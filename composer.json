@@ -1,0 +1,24 @@
+{
+    "name": "lizmap/lizmap-gobs-module",
+    "type": "jelix-module",
+    "description": "Jelix module for Lizmap, which adds tools to manage data from G-Obs database",
+    "keywords": ["module", "jelix", "lizmap", "G-Obs", "observation", "database"],
+    "homepage": "http://3liz.com",
+    "license": "MPL-2.0",
+    "authors": [
+        {
+            "name": "Michaël DOUCHIN",
+            "email": "info@3liz.com"
+        }
+    ],
+    "require": {
+    },
+    "minimum-stability": "stable",
+    "extra" : {
+        "jelix" : {
+            "modules": [
+                "gobs/"
+            ]
+        }
+    }
+}
