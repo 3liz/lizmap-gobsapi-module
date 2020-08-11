@@ -121,19 +121,8 @@
           "user"
         ],
         "summary": "Get projects for the given user",
-        "description": "User login must be passed.",
-        "operationId": "findProjectByUser",
-        "parameters": [
-          {
-            "name": "project",
-            "in": "query",
-            "description": "Project key",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "description": "Projects will be returned for the logged in user.",
+        "operationId": "getUserProjects",
         "responses": {
           "200": {
             "description": "successful operation",
@@ -245,24 +234,24 @@
         }
       }
     },
-    "/indicator/{indicatorId}": {
+    "/indicator/{indicatorCode}": {
       "get": {
         "tags": [
           "indicator"
         ],
-        "summary": "Get indicator by id",
+        "summary": "Get indicator by code",
         "description": "Returns a single indicator",
-        "operationId": "getIndicatorById",
+        "operationId": "getIndicatorByCode",
         "parameters": [
           {
-            "name": "indicatorId",
+            "name": "indicatorCode",
             "in": "path",
-            "description": "ID of indicator to return",
+            "description": "Code of indicator to return",
             "required": true,
             "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
+              "type": "string"
+            },
+            "example": "pluviometry"
           }
         ],
         "responses": {
@@ -277,7 +266,7 @@
             }
           },
           "400": {
-            "description": "Invalid ID supplied",
+            "description": "Invalid code supplied",
             "content": {}
           },
           "401": {
@@ -290,23 +279,23 @@
         }
       }
     },
-    "/indicator/{indicatorId}/documents": {
+    "/indicator/{indicatorCode}/documents": {
       "get": {
         "tags": [
           "indicator"
         ],
         "summary": "Get the documents for a given indicator",
-        "description": "Indicator id must be given in the path.",
+        "description": "Indicator code must be given in the path.",
         "operationId": "getIndicatorDocuments",
         "parameters": [
           {
-            "name": "indicatorId",
+            "name": "indicatorCode",
             "in": "path",
-            "description": "Indicator ID to filter by",
+            "description": "Indicator code to filter by",
             "required": true,
             "schema": {
-              "type": "integer",
-              "format": "int64"
+              "type": "string",
+              "example": "pluviometry"
             }
           }
         ],
@@ -325,32 +314,46 @@
             }
           },
           "400": {
-            "description": "Invalid indicator value",
+            "description": "Invalid code supplied",
             "content": {}
           },
           "401": {
             "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "description": "Indicator not found",
+            "content": {}
           }
         }
       }
     },
-    "/indicator/{indicatorId}/observations": {
+    "/indicator/{indicatorCode}/observations": {
       "get": {
         "tags": [
           "indicator"
         ],
         "summary": "Get observations by indicator",
-        "description": "Indicator id must be given in the path.",
-        "operationId": "findObservationByIndicator",
+        "description": "Indicator code must be given in the path, and device UID in the header",
+        "operationId": "getObservationsByIndicator",
         "parameters": [
           {
-            "name": "indicatorId",
-            "in": "path",
-            "description": "Indicator ID to filter by",
+            "name": "deviceId",
+            "in": "header",
+            "description": "Device unique id",
+            "example": "3ee487d9-f909-634d-2455-0c8fbead6e4e",
             "required": true,
             "schema": {
-              "type": "integer",
-              "format": "int64"
+              "type": "string"
+            }
+          },
+          {
+            "name": "indicatorCode",
+            "in": "path",
+            "description": "Indicator code to filter by",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "pluviometry"
             }
           }
         ],
@@ -369,11 +372,15 @@
             }
           },
           "400": {
-            "description": "Invalid indicator value",
+            "description": "Invalid code supplied",
             "content": {}
           },
           "401": {
             "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "description": "Indicator not found",
+            "content": {}
           }
         }
       }
@@ -383,14 +390,84 @@
         "tags": [
           "observation"
         ],
-        "summary": "Add a new observation to G-Obs",
+        "summary": "Create a new observation",
         "operationId": "addObservation",
+        "parameters": [
+          {
+            "name": "deviceId",
+            "in": "header",
+            "description": "Device unique id.",
+            "example": "3ee487d9-f909-634d-2455-0c8fbead6e4e",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
-          "description": "Observation object that needs to be added to G-Obs",
+          "description": "Observation object that needs to be added",
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/Observation"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "created observation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Observation"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "405": {
+            "description": "Invalid input",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "body"
+      }
+    },
+    "/observation/observations": {
+      "post": {
+        "tags": [
+          "observation"
+        ],
+        "summary": "Create new observations by sending a list of objects",
+        "operationId": "addObservations",
+        "parameters": [
+          {
+            "name": "deviceId",
+            "in": "header",
+            "description": "Device unique id",
+            "example": "3ee487d9-f909-634d-2455-0c8fbead6e4e",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "List of bservation objects that needs to be added",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Observation"
+                }
               }
             }
           },
@@ -582,13 +659,13 @@
         "tags": [
           "observation"
         ],
-        "summary": "uploads an image",
-        "operationId": "uploadFile",
+        "summary": "uploads an media for the observation",
+        "operationId": "uploadMedia",
         "parameters": [
           {
             "name": "observationId",
             "in": "path",
-            "description": "ID of observation to update",
+            "description": "ID of observation concerned for which to store the media",
             "required": true,
             "schema": {
               "type": "integer",
@@ -683,13 +760,16 @@
         "properties": {
           "code": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "example": 1
           },
           "type": {
-            "type": "string"
+            "type": "string",
+            "example": "success"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "example": "Observation sucessfully updated"
           }
         }
       },
@@ -697,16 +777,23 @@
         "type": "object",
         "properties": {
           "key": {
-            "type": "string"
+            "type": "string",
+            "description": "unique key of the project",
+            "example": "environment@water"
           },
           "label": {
-            "type": "string"
+            "type": "string",
+            "description": "Label of the project, to be used as title",
+            "example": "Water quality assessment"
           },
           "description": {
-            "type": "string"
+            "type": "string",
+            "description": "Description of the project",
+            "example": "Water quality related data"
           },
           "media_url": {
-            "type": "string"
+            "type": "string",
+            "description": "URL of the media describing the project"
           }
         },
         "xml": {
@@ -718,11 +805,13 @@
         "properties": {
           "code": {
             "type": "string",
-            "description": "code of the vector dimension"
+            "description": "Code of the vector dimension",
+            "example": "pluviometry"
           },
           "name": {
             "type": "string",
-            "description": "name of the vector dimension"
+            "description": "Name of the vector dimension",
+            "example": "Pluviometry"
           },
           "type": {
             "type": "string",
@@ -736,7 +825,8 @@
           },
           "unit": {
             "type": "string",
-            "description": "unit of the stored value"
+            "description": "Unit of the stored value",
+            "example": "mm"
           }
         },
         "xml": {
@@ -748,16 +838,19 @@
         "properties": {
           "id": {
             "type": "integer",
-            "format": "int64"
+            "format": "int64",
+            "example": 1
           },
           "indicator": {
             "type": "integer",
             "description": "Id of the indicator",
-            "format": "int64"
+            "format": "int64",
+            "example": 2
           },
           "label": {
             "type": "string",
-            "description": "Label of the document"
+            "description": "Label of the document",
+            "example": "Technical guide for using field pluviometers"
           },
           "description": {
             "type": "string",
@@ -788,19 +881,36 @@
           "id": {
             "type": "integer",
             "description": "Unique identifier",
-            "format": "int64"
+            "format": "int64",
+            "example": 1
+          },
+          "code": {
+            "type": "string",
+            "description": "Code of the indicator. Can be used as an unique identifier",
+            "example": "pluviometry"
           },
           "label": {
             "type": "string",
-            "description": "Label of the indicator"
+            "description": "Label of the indicator",
+            "example": "Hourly pluviometry"
           },
           "description": {
             "type": "string",
-            "description": "Description of the indicator"
+            "description": "Description of the indicator",
+            "example": "Hourly rainfall pluviometry in millimetre"
           },
           "date_format": {
             "type": "string",
-            "description": "Date format"
+            "description": "Date format",
+            "example": "year",
+            "enum": [
+              "second",
+              "minute",
+              "hour",
+              "day",
+              "month",
+              "year"
+            ]
           },
           "values": {
             "type": "array",
@@ -828,7 +938,8 @@
           },
           "color": {
             "type": "string",
-            "description": "Main color of the indicator"
+            "description": "Main color of the indicator",
+            "example": null
           }
         },
         "xml": {
@@ -840,11 +951,13 @@
         "properties": {
           "name": {
             "type": "string",
-            "description": "name of the vector dimension"
+            "description": "Name of the value",
+            "example": "pluviometry"
           },
           "type": {
             "type": "string",
             "description": "Format of the value",
+            "example": "integer",
             "enum": [
               "integer",
               "string",
@@ -854,7 +967,8 @@
           },
           "value": {
             "type": "string",
-            "description": "data"
+            "description": "data",
+            "example": 24
           }
         },
         "xml": {
@@ -863,6 +977,8 @@
       },
       "Observation": {
         "required": [
+          "uuid",
+          "indicator",
           "timestamp",
           "values",
           "x",
@@ -872,22 +988,49 @@
         "properties": {
           "id": {
             "type": "integer",
-            "format": "int64"
+            "format": "int64",
+            "description": "Unique internal identifier",
+            "example": 1
+          },
+          "indicator": {
+            "type": "string",
+            "description": "Code of the indicator",
+            "example": "pluviometry"
+          },
+          "uuid": {
+            "type": "string",
+            "description": "Unique identifier in format UUID",
+            "example": "e715352e-edb0-553e-2c69-09b6dc768ea7"
+          },
+          "changeset": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Id of the import",
+            "example": 123
           },
           "timestamp": {
             "type": "string",
-            "description": "Date and time of the observation"
+            "description": "Date and time of the observation",
+            "example": "2020-01-31 20:10:30"
           },
           "x": {
             "type": "number",
-            "description": "Longitude of the observation"
+            "description": "Longitude of the observation, or the centroid of the observation geometry",
+            "example": 43.123456
           },
           "y": {
             "type": "number",
-            "description": "Latitude of the observation"
+            "description": "Latitude of the observation, or of the centroid of the observation geometry",
+            "example": 3.456788
+          },
+          "wkt": {
+            "type": "string",
+            "description": "WKT representation of the observation geometry",
+            "example": "POINT(3.456788 43.123456)"
           },
           "values": {
             "type": "array",
+            "description": "Values of the observation",
             "xml": {
               "wrapped": true
             },
@@ -896,7 +1039,8 @@
             }
           },
           "photo": {
-            "type": "string"
+            "type": "string",
+            "description": "Photography of the observation (optionnal)"
           }
         },
         "xml": {
