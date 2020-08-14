@@ -44,24 +44,21 @@ paths:
         schema:
           type: string
           format: password
-      security: []    # no authentication
+      security: []    # no authentication for this login request only
       responses:
         200:
           description: >
             Successfully authenticated.
-            The session ID is returned in a cookie named `PHPSESSID`. You need to include this cookie in subsequent requests.
-          headers: 
-            Set-Cookie:
-              schema: 
-                type: string
-                example: PHPSESSID=abcde12345; Path=/; HttpOnly                      
+            A token has been returned. You need to include this token in subsequent requests in Authorization header as 'Bearer XXXXXXX'
           content:
             application/json:
               schema:
-                type: string
-            application/xml:
-              schema:
-                type: string
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: '1mx6L2L7AMdEsyKy5LW9s8gt6mBxdICwosVn5sjhbwykOoQJFUru6752dwsj2THN'
+                    description: 'Token'
         400:
           description: Invalid username/password supplied
           content: {}
@@ -69,7 +66,7 @@ paths:
     get:
       tags:
       - user
-      summary: Logs out current logged in user session
+      summary: Logs out current logged in user session. Invalidate the token
       operationId: logoutUser
       responses:
         default:
@@ -222,7 +219,7 @@ paths:
       tags:
       - indicator
       summary: Get observations by indicator
-      description: Indicator code must be given in the path, and device UID in the header
+      description: Indicator code must be given in the path. For synchronization purpose, last synchronization timestamp and request timestamp must be passed in header.
       operationId: getObservationsByIndicator
       parameters:
       - name: indicatorCode
@@ -793,15 +790,11 @@ components:
         name: Observation 
   responses:
     UnauthorizedError:
-      description: Authentication information is missing or invalid
-      headers:
-        WWW_Authenticate:
-          schema:
-            type: string        
+      description: Access token is missing or invalid
   securitySchemes:
-    cookieAuth:
-      type: apiKey
-      in: cookie
-      name: PHPSESSID
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
 security:
-  - cookieAuth: []
+  - bearerAuth: []
