@@ -64,7 +64,8 @@
             "description": "The password for login in clear text",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "format": "password"
             }
           }
         ],
@@ -160,6 +161,7 @@
             "name": "projectKey",
             "in": "path",
             "description": "Key of the project to return",
+            "example": "environment_weather",
             "required": true,
             "schema": {
               "type": "string"
@@ -204,6 +206,7 @@
             "name": "projectKey",
             "in": "path",
             "description": "Project key to filter by.",
+            "example": "environment_weather",
             "required": true,
             "schema": {
               "type": "string"
@@ -218,7 +221,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/IndicatorDocument"
+                    "$ref": "#/components/schemas/Indicator"
                   }
                 }
               }
@@ -251,7 +254,7 @@
             "schema": {
               "type": "string"
             },
-            "example": "pluviometry"
+            "example": "weather_status"
           }
         ],
         "responses": {
@@ -295,7 +298,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "example": "pluviometry"
+              "example": "weather_status"
             }
           }
         ],
@@ -337,23 +340,35 @@
         "operationId": "getObservationsByIndicator",
         "parameters": [
           {
-            "name": "deviceId",
-            "in": "header",
-            "description": "Device unique id",
-            "example": "3ee487d9-f909-634d-2455-0c8fbead6e4e",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
             "name": "indicatorCode",
             "in": "path",
             "description": "Indicator code to filter by",
             "required": true,
             "schema": {
               "type": "string",
-              "example": "pluviometry"
+              "example": "weather_status"
+            }
+          },
+          {
+            "name": "lastSyncDate",
+            "in": "header",
+            "description": "Last synchronisation date",
+            "example": "2020-01-31 20:10:30",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-type"
+            }
+          },
+          {
+            "name": "requestSyncDate",
+            "in": "header",
+            "description": "Request synchronisation date",
+            "example": "2020-02-15 10:40:30",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-type"
             }
           }
         ],
@@ -394,13 +409,14 @@
         "operationId": "addObservation",
         "parameters": [
           {
-            "name": "deviceId",
-            "in": "header",
-            "description": "Device unique id.",
-            "example": "3ee487d9-f909-634d-2455-0c8fbead6e4e",
+            "name": "requestSyncDate",
+            "in": "query",
+            "description": "Request synchronisation date",
+            "example": "2020-02-15 10:40:30",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "format": "date-type"
             }
           }
         ],
@@ -449,13 +465,14 @@
         "operationId": "addObservations",
         "parameters": [
           {
-            "name": "deviceId",
+            "name": "requestSyncDate",
             "in": "header",
-            "description": "Device unique id",
-            "example": "3ee487d9-f909-634d-2455-0c8fbead6e4e",
+            "description": "Request synchronisation date",
+            "example": "2020-02-15 10:40:30",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "format": "date-type"
             }
           }
         ],
@@ -490,6 +507,19 @@
         ],
         "summary": "Update an existing observation",
         "operationId": "updateObservation",
+        "parameters": [
+          {
+            "name": "requestSyncDate",
+            "in": "header",
+            "description": "Request synchronisation date",
+            "example": "2020-02-15 10:40:30",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-type"
+            }
+          }
+        ],
         "requestBody": {
           "description": "Observation object that needs to be added to G-obs",
           "content": {
@@ -539,6 +569,28 @@
               "type": "integer",
               "format": "int64"
             }
+          },
+          {
+            "name": "lastSyncDate",
+            "in": "header",
+            "description": "Last synchronisation date",
+            "example": "2020-01-31 20:10:30",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-type"
+            }
+          },
+          {
+            "name": "requestSyncDate",
+            "in": "header",
+            "description": "Request synchronisation date",
+            "example": "2020-02-15 10:40:30",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-type"
+            }
           }
         ],
         "responses": {
@@ -580,6 +632,17 @@
             "schema": {
               "type": "integer",
               "format": "int64"
+            }
+          },
+          {
+            "name": "requestSyncDate",
+            "in": "header",
+            "description": "Request synchronisation date",
+            "example": "2020-02-15 10:40:30",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-type"
             }
           }
         ],
@@ -627,6 +690,17 @@
               "type": "integer",
               "format": "int64"
             }
+          },
+          {
+            "name": "requestSyncDate",
+            "in": "header",
+            "description": "Request synchronisation date",
+            "example": "2020-02-15 10:40:30",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-type"
+            }
           }
         ],
         "responses": {
@@ -670,6 +744,17 @@
             "schema": {
               "type": "integer",
               "format": "int64"
+            }
+          },
+          {
+            "name": "requestSyncDate",
+            "in": "header",
+            "description": "Request synchronisation date",
+            "example": "2020-02-15 10:40:30",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-type"
             }
           }
         ],
@@ -725,6 +810,17 @@
               "type": "integer",
               "format": "int64"
             }
+          },
+          {
+            "name": "requestSyncDate",
+            "in": "header",
+            "description": "Request synchronisation date",
+            "example": "2020-02-15 10:40:30",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-type"
+            }
           }
         ],
         "responses": {
@@ -773,27 +869,59 @@
           }
         }
       },
+      "PointGeometryValue": {
+        "required": [
+          "x",
+          "y"
+        ],
+        "type": "object",
+        "properties": {
+          "x": {
+            "type": "number",
+            "format": "float",
+            "description": "Longitude of the point",
+            "example": 3.12345678
+          },
+          "y": {
+            "type": "number",
+            "format": "float",
+            "description": "Latitude of the point",
+            "example": 43.12345678
+          }
+        },
+        "xml": {
+          "name": "IndicatorValue"
+        }
+      },
       "Project": {
         "type": "object",
         "properties": {
           "key": {
             "type": "string",
             "description": "unique key of the project",
-            "example": "environment@water"
+            "example": "environment_weather"
           },
           "label": {
             "type": "string",
             "description": "Label of the project, to be used as title",
-            "example": "Water quality assessment"
+            "example": "Weather data publication"
           },
           "description": {
             "type": "string",
             "description": "Description of the project",
-            "example": "Water quality related data"
+            "example": "This projects aims to show weather data"
           },
           "media_url": {
             "type": "string",
             "description": "URL of the media describing the project"
+          },
+          "center": {
+            "$ref": "#/components/schemas/PointGeometryValue"
+          },
+          "radius": {
+            "type": "integer",
+            "description": "Radius of the project in metres",
+            "example": 50000
           }
         },
         "xml": {
@@ -806,12 +934,12 @@
           "code": {
             "type": "string",
             "description": "Code of the vector dimension",
-            "example": "pluviometry"
+            "example": "temperature"
           },
           "name": {
             "type": "string",
             "description": "Name of the vector dimension",
-            "example": "Pluviometry"
+            "example": "Température"
           },
           "type": {
             "type": "string",
@@ -821,12 +949,13 @@
               "string",
               "boolean",
               "real"
-            ]
+            ],
+            "example": "real"
           },
           "unit": {
             "type": "string",
             "description": "Unit of the stored value",
-            "example": "mm"
+            "example": "°C"
           }
         },
         "xml": {
@@ -842,15 +971,14 @@
             "example": 1
           },
           "indicator": {
-            "type": "integer",
-            "description": "Id of the indicator",
-            "format": "int64",
-            "example": 2
+            "type": "string",
+            "description": "Code of the indicator",
+            "example": "weather_status"
           },
           "label": {
             "type": "string",
             "description": "Label of the document",
-            "example": "Technical guide for using field pluviometers"
+            "example": "Technical guide for using field weather stations"
           },
           "description": {
             "type": "string",
@@ -864,7 +992,8 @@
               "video",
               "document",
               "other"
-            ]
+            ],
+            "example": "document"
           },
           "url": {
             "type": "string",
@@ -887,22 +1016,22 @@
           "code": {
             "type": "string",
             "description": "Code of the indicator. Can be used as an unique identifier",
-            "example": "pluviometry"
+            "example": "weather_status"
           },
           "label": {
             "type": "string",
             "description": "Label of the indicator",
-            "example": "Hourly pluviometry"
+            "example": "Weather status"
           },
           "description": {
             "type": "string",
             "description": "Description of the indicator",
-            "example": "Hourly rainfall pluviometry in millimetre"
+            "example": "Weather status with measured temperature and hygrometry"
           },
           "date_format": {
             "type": "string",
             "description": "Date format",
-            "example": "year",
+            "example": "day",
             "enum": [
               "second",
               "minute",
@@ -914,7 +1043,21 @@
           },
           "values": {
             "type": "array",
-            "description": "List of value for the indicator",
+            "description": "List of values properties for the indicator",
+            "example": [
+              {
+                "code": "temperature",
+                "name": "Température",
+                "type": "real",
+                "unit": "°C"
+              },
+              {
+                "code": "hygrometry",
+                "name": "Hygrometry",
+                "type": "real",
+                "unit": "%"
+              }
+            ],
             "xml": {
               "wrapped": true
             },
@@ -946,43 +1089,13 @@
           "name": "Indicator"
         }
       },
-      "ObservationValue": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "Name of the value",
-            "example": "pluviometry"
-          },
-          "type": {
-            "type": "string",
-            "description": "Format of the value",
-            "example": "integer",
-            "enum": [
-              "integer",
-              "string",
-              "boolean",
-              "real"
-            ]
-          },
-          "value": {
-            "type": "string",
-            "description": "data",
-            "example": 24
-          }
-        },
-        "xml": {
-          "name": "ObservationValue"
-        }
-      },
       "Observation": {
         "required": [
           "uuid",
           "indicator",
-          "timestamp",
-          "values",
-          "x",
-          "y"
+          "start_timestamp",
+          "wkt",
+          "values"
         ],
         "type": "object",
         "properties": {
@@ -995,47 +1108,42 @@
           "indicator": {
             "type": "string",
             "description": "Code of the indicator",
-            "example": "pluviometry"
+            "example": "weather_status"
           },
           "uuid": {
             "type": "string",
             "description": "Unique identifier in format UUID",
             "example": "e715352e-edb0-553e-2c69-09b6dc768ea7"
           },
-          "changeset": {
-            "type": "integer",
-            "format": "int64",
-            "description": "Id of the import",
-            "example": 123
-          },
-          "timestamp": {
+          "start_timestamp": {
             "type": "string",
-            "description": "Date and time of the observation",
+            "format": "date-time",
+            "description": "Date and time of the start of the observation",
             "example": "2020-01-31 20:10:30"
           },
-          "x": {
-            "type": "number",
-            "description": "Longitude of the observation, or the centroid of the observation geometry",
-            "example": 43.123456
+          "end_timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date and time of the end of the observation",
+            "example": "2020-01-31 20:10:30"
           },
-          "y": {
-            "type": "number",
-            "description": "Latitude of the observation, or of the centroid of the observation geometry",
-            "example": 3.456788
+          "coordinates": {
+            "$ref": "#/components/schemas/PointGeometryValue"
           },
           "wkt": {
             "type": "string",
             "description": "WKT representation of the observation geometry",
-            "example": "POINT(3.456788 43.123456)"
+            "example": "POINT(3.123456 43.123456)"
           },
           "values": {
             "type": "array",
             "description": "Values of the observation",
-            "xml": {
-              "wrapped": true
-            },
             "items": {
-              "$ref": "#/components/schemas/ObservationValue"
+              "type": "string",
+              "example": [
+                20,
+                65
+              ]
             }
           },
           "photo": {
