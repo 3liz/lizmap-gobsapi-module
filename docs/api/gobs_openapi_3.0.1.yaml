@@ -14,6 +14,8 @@ externalDocs:
   url: https://3liz.github.io/qgis-gobs-plugin/
 servers:
 - url: https://gobs.3liz.com/1.0.0
+
+
 tags:
 - name: user
   description: Operations about user
@@ -214,6 +216,7 @@ paths:
         404:
           description: Indicator not found
           content: {}
+          
   /indicator/{indicatorCode}/observations:
     get:
       tags:
@@ -254,6 +257,58 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Observation'
+        400:
+          description: Invalid code supplied
+          content: {}
+        401:
+           $ref: '#/components/responses/UnauthorizedError'
+        404:
+          description: Indicator not found
+          content: {}
+
+
+  /indicator/{indicatorCode}/deletedObservations:
+    get:
+      tags:
+      - indicator
+      summary: Get deleted observations by indicator since last synchronization
+      description: Indicator code must be given in the path. For synchronization purpose, last synchronization timestamp and request timestamp must be passed in header.
+      operationId: getDeletedObservationsByIndicator
+      parameters:
+      - name: indicatorCode
+        in: path
+        description: Indicator code to filter by
+        required: true
+        schema:
+          type: string
+          example: weather_status
+      - name: lastSyncDate
+        in: header
+        description: Last synchronisation date
+        example: "2020-01-31 20:10:30"
+        required: true
+        schema:
+          type: string
+          format: date-type
+      - name: requestSyncDate
+        in: header
+        description: Request synchronisation date
+        example: "2020-02-15 10:40:30"
+        required: true
+        schema:
+          type: string
+          format: date-type
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                description: Array of UUID of the deleted observation
+                items:
+                  type: string
+                  example: e715352e-edb0-553e-2c69-09b6dc768ea7
         400:
           description: Invalid code supplied
           content: {}
@@ -597,7 +652,37 @@ components:
           description: Latitude of the point
           example: 43.12345678
       xml:
-        name: IndicatorValue          
+        name: PointGeometryValue
+    GeometryExtent:
+      required:
+        - xmin
+        - ymin
+        - xmax
+        - ymax
+      type: object
+      properties:
+        xmin:
+          type: number
+          format: float
+          description: Minimum longitude
+          example: 3.12345678
+        ymin:
+          type: number
+          format: float
+          description: Minimum latitude
+          example: 43.12345678
+        xmax:
+          type: number
+          format: float
+          description: Maximum longitude
+          example: 3.23456789
+        ymax:
+          type: number
+          format: float
+          description: Maximum latitude
+          example: 43.23456789
+      xml:
+        name: GeometryExtent   
     Project:
       type: object
       properties:
@@ -616,14 +701,8 @@ components:
         media_url:
           type: string
           description: URL of the media describing the project
-        center:
-          $ref: '#/components/schemas/PointGeometryValue'
-        radius:
-          type: integer
-          description: Radius of the project in metres
-          example: 50000
-          
-            
+        extent:
+          $ref: '#/components/schemas/GeometryExtent'
       xml:
         name: Project   
     IndicatorValue:
@@ -682,6 +761,16 @@ components:
         url:
           type: string
           description: Url of the document
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp of the object creation
+          example: "2010-01-15 13:10:19"
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp of the last update
+          example: "2010-01-15 13:15:38"          
       xml:
         name: IndicatorDocument   
     Indicator:
@@ -689,7 +778,7 @@ components:
       properties:
         id:
           type: integer
-          description: Unique identifier
+          description: Unique internal identifier
           format: int64
           example: 1
         code:
@@ -704,6 +793,10 @@ components:
           type: string
           description: Description of the indicator
           example: Weather status with measured temperature and hygrometry
+        category:
+          type: string
+          description: Category of the indicator
+          example: Climate
         date_format:
           type: string
           description: Date format
@@ -737,8 +830,19 @@ components:
           type: string
           description: Main color of the indicator
           example: #99cc00
+
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp of the object creation
+          example: "2010-01-15 13:10:19"
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp of the last update
+          example: "2010-01-15 13:15:38"          
       xml:
-        name: Indicator   
+        name: Indicator
     Observation:
       required:
       - uuid
@@ -782,12 +886,24 @@ components:
           description: Values of the observation
           items:
             type: string
-            example: [20, 65]
+            example: 20
         photo:
           type: string
           description: Photography of the observation (optionnal)
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp of the object creation
+          example: "2010-01-15 13:10:19"
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp of the last update
+          example: "2010-01-15 13:15:38"
       xml:
-        name: Observation 
+        name: Observation
+
+
   responses:
     UnauthorizedError:
       description: Access token is missing or invalid
@@ -796,5 +912,7 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+      
+
 security:
   - bearerAuth: []
