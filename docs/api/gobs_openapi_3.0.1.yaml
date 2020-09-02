@@ -14,8 +14,307 @@ externalDocs:
   url: https://3liz.github.io/qgis-gobs-plugin/
 servers:
 - url: https://gobs.3liz.com/1.0.0
+security:
+  - bearerAuth: []
+components:
+  schemas:
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+          example: 1
+        type:
+          type: string
+          example: success
+        message:
+          type: string
+          example: Observation sucessfully updated
+          
+    PointGeometryValue:
+      required:
+        - x
+        - y
+      type: object
+      properties:
+        x:
+          type: number
+          format: float
+          description: Longitude of the point
+          example: 3.12345678
+        y:
+          type: number
+          format: float
+          description: Latitude of the point
+          example: 43.12345678
+      xml:
+        name: PointGeometryValue
+        
+    GeometryExtent:
+      required:
+        - xmin
+        - ymin
+        - xmax
+        - ymax
+      type: object
+      properties:
+        xmin:
+          type: number
+          format: float
+          description: Minimum longitude
+          example: 3.12345678
+        ymin:
+          type: number
+          format: float
+          description: Minimum latitude
+          example: 43.12345678
+        xmax:
+          type: number
+          format: float
+          description: Maximum longitude
+          example: 3.23456789
+        ymax:
+          type: number
+          format: float
+          description: Maximum latitude
+          example: 43.23456789
+      xml:
+        name: GeometryExtent
+        
+    Project:
+      type: object
+      properties:
+        key:
+          type: string
+          description: unique key of the project
+          example: environment_weather
+        label:
+          type: string
+          description: Label of the project, to be used as title
+          example: Weather data publication
+        description:
+          type: string
+          description: Description of the project
+          example: This projects aims to show weather data
+        media_url:
+          type: string
+          description: URL of the media describing the project
+        extent:
+          $ref: '#/components/schemas/GeometryExtent'
+      xml:
+        name: Project
+        
+    IndicatorValue:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Code of the vector dimension
+          example: temperature
+        name:
+          type: string
+          description: Name of the vector dimension
+          example: Température
+        type:
+          type: string
+          description: Format of the stored value
+          enum:
+          - integer
+          - string
+          - boolean
+          - real
+          example: real
+        unit:
+          type: string
+          description: Unit of the stored value
+          example: °C
+      xml:
+        name: IndicatorValue
+        
+    IndicatorDocument:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        indicator:
+          type: string
+          description: Code of the indicator
+          example: weather_status
+        label:
+          type: string
+          description: Label of the document
+          example: Technical guide for using field weather stations
+        description:
+          type: string
+          description: Full description of the document
+        type:
+          type: string
+          description: Type of the document
+          enum:
+          - image
+          - video
+          - document
+          - other
+          example: document
+        url:
+          type: string
+          description: Url of the document
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp of the object creation
+          example: "2010-01-15 13:10:19"
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp of the last update
+          example: "2010-01-15 13:15:38"          
+      xml:
+        name: IndicatorDocument   
+        
+    Indicator:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique internal identifier
+          format: int64
+          example: 1
+        code:
+          type: string
+          description: Code of the indicator. Can be used as an unique identifier
+          example: weather_status
+        label:
+          type: string
+          description: Label of the indicator
+          example: Weather status
+        description:
+          type: string
+          description: Description of the indicator
+          example: Weather status with measured temperature and hygrometry
+        category:
+          type: string
+          description: Category of the indicator
+          example: Climate
+        date_format:
+          type: string
+          description: Date format
+          example: day
+          enum:
+          - second
+          - minute
+          - hour
+          - day
+          - month
+          - year
+        values:
+          type: array
+          description: List of values properties for the indicator
+          example: [{"code": "temperature", "name": "Température", "type":"real", "unit": "°C"}, {"code": "hygrometry", "name": "Hygrometry", "type":"real", "unit": "%"}]
+          xml:
+            wrapped: true
+          items:
+            $ref: '#/components/schemas/IndicatorValue'
+        documents:
+          type: array
+          description: List of documents for the indicator
+          xml:
+            wrapped: true
+          items:
+            $ref: '#/components/schemas/IndicatorDocument'
+        avatar:
+          type: string
+          description: Url of the image illustrating the indicator
+        color:
+          type: string
+          description: Main color of the indicator
+          example: #99cc00
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp of the object creation
+          example: "2010-01-15 13:10:19"
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp of the last update
+          example: "2010-01-15 13:15:38"          
+      xml:
+        name: Indicator
+        
+    Observation:
+      required:
+      - uuid
+      - indicator
+      - start_timestamp
+      - wkt
+      - values
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique internal identifier
+          example: 1
+        indicator:
+          type: string
+          description: Code of the indicator
+          example: weather_status
+        uuid:
+          type: string
+          description: Unique identifier in format UUID
+          example: e715352e-edb0-553e-2c69-09b6dc768ea7
+        start_timestamp:
+          type: string
+          format: date-time
+          description: Date and time of the start of the observation
+          example: "2020-01-31 20:10:30"
+        end_timestamp:
+          type: string
+          format: date-time
+          description: Date and time of the end of the observation
+          example: "2020-01-31 20:10:30"
+        coordinates:
+          $ref: '#/components/schemas/PointGeometryValue'
+        wkt:
+          type: string
+          description: WKT representation of the observation geometry
+          example: "POINT(3.123456 43.123456)"
+        values:
+          type: array
+          description: Values of the observation
+          items:
+            type: string
+            example: 20
+        photo:
+          type: string
+          description: Photography of the observation (optionnal)
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp of the object creation
+          example: "2010-01-15 13:10:19"
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp of the last update
+          example: "2010-01-15 13:15:38"
+      xml:
+        name: Observation
 
-
+  responses:
+    UnauthorizedError:
+      description: Access token is missing or invalid
+      
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      
 tags:
 - name: user
   description: Operations about user
@@ -25,6 +324,7 @@ tags:
   description: Indicator
 - name: observation
   description: Field observation
+  
 paths:
   /user/login:
     get:
@@ -64,6 +364,7 @@ paths:
         400:
           description: Invalid username/password supplied
           content: {}
+          
   /user/logout:
     get:
       tags:
@@ -74,6 +375,7 @@ paths:
         default:
           description: successful operation
           content: {}
+          
   /user/projects:
     get:
       tags:
@@ -95,6 +397,7 @@ paths:
           content: {}
         401:
            $ref: '#/components/responses/UnauthorizedError'
+           
   /project/{projectKey}:
     get:
       tags:
@@ -125,6 +428,7 @@ paths:
           content: {}
         401:
            $ref: '#/components/responses/UnauthorizedError'
+           
   /project/{projectKey}/indicators:
     get:
       tags:
@@ -154,6 +458,7 @@ paths:
           content: {}
         401:
            $ref: '#/components/responses/UnauthorizedError'
+           
   /indicator/{indicatorCode}:
     get:
       tags:
@@ -184,6 +489,7 @@ paths:
         404:
           description: Indicator not found
           content: {}
+          
   /indicator/{indicatorCode}/documents:
     get:
       tags:
@@ -265,7 +571,6 @@ paths:
         404:
           description: Indicator not found
           content: {}
-
 
   /indicator/{indicatorCode}/deletedObservations:
     get:
@@ -355,6 +660,7 @@ paths:
           description: Invalid input
           content: {}
       x-codegen-request-body-name: body
+      
   /observation/observations:
     post:
       tags:
@@ -386,6 +692,7 @@ paths:
           description: Invalid input
           content: {}
       x-codegen-request-body-name: body      
+      
     put:
       tags:
       - observation
@@ -420,6 +727,7 @@ paths:
           description: Validation exception
           content: {}
       x-codegen-request-body-name: body      
+      
   /observation/{observationId}:
     get:
       tags:
@@ -466,6 +774,7 @@ paths:
         404:
           description: Observation not found
           content: {}
+          
     post:
       tags:
       - observation
@@ -504,6 +813,7 @@ paths:
         405:
           description: Invalid input
           content: {}
+          
     delete:
       tags:
       - observation
@@ -540,6 +850,7 @@ paths:
         404:
           description: Observation not found
           content: {}
+          
   /observation/{observationId}/uploadMedia:
     post:
       tags:
@@ -582,6 +893,7 @@ paths:
                 $ref: '#/components/schemas/ApiResponse'
         401:
            $ref: '#/components/responses/UnauthorizedError'
+           
   /observation/{observationId}/deleteMedia:
     delete:
       tags:
@@ -619,300 +931,3 @@ paths:
         404:
           description: Observation not found
           content: {} 
-
-components:
-  schemas:
-    ApiResponse:
-      type: object
-      properties:
-        code:
-          type: integer
-          format: int32
-          example: 1
-        type:
-          type: string
-          example: success
-        message:
-          type: string
-          example: Observation sucessfully updated
-    PointGeometryValue:
-      required:
-        - x
-        - y
-      type: object
-      properties:
-        x:
-          type: number
-          format: float
-          description: Longitude of the point
-          example: 3.12345678
-        y:
-          type: number
-          format: float
-          description: Latitude of the point
-          example: 43.12345678
-      xml:
-        name: PointGeometryValue
-    GeometryExtent:
-      required:
-        - xmin
-        - ymin
-        - xmax
-        - ymax
-      type: object
-      properties:
-        xmin:
-          type: number
-          format: float
-          description: Minimum longitude
-          example: 3.12345678
-        ymin:
-          type: number
-          format: float
-          description: Minimum latitude
-          example: 43.12345678
-        xmax:
-          type: number
-          format: float
-          description: Maximum longitude
-          example: 3.23456789
-        ymax:
-          type: number
-          format: float
-          description: Maximum latitude
-          example: 43.23456789
-      xml:
-        name: GeometryExtent   
-    Project:
-      type: object
-      properties:
-        key:
-          type: string
-          description: unique key of the project
-          example: environment_weather
-        label:
-          type: string
-          description: Label of the project, to be used as title
-          example: Weather data publication
-        description:
-          type: string
-          description: Description of the project
-          example: This projects aims to show weather data
-        media_url:
-          type: string
-          description: URL of the media describing the project
-        extent:
-          $ref: '#/components/schemas/GeometryExtent'
-      xml:
-        name: Project   
-    IndicatorValue:
-      type: object
-      properties:
-        code:
-          type: string
-          description: Code of the vector dimension
-          example: temperature
-        name:
-          type: string
-          description: Name of the vector dimension
-          example: Température
-        type:
-          type: string
-          description: Format of the stored value
-          enum:
-          - integer
-          - string
-          - boolean
-          - real
-          example: real
-        unit:
-          type: string
-          description: Unit of the stored value
-          example: °C
-      xml:
-        name: IndicatorValue
-    IndicatorDocument:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-          example: 1
-        indicator:
-          type: string
-          description: Code of the indicator
-          example: weather_status
-        label:
-          type: string
-          description: Label of the document
-          example: Technical guide for using field weather stations
-        description:
-          type: string
-          description: Full description of the document
-        type:
-          type: string
-          description: Type of the document
-          enum:
-          - image
-          - video
-          - document
-          - other
-          example: document
-        url:
-          type: string
-          description: Url of the document
-        created_at:
-          type: string
-          format: date-time
-          description: Timestamp of the object creation
-          example: "2010-01-15 13:10:19"
-        updated_at:
-          type: string
-          format: date-time
-          description: Timestamp of the last update
-          example: "2010-01-15 13:15:38"          
-      xml:
-        name: IndicatorDocument   
-    Indicator:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Unique internal identifier
-          format: int64
-          example: 1
-        code:
-          type: string
-          description: Code of the indicator. Can be used as an unique identifier
-          example: weather_status
-        label:
-          type: string
-          description: Label of the indicator
-          example: Weather status
-        description:
-          type: string
-          description: Description of the indicator
-          example: Weather status with measured temperature and hygrometry
-        category:
-          type: string
-          description: Category of the indicator
-          example: Climate
-        date_format:
-          type: string
-          description: Date format
-          example: day
-          enum:
-          - second
-          - minute
-          - hour
-          - day
-          - month
-          - year
-        values:
-          type: array
-          description: List of values properties for the indicator
-          example: [{"code": "temperature", "name": "Température", "type":"real", "unit": "°C"}, {"code": "hygrometry", "name": "Hygrometry", "type":"real", "unit": "%"}]
-          xml:
-            wrapped: true
-          items:
-            $ref: '#/components/schemas/IndicatorValue'
-        documents:
-          type: array
-          description: List of documents for the indicator
-          xml:
-            wrapped: true
-          items:
-            $ref: '#/components/schemas/IndicatorDocument'
-        avatar:
-          type: string
-          description: Url of the image illustrating the indicator
-        color:
-          type: string
-          description: Main color of the indicator
-          example: #99cc00
-
-        created_at:
-          type: string
-          format: date-time
-          description: Timestamp of the object creation
-          example: "2010-01-15 13:10:19"
-        updated_at:
-          type: string
-          format: date-time
-          description: Timestamp of the last update
-          example: "2010-01-15 13:15:38"          
-      xml:
-        name: Indicator
-    Observation:
-      required:
-      - uuid
-      - indicator
-      - start_timestamp
-      - wkt
-      - values
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-          description: Unique internal identifier
-          example: 1
-        indicator:
-          type: string
-          description: Code of the indicator
-          example: weather_status
-        uuid:
-          type: string
-          description: Unique identifier in format UUID
-          example: e715352e-edb0-553e-2c69-09b6dc768ea7
-        start_timestamp:
-          type: string
-          format: date-time
-          description: Date and time of the start of the observation
-          example: "2020-01-31 20:10:30"
-        end_timestamp:
-          type: string
-          format: date-time
-          description: Date and time of the end of the observation
-          example: "2020-01-31 20:10:30"
-        coordinates:
-          $ref: '#/components/schemas/PointGeometryValue'
-        wkt:
-          type: string
-          description: WKT representation of the observation geometry
-          example: "POINT(3.123456 43.123456)"
-        values:
-          type: array
-          description: Values of the observation
-          items:
-            type: string
-            example: 20
-        photo:
-          type: string
-          description: Photography of the observation (optionnal)
-        created_at:
-          type: string
-          format: date-time
-          description: Timestamp of the object creation
-          example: "2010-01-15 13:10:19"
-        updated_at:
-          type: string
-          format: date-time
-          description: Timestamp of the last update
-          example: "2010-01-15 13:15:38"
-      xml:
-        name: Observation
-
-
-  responses:
-    UnauthorizedError:
-      description: Access token is missing or invalid
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-      
-
-security:
-  - bearerAuth: []
