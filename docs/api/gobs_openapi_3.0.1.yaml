@@ -100,6 +100,9 @@ components:
         media_url:
           type: string
           description: URL of the media describing the project
+        geopackage_url:
+          type: string
+          description: URL of the GeoPackage file containing spatial layers for the project (rasters & vectors)
         extent:
           $ref: '#/components/schemas/GeometryExtent'
       xml:
@@ -154,6 +157,7 @@ components:
           type: string
           description: Type of the document
           enum:
+          - preview
           - image
           - video
           - document
