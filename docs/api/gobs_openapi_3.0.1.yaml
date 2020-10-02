@@ -370,7 +370,10 @@ paths:
                     description: 'Token'
         400:
           description: Invalid username/password supplied
-          content: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
           
   /user/logout:
     get:
@@ -385,12 +388,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+        401:
+           $ref: '#/components/responses/UnauthorizedError'
           
   /user/projects:
     get:
       tags:
       - user
-      summary: Get projects for the given user
+      summary: Get projects for the authenticated user
       description: Projects will be returned for the logged in user.
       operationId: getUserProjects
       responses:
@@ -668,7 +673,10 @@ paths:
            $ref: '#/components/responses/UnauthorizedError'
         405:
           description: Invalid input
-          content: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'          
       x-codegen-request-body-name: body
       
     put:
@@ -728,7 +736,7 @@ paths:
       tags:
       - observation
       summary: Create new observations by sending a list of objects
-      operationId: addObservations
+      operationId: createObservations
       parameters:
       - name: requestSyncDate
         in: header
@@ -749,11 +757,13 @@ paths:
         required: true
       responses:
         200:
-          description: successful operation
+          description: List of created observations
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApiResponse'
+                type: array
+                items:
+                  $ref: '#/components/schemas/Observation'
         401:
            $ref: '#/components/responses/UnauthorizedError'
         405:
@@ -768,17 +778,18 @@ paths:
     get:
       tags:
       - observation
-      summary: Find observation by ID
+      summary: Get an observation by ID
       description: Returns a single observation
       operationId: getObservationById
       parameters:
       - name: observationId
         in: path
-        description: ID of observation to return
+        description: UID of observation concerned for which to store the media
         required: true
         schema:
-          type: integer
-          format: int64
+          type: string
+          description: Unique identifier in format UUID
+          example: e715352e-edb0-553e-2c69-09b6dc768ea7
       - name: lastSyncDate
         in: header
         description: Last synchronisation date
@@ -804,12 +815,18 @@ paths:
                 $ref: '#/components/schemas/Observation'
         400:
           description: Invalid ID supplied
-          content: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
         401:
            $ref: '#/components/responses/UnauthorizedError'
         404:
           description: Observation not found
-          content: {}
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
           
     delete:
       tags:
@@ -819,11 +836,12 @@ paths:
       parameters:
       - name: observationId
         in: path
-        description: Observation id to delete
+        description: UID of observation concerned for which to store the media
         required: true
         schema:
-          type: integer
-          format: int64
+          type: string
+          description: Unique identifier in format UUID
+          example: e715352e-edb0-553e-2c69-09b6dc768ea7
       - name: requestSyncDate
         in: header
         description: Request synchronisation date
@@ -841,12 +859,18 @@ paths:
                 $ref: '#/components/schemas/ApiResponse'
         400:
           description: Invalid ID supplied
-          content: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
         401:
            $ref: '#/components/responses/UnauthorizedError'
         404:
           description: Observation not found
-          content: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
           
   /observation/{observationId}/uploadMedia:
     post:
@@ -857,11 +881,12 @@ paths:
       parameters:
       - name: observationId
         in: path
-        description: ID of observation concerned for which to store the media
+        description: UID of observation concerned for which to store the media
         required: true
         schema:
-          type: integer
-          format: int64
+          type: string
+          description: Unique identifier in format UUID
+          example: e715352e-edb0-553e-2c69-09b6dc768ea7
       - name: requestSyncDate
         in: header
         description: Request synchronisation date
@@ -900,11 +925,12 @@ paths:
       parameters:
       - name: observationId
         in: path
-        description: ID of observation for which to delete media
+        description: UID of observation concerned for which to store the media
         required: true
         schema:
-          type: integer
-          format: int64
+          type: string
+          description: Unique identifier in format UUID
+          example: e715352e-edb0-553e-2c69-09b6dc768ea7
       - name: requestSyncDate
         in: header
         description: Request synchronisation date

@@ -494,7 +494,13 @@
           },
           "400": {
             "description": "Invalid username/password supplied",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -516,6 +522,9 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
           }
         }
       }
@@ -525,7 +534,7 @@
         "tags": [
           "user"
         ],
-        "summary": "Get projects for the given user",
+        "summary": "Get projects for the authenticated user",
         "description": "Projects will be returned for the logged in user.",
         "operationId": "getUserProjects",
         "responses": {
@@ -926,7 +935,13 @@
           },
           "405": {
             "description": "Invalid input",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
           }
         },
         "x-codegen-request-body-name": "body"
@@ -1018,7 +1033,7 @@
           "observation"
         ],
         "summary": "Create new observations by sending a list of objects",
-        "operationId": "addObservations",
+        "operationId": "createObservations",
         "parameters": [
           {
             "name": "requestSyncDate",
@@ -1048,11 +1063,14 @@
         },
         "responses": {
           "200": {
-            "description": "successful operation",
+            "description": "List of created observations",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiResponse"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Observation"
+                  }
                 }
               }
             }
@@ -1079,18 +1097,19 @@
         "tags": [
           "observation"
         ],
-        "summary": "Find observation by ID",
+        "summary": "Get an observation by ID",
         "description": "Returns a single observation",
         "operationId": "getObservationById",
         "parameters": [
           {
             "name": "observationId",
             "in": "path",
-            "description": "ID of observation to return",
+            "description": "UID of observation concerned for which to store the media",
             "required": true,
             "schema": {
-              "type": "integer",
-              "format": "int64"
+              "type": "string",
+              "description": "Unique identifier in format UUID",
+              "example": "e715352e-edb0-553e-2c69-09b6dc768ea7"
             }
           },
           {
@@ -1129,14 +1148,26 @@
           },
           "400": {
             "description": "Invalid ID supplied",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
           },
           "401": {
             "$ref": "#/components/responses/UnauthorizedError"
           },
           "404": {
             "description": "Observation not found",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
           }
         }
       },
@@ -1150,11 +1181,12 @@
           {
             "name": "observationId",
             "in": "path",
-            "description": "Observation id to delete",
+            "description": "UID of observation concerned for which to store the media",
             "required": true,
             "schema": {
-              "type": "integer",
-              "format": "int64"
+              "type": "string",
+              "description": "Unique identifier in format UUID",
+              "example": "e715352e-edb0-553e-2c69-09b6dc768ea7"
             }
           },
           {
@@ -1182,14 +1214,26 @@
           },
           "400": {
             "description": "Invalid ID supplied",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
           },
           "401": {
             "$ref": "#/components/responses/UnauthorizedError"
           },
           "404": {
             "description": "Observation not found",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -1205,11 +1249,12 @@
           {
             "name": "observationId",
             "in": "path",
-            "description": "ID of observation concerned for which to store the media",
+            "description": "UID of observation concerned for which to store the media",
             "required": true,
             "schema": {
-              "type": "integer",
-              "format": "int64"
+              "type": "string",
+              "description": "Unique identifier in format UUID",
+              "example": "e715352e-edb0-553e-2c69-09b6dc768ea7"
             }
           },
           {
@@ -1270,11 +1315,12 @@
           {
             "name": "observationId",
             "in": "path",
-            "description": "ID of observation for which to delete media",
+            "description": "UID of observation concerned for which to store the media",
             "required": true,
             "schema": {
-              "type": "integer",
-              "format": "int64"
+              "type": "string",
+              "description": "Unique identifier in format UUID",
+              "example": "e715352e-edb0-553e-2c69-09b6dc768ea7"
             }
           },
           {
