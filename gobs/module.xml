@@ -13,4 +13,7 @@
         <jelix minversion="1.6.27-pre" maxversion="1.6.*"/>
         <module name="lizmap" />
     </dependencies>
+    <autoload>
+        <namespacePathMap name="Gobs" dir="lib"/>
+    </autoload>
 </module>
