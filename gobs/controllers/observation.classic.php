@@ -2,16 +2,16 @@
 
 class observationCtrl extends jController {
 
-    protected error_codes = array(
+    protected $error_codes = array(
         'error' => 0,
         'success' => 1,
     );
 
-    protected http_codes = array {
+    protected $http_codes = array (
         '200' => 'Successfull operation',
         '401' => 'Unauthorized',
         '405' => 'Method Not Allowed',
-    }
+    );
 
     /**
      * Return api response in JSON format
@@ -34,7 +34,7 @@ class observationCtrl extends jController {
                 'status' => $status,
                 'message' => $message
             );
-        );
+        }
         return $rep;
     }
 
@@ -184,5 +184,6 @@ class observationCtrl extends jController {
         $this->apiResponse('200', 'success', 'Observation successfully deleted');
     }
 
+}
 
 ?>

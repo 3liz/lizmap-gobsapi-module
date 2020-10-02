@@ -14,16 +14,16 @@ class userCtrl extends jController {
 // Todo : use jexli plugin to describe in an array wich method is accepted for each function
 
 
-    protected error_codes = array(
+    protected $error_codes = array(
         'error' => 0,
         'success' => 1,
     );
 
-    protected http_codes = array {
+    protected $http_codes = array (
         '200' => 'Successfull operation',
         '400' => 'Bad Request',
         '405' => 'Method Not Allowed',
-    }
+    );
 
     /**
      * Return api response in JSON format
@@ -45,7 +45,7 @@ class userCtrl extends jController {
                 'status' => $status,
                 'message' => $message
             );
-        );
+        }
         return $rep;
     }
 
@@ -210,6 +210,7 @@ class userCtrl extends jController {
 
     }
 
+}
 
 ?>
 
