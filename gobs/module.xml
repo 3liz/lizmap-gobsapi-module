@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module xmlns="http://jelix.org/ns/module/1.0">
+    <info id="gobs" name="gobs" createdate="2020-10-02">
+        <version date="2020-10-02">0.1.0</version>
+        <label lang="en_US">gobs</label>
+        <description lang="en_US" />
+        <license URL="">Mozilla Public Licence (MPL)</license>
+        <copyright>2017 3liz</copyright>
+        <creator name="3liz" email="info@3liz.com" active="true"/>
+        <homepageURL>http://3liz.com</homepageURL>
+    </info>
+    <dependencies>
+        <jelix minversion="1.6.27-pre" maxversion="1.6.*"/>
+        <module name="lizmap" />
+    </dependencies>
+</module>
