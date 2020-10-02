@@ -35,15 +35,18 @@
           "code": {
             "type": "integer",
             "format": "int32",
+            "description": "0 for error, 1 for success",
             "example": 1
           },
           "type": {
             "type": "string",
-            "example": "success"
+            "example": "success",
+            "description": "error or success"
           },
           "message": {
             "type": "string",
-            "example": "Observation sucessfully updated"
+            "description": "Message describing the status",
+            "example": "Operation successfull"
           }
         }
       },
@@ -473,7 +476,7 @@
         "security": [],
         "responses": {
           "200": {
-            "description": "Successfully authenticated. A token has been returned. You need to include this token in subsequent requests in Authorization header as 'Bearer XXXXXXX'\n",
+            "description": "Successfully authenticated. A token has been returned. You need to include this token in subsequent requests in Authorization header as 'Authorization: Bearer TOKEN'\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -504,9 +507,15 @@
         "summary": "Logs out current logged in user session. Invalidate the token",
         "operationId": "logoutUser",
         "responses": {
-          "default": {
+          "200": {
             "description": "successful operation",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -873,7 +882,7 @@
           "observation"
         ],
         "summary": "Create a new observation",
-        "operationId": "addObservation",
+        "operationId": "createObservation",
         "parameters": [
           {
             "name": "requestSyncDate",
@@ -921,6 +930,86 @@
           }
         },
         "x-codegen-request-body-name": "body"
+      },
+      "put": {
+        "tags": [
+          "observation"
+        ],
+        "summary": "Update an existing observation",
+        "operationId": "updateObservation",
+        "parameters": [
+          {
+            "name": "requestSyncDate",
+            "in": "header",
+            "description": "Request synchronisation date",
+            "example": "2020-02-15 10:40:30",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-type"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Observation object that needs to be modified",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Observation"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "updated observation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Observation"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "description": "Observation not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Validation exception",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        },
+        "x-codegen-request-body-name": "body"
       }
     },
     "/observation/observations": {
@@ -944,7 +1033,7 @@
           }
         ],
         "requestBody": {
-          "description": "List of bservation objects that needs to be added",
+          "description": "List of observation objects that needs to be added",
           "content": {
             "application/json": {
               "schema": {
@@ -958,61 +1047,28 @@
           "required": true
         },
         "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
           "401": {
             "$ref": "#/components/responses/UnauthorizedError"
           },
           "405": {
             "description": "Invalid input",
-            "content": {}
-          }
-        },
-        "x-codegen-request-body-name": "body"
-      },
-      "put": {
-        "tags": [
-          "observation"
-        ],
-        "summary": "Update an existing observation",
-        "operationId": "updateObservation",
-        "parameters": [
-          {
-            "name": "requestSyncDate",
-            "in": "header",
-            "description": "Request synchronisation date",
-            "example": "2020-02-15 10:40:30",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "date-type"
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "Observation object that needs to be added to G-obs",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Observation"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
               }
             }
-          },
-          "required": true
-        },
-        "responses": {
-          "400": {
-            "description": "Invalid ID supplied",
-            "content": {}
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          },
-          "404": {
-            "description": "Observation not found",
-            "content": {}
-          },
-          "405": {
-            "description": "Validation exception",
-            "content": {}
           }
         },
         "x-codegen-request-body-name": "body"
@@ -1080,63 +1136,6 @@
           },
           "404": {
             "description": "Observation not found",
-            "content": {}
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "observation"
-        ],
-        "summary": "Updates a observation in the store with form data",
-        "operationId": "updateObservationWithForm",
-        "parameters": [
-          {
-            "name": "observationId",
-            "in": "path",
-            "description": "ID of observation that needs to be updated",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          },
-          {
-            "name": "requestSyncDate",
-            "in": "header",
-            "description": "Request synchronisation date",
-            "example": "2020-02-15 10:40:30",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "date-type"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/x-www-form-urlencoded": {
-              "schema": {
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "description": "Updated name of the observation"
-                  },
-                  "status": {
-                    "type": "string",
-                    "description": "Updated status of the observation"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          },
-          "405": {
-            "description": "Invalid input",
             "content": {}
           }
         }
