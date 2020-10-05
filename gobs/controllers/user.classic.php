@@ -211,6 +211,5 @@ class userCtrl extends jController {
     }
 
 }
-
 ?>
 

@@ -9,7 +9,7 @@ class observationCtrl extends jController {
 
     protected $http_codes = array (
         '200' => 'Successfull operation',
-        '401' => 'Unauthorized',
+        '400' => 'Bad Request',
         '405' => 'Method Not Allowed',
     );
 
@@ -185,5 +185,4 @@ class observationCtrl extends jController {
     }
 
 }
-
 ?>
