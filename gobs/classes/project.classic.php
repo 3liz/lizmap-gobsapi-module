@@ -8,28 +8,23 @@
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
 
-namespace Gobs\User;
+namespace Gobs\Project;
 
-class User
+class Project
 {
     /**
      * @var Repository
      */
-    protected $login;
+    protected $project;
 
     /**
      * constructor.
      *
      * @param string $username: the user login
-     * @param mixed  $login
+     * @param mixed  $project
      */
-    public function __construct($login)
+    public function __construct($project)
     {
-        $this->login = $login;
-    }
-
-    public function getProjects()
-    {
-        return array();
+        $this->project = $project;
     }
 }
