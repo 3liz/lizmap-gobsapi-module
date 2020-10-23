@@ -2,6 +2,8 @@
 
 include jApp::getModulePath('gobs').'controllers/apiController.php';
 
+use Gobs\User;
+
 class userCtrl extends apiController
 {
     /**
@@ -81,10 +83,18 @@ class userCtrl extends apiController
             );
         }
 
+        // Temporary for dev purpose only
+        // return success
+        return $this->apiResponse(
+            '200',
+            'success',
+            'User successfully logged in'
+        );
+
         // Generate token
         // TODO use a real class for this
-        $user = jAuth::getUserSession();
-        $token = $this->generateJwcToken($user->login);
+        $user_session = jAuth::getUserSession();
+        $token = $this->generateJwcToken($user_session->login);
 
         // Return token
         $rep->setHttpStatus('200', 'Successfully authenticated');
@@ -142,8 +152,19 @@ class userCtrl extends apiController
      */
     public function projects()
     {
-        $data = array();
-        $this->objectResponse($data);
+        // Get authenticated user
+        $user_session = jAuth::getUserSession();
+        if (!$user_session) {
+            return $this->apiResponse(
+                '401',
+                'error',
+                'You must authenticate to get the user projects'
+            );
+        }
+
+        $user = new \Gobs\User\User($user_session->login);
+        $projects = $user->getProjects();
+        $this->objectResponse($projects);
     }
 }
 ?>
