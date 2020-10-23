@@ -21,6 +21,7 @@ class User
      * constructor.
      *
      * @param string $username: the user login
+     * @param mixed  $login
      */
     public function __construct($login)
     {
@@ -29,9 +30,6 @@ class User
 
     public function getProjects()
     {
-
-        $projects = array();
-        return $projects;
+        return array();
     }
-
 }
