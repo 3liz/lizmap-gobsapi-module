@@ -2,8 +2,6 @@
 
 include jApp::getModulePath('gobs').'controllers/apiController.php';
 
-use Gobs\User;
-
 class userCtrl extends apiController
 {
     /**
@@ -119,7 +117,8 @@ class userCtrl extends apiController
         // TODO: use PHP lib JWC
 
         // Get and validate the token
-        $validate_token = $this->validateToken();
+        $token = 'test';
+        $validate_token = $this->validateToken($token);
         if (!$validate_token) {
             return $this->apiResponse(
                 '401',
@@ -129,7 +128,9 @@ class userCtrl extends apiController
         }
 
         // Log the user out
-        $log_user = jAuth::logout($username);
+        //$log_user = jAuth::logout($username);
+        $login = 'admin';
+        $log_user = jAuth::logout($login);
 
         // Clear session and destroy token
         $this->destroyToken($login);
@@ -162,9 +163,11 @@ class userCtrl extends apiController
             );
         }
 
-        $user = new \Gobs\User\User($user_session->login);
+        jClasses::inc('gobs~User');
+        $user = new User($user_session->login);
         $projects = $user->getProjects();
-        $this->objectResponse($projects);
+
+        return $this->objectResponse($projects);
     }
 }
 ?>

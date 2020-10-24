@@ -1,15 +1,12 @@
 <?php
 /**
  * @author    3liz
- * @copyright 2019 3liz
+ * @copyright 2020 3liz
  *
  * @see      http://3liz.com
  *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
-
-namespace Gobs\User;
-
 class User
 {
     /**
@@ -30,11 +27,10 @@ class User
 
     /**
      * Get projects for the authenticated user.
-     *
      */
     public function getProjects()
     {
-        //$repositories = lizmap::getRepositoryList();
+        $repositories = lizmap::getRepositoryList();
         $projects = array();
 
         foreach ($repositories as $repository) {
@@ -46,22 +42,24 @@ class User
 
             // Get repository and related projects
             $lrep = lizmap::getRepository($repository);
-            $mrep = new lizmapMainViewItem($repository, $lrep->getData('label'));
-            $lprojects = $lrep->getProjects();
-
-            foreach ($projects as $project) {
+            $get_projects = $lrep->getProjects();
+            foreach ($get_projects as $project) {
 
                 // Check rights
                 if (!$project->checkAcl()) {
                     continue;
                 }
 
+                // Compute bbox
+                $bbox = $project->getData('bbox');
+                $extent = explode(', ', $bbox);
+
                 // Add project
                 $projects[] = array(
-                    'key' => $project->getData('id'),
+                    'key' => $lrep->getKey().'_'.$project->getData('id'),
                     'label' => $project->getData('title'),
                     'description' => $project->getData('abstract'),
-                    'media_url' => jUrl::get(
+                    'media_url' => jUrl::getFull(
                         'view~media:illustration',
                         array(
                             'repository' => $project->getData('repository'),
@@ -69,10 +67,16 @@ class User
                         )
                     ),
                     'geopackage_url' => null,
-                    'extent' => $project->getData('bbox'),
+                    'extent' => array(
+                        'xmin' => $extent[0],
+                        'ymin' => $extent[1],
+                        'xmax' => $extent[2],
+                        'ymax' => $extent[3],
+                    ),
                 );
             }
         }
+
         return $projects;
     }
 }
