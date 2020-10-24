@@ -1,5 +1,16 @@
 <?php
 
+//TODO: utiliser un plugin de coordinateur pour tester les méthodes HTTP
+//$method = $_SERVER['REQUEST_METHOD'];
+//if ($method != 'GET') {
+
+    //return $this->apiResponse(
+        //'405',
+        //'error',
+        //'"project/{projectKey}" api entry point only accepts GET request method'
+    //);
+//}
+
 include jApp::getModulePath('gobs').'controllers/apiController.php';
 
 class projectCtrl extends apiController
@@ -13,22 +24,11 @@ class projectCtrl extends apiController
      *
      * @return jResponseJson Project object or standard api response
      */
-    public function projectKey()
+    public function getProjectByKey()
     {
+        $data = array();
 
-        // Get http method
-        $method = $_SERVER['REQUEST_METHOD'];
-
-        // Redirect depending on method
-        if ($method == 'GET') {
-            return $this->getProject();
-        }
-
-        return $this->apiResponse(
-            '405',
-            'error',
-            '"project/{projectKey}" api entry point only accepts GET request method'
-        );
+        return $this->objectResponse($data);
     }
 
     /**
@@ -43,7 +43,8 @@ class projectCtrl extends apiController
     private function getProject()
     {
         $data = array();
-        $this->objectResponse($data);
+
+        return $this->objectResponse($data);
     }
 
     /**
@@ -55,9 +56,10 @@ class projectCtrl extends apiController
      *
      * @return jResponseJson Indicator data
      */
-    private function indicators()
+    public function indicators()
     {
         $data = array();
-        $this->objectResponse($data);
+
+        return $this->objectResponse($data);
     }
 }

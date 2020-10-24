@@ -43,7 +43,8 @@ class indicatorCtrl extends apiController
     private function getIndicator()
     {
         $data = array();
-        $this->objectResponse($data);
+
+        return $this->objectResponse($data);
     }
 
     /**
@@ -58,7 +59,8 @@ class indicatorCtrl extends apiController
     private function documents()
     {
         $data = array();
-        $this->objectResponse($data);
+
+        return $this->objectResponse($data);
     }
 
     /**
@@ -76,7 +78,8 @@ class indicatorCtrl extends apiController
     private function observations()
     {
         $data = array();
-        $this->objectResponse($data);
+
+        return $this->objectResponse($data);
     }
 
     /**
@@ -94,6 +97,7 @@ class indicatorCtrl extends apiController
     private function deletedObservations()
     {
         $data = array();
-        $this->objectResponse($data);
+
+        return $this->objectResponse($data);
     }
 }

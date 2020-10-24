@@ -44,7 +44,8 @@ class observationCtrl extends apiController
     private function createObservation()
     {
         $data = array();
-        $this->objectResponse($data);
+
+        return $this->objectResponse($data);
     }
 
     /**
@@ -57,7 +58,8 @@ class observationCtrl extends apiController
     private function updateObservation()
     {
         $data = array();
-        $this->objectResponse($data);
+
+        return $this->objectResponse($data);
     }
 
     /**
@@ -72,7 +74,8 @@ class observationCtrl extends apiController
     public function observations()
     {
         $data = array();
-        $this->objectResponse($data);
+
+        return $this->objectResponse($data);
     }
 
     /**
@@ -117,7 +120,8 @@ class observationCtrl extends apiController
     private function getObservation()
     {
         $data = array();
-        $this->objectResponse($data);
+
+        return $this->objectResponse($data);
     }
 
     /**
@@ -131,7 +135,7 @@ class observationCtrl extends apiController
      */
     private function deleteObservation()
     {
-        $this->apiResponse(
+        return $this->apiResponse(
             '200',
             'success',
             'Observation successfully deleted'

@@ -61,7 +61,7 @@ class userCtrl extends apiController
      *
      * @return jResponseJson JWC token or error code
      */
-    public function login()
+    public function logUserIn()
     {
         $rep = $this->getResponse('json');
 
@@ -111,7 +111,7 @@ class userCtrl extends apiController
      *
      * @return jResponseJson Status of the logout
      */
-    public function logout()
+    public function logUserOut()
     {
 
         // TODO: use PHP lib JWC
@@ -151,7 +151,7 @@ class userCtrl extends apiController
      *
      * @return jResponseJson Status of the logout
      */
-    public function projects()
+    public function getUserProjects()
     {
         // Get authenticated user
         $user_session = jAuth::getUserSession();
