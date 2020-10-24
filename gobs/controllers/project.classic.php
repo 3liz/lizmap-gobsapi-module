@@ -26,26 +26,51 @@ class projectCtrl extends apiController
      */
     public function getProjectByKey()
     {
-        $data = array();
+        // Check projectKey parameter
+        $project_key = $this->param('projectKey');
+        if (!$project_key) {
+            return $this->apiResponse(
+                '400',
+                'error',
+                'The projectKey parameter is mandatory !'
+            );
+        }
+
+        // Check project is valid
+        try {
+            $project = lizmap::getProject($project_key);
+            if (!$project) {
+                return $this->apiResponse(
+                    '404',
+                    'error',
+                    'The given project key does not refer to a known project'
+                );
+            }
+        } catch (UnknownLizmapProjectException $e) {
+            return $this->apiResponse(
+                '404',
+                'error',
+                'The given project key does not refer to a known project'
+            );
+        }
+
+        // Check the authenticated user can access to the project
+        if (!$project->checkAcl()) {
+            return $this->apiResponse(
+                '403',
+                'error',
+                jLocale::get('view~default.repository.access.denied')
+            );
+        }
+
+        // Get project
+        jClasses::inc('gobs~Project');
+        $gobs_project = new Project($project);
+        $data = $gobs_project->get();
 
         return $this->objectResponse($data);
     }
 
-    /**
-     * Get a project by Key
-     * /project/{projectKey}.
-     *
-     * @param string Project Key
-     * @httpresponse JSON Project data
-     *
-     * @return jResponseJson Project data
-     */
-    private function getProject()
-    {
-        $data = array();
-
-        return $this->objectResponse($data);
-    }
 
     /**
      * Get indicators for a project by project Key
@@ -56,7 +81,7 @@ class projectCtrl extends apiController
      *
      * @return jResponseJson Indicator data
      */
-    public function indicators()
+    public function getProjectIndicators()
     {
         $data = array();
 

@@ -50,30 +50,10 @@ class User
                     continue;
                 }
 
-                // Compute bbox
-                $bbox = $project->getData('bbox');
-                $extent = explode(', ', $bbox);
-
                 // Add project
-                $projects[] = array(
-                    'key' => $lrep->getKey().'_'.$project->getData('id'),
-                    'label' => $project->getData('title'),
-                    'description' => $project->getData('abstract'),
-                    'media_url' => jUrl::getFull(
-                        'view~media:illustration',
-                        array(
-                            'repository' => $project->getData('repository'),
-                            'project' => $project->getData('id'),
-                        )
-                    ),
-                    'geopackage_url' => null,
-                    'extent' => array(
-                        'xmin' => $extent[0],
-                        'ymin' => $extent[1],
-                        'xmax' => $extent[2],
-                        'ymax' => $extent[3],
-                    ),
-                );
+                jClasses::inc('gobs~Project');
+                $gobs_project = new Project($project);
+                $projects[] = $gobs_project->get();
             }
         }
 
