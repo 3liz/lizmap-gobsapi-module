@@ -16,11 +16,13 @@ class apiController extends jController
         '500' => 'Internal Server Error',
     );
 
+    protected $user = null;
+
     /**
      * Authenticate the user via JWC token
      * Token is given in Authorization header as: Authorization: Bearer <token>.
      */
-    protected function authIsValid()
+    protected function authenticate()
     {
 
         // Get token tool
@@ -38,8 +40,9 @@ class apiController extends jController
         if (!$user) {
             return false;
         }
+        $this->user = $user;
 
-        return $user;
+        return true;
     }
 
     /**

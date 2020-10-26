@@ -116,14 +116,15 @@ class userCtrl extends apiController
     public function getUserProjects()
     {
         // Get authenticated user
-        $user = $this->authIsValid();
-        if (!$user) {
+        $this->authenticate();
+        if (!$this->user) {
             return $this->apiResponse(
                 '401',
                 'error',
                 'Access token is missing or invalid'
             );
         }
+        $user = $this->user;
         $login = $user['usr_login'];
 
         // Get gobs user instance

@@ -28,14 +28,15 @@ class projectCtrl extends apiController
     {
 
         // Get authenticated user
-        $user = $this->authIsValid();
-        if (!$user) {
+        $this->authenticate();
+        if (!$this->user) {
             return $this->apiResponse(
                 '401',
                 'error',
                 'Access token is missing or invalid'
             );
         }
+        $user = $this->user;
         $login = $user['usr_login'];
 
         // Check projectKey parameter
@@ -96,14 +97,15 @@ class projectCtrl extends apiController
     {
 
         // Get authenticated user
-        $user = $this->authIsValid();
-        if (!$user) {
+        $this->authenticate();
+        if (!$this->user) {
             return $this->apiResponse(
                 '401',
                 'error',
                 'Access token is missing or invalid'
             );
         }
+        $user = $this->user;
         $login = $user['usr_login'];
 
         $data = array();
