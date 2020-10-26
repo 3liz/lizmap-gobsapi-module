@@ -2,7 +2,6 @@
 
 class apiController extends jController
 {
-
     protected $error_codes = array(
         'error' => 0,
         'success' => 1,
@@ -19,8 +18,7 @@ class apiController extends jController
 
     /**
      * Authenticate the user via JWC token
-     * Token is given in Authorization header as: Authorization: Bearer <token>
-     *
+     * Token is given in Authorization header as: Authorization: Bearer <token>.
      */
     protected function authIsValid()
     {

@@ -4,16 +4,16 @@ include jApp::getModulePath('gobs').'controllers/apiController.php';
 
 class userCtrl extends apiController
 {
-
     /**
-     * Logs user into the system and returns JWC token
+     * Logs user into the system and returns JWC token.
      *
      * @httpmethod GET
+     *
      * @param string username Username of the user to log in
      * @param string password Password of the user to log in
      *
      * @return jResponseJson JWC token or error code:
-     * {"token": "1mx6L2L7AMdEsyKy5LW9s8gt6mBxdICwosVn5sjhbwykOoQJFUru6752dwsj2THN"}
+     *                       {"token": "1mx6L2L7AMdEsyKy5LW9s8gt6mBxdICwosVn5sjhbwykOoQJFUru6752dwsj2THN"}
      */
     public function logUserIn()
     {

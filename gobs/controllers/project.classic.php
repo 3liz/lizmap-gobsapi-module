@@ -83,7 +83,6 @@ class projectCtrl extends apiController
         return $this->objectResponse($data);
     }
 
-
     /**
      * Get indicators for a project by project Key
      * /project/{projectKey}/indicators.

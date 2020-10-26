@@ -7,7 +7,6 @@
  *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
-
 class Project
 {
     /**

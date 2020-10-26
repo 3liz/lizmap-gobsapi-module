@@ -9,7 +9,6 @@
  */
 class Token
 {
-
     /**
      * Get the token from the Authentication request header.
      *
@@ -30,15 +29,13 @@ class Token
             $token = $matches[1];
             if (empty($token)) {
                 return null;
-            } else {
-                return $token;
             }
 
+            return $token;
         }
 
         return null;
     }
-
 
     /**
      * Validate a JWC token and give corresponding user name.
@@ -58,24 +55,22 @@ class Token
             // Check that the user exists
             $list = jAuth::getUserList();
             $login = null;
-            foreach($list as $juser) {
+            foreach ($list as $juser) {
                 if ($juser->login == $cache_login) {
                     $login = $cache_login;
+
                     break;
                 }
             }
             if ($login) {
-                $user = array(
-                    'usr_login' => $login
+                return array(
+                    'usr_login' => $login,
                 );
-                return $user;
             }
         }
 
         return null;
-
     }
-
 
     /**
      * Generate a JWC token for a given login.
@@ -98,9 +93,8 @@ class Token
         return $token;
     }
 
-
     /**
-     * Destroy a JWC token
+     * Destroy a JWC token.
      *
      * @param string $token Token
      *
@@ -120,5 +114,4 @@ class Token
 
         return true;
     }
-
 }
