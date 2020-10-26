@@ -16,7 +16,7 @@ class apiController extends jController
         '500' => 'Internal Server Error',
     );
 
-    protected $user = null;
+    protected $user;
 
     /**
      * Authenticate the user via JWC token

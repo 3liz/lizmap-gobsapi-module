@@ -132,7 +132,7 @@ class userCtrl extends apiController
         $user_instance = new User($login);
 
         // Get projects
-        $projects = $user->getProjects();
+        $projects = $user_instance->getProjects();
 
         return $this->objectResponse($projects);
     }

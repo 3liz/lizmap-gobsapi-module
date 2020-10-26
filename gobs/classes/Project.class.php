@@ -10,7 +10,12 @@
 class Project
 {
     /**
-     * @var data
+     * @var project: Lizmap project instance
+     */
+    protected $project;
+
+    /**
+     * @var data G-Obs Representation of a project
      */
     protected $data;
 
@@ -22,6 +27,7 @@ class Project
      */
     public function __construct($project)
     {
+        $this->project = $project;
 
         // Compute bbox
         $bbox = $project->getData('bbox');
@@ -49,8 +55,52 @@ class Project
         );
     }
 
+    // Get Gobs representation of a project object
     public function get()
     {
         return $this->data;
+    }
+
+    /* Get QGIS project XML
+     *
+     * @param object $project Lizmap project
+     *
+     * @return XML of the QGIS project
+     */
+    private function getProjectXml()
+    {
+        $qgs_path = $this->project->getQgisPath();
+        if (!file_exists($qgs_path) ||
+            !file_exists($qgs_path.'.cfg')) {
+            throw new Error('Files of project '.$this->key.' does not exists');
+        }
+        $xml = simplexml_load_file($qgs_path);
+        if ($xml === false) {
+            throw new Exception('Qgs File of project '.$this->key.' has invalid content');
+        }
+
+        return $xml;
+    }
+
+    /* Get project gobs indicators
+     *
+     *
+     * return Gobs list of indicators codes or null if none has been found
+     */
+    public function getProjectIndicators()
+    {
+        $xml = $this->getProjectXml($this->project);
+        $xpath = '//properties/Variables/variableNames/value[.="gobs_indicators"]/parent::variableNames/following-sibling::variableValues/value';
+        $data = $xml->xpath($xpath);
+
+        if ($data) {
+            $indicators = trim((string) $data[0]);
+            $indicators = array_map('trim', explode(',', $indicators));
+            jLog::log(json_encode($indicators), 'error');
+
+            return $indicators;
+        }
+
+        return null;
     }
 }

@@ -46,14 +46,18 @@ class User
             foreach ($get_projects as $project) {
 
                 // Check rights
-                if (!$project->checkAcl()) {
+                if (!$project->checkAclByUser($this->login)) {
                     continue;
                 }
 
-                // Add project
+                // Get project instance from Lizmap project
                 jClasses::inc('gobs~Project');
                 $gobs_project = new Project($project);
-                $projects[] = $gobs_project->get();
+
+                // Add it only if project has gobs indicators
+                if ($gobs_project->getProjectIndicators()) {
+                    $projects[] = $gobs_project->get();
+                }
             }
         }
 

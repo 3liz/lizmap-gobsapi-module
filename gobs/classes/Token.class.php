@@ -18,7 +18,7 @@ class Token
     {
         // Get Authorization header value
         $authorization = jApp::coord()->request->header('Authorization');
-        if (!$authorization || empty(authorization)) {
+        if (!$authorization || empty($authorization)) {
             return null;
         }
 
