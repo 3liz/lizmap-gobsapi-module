@@ -451,7 +451,7 @@
           "user"
         ],
         "summary": "Logs user into the system",
-        "operationId": "loginUser",
+        "operationId": "logUserIn",
         "parameters": [
           {
             "name": "username",
@@ -511,7 +511,7 @@
           "user"
         ],
         "summary": "Logs out current logged in user session. Invalidate the token",
-        "operationId": "logoutUser",
+        "operationId": "logUserOut",
         "responses": {
           "200": {
             "description": "successful operation",

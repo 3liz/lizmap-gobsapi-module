@@ -338,7 +338,7 @@ paths:
       tags:
       - user
       summary: Logs user into the system
-      operationId: loginUser
+      operationId: logUserIn
       parameters:
       - name: username
         in: query
@@ -380,7 +380,7 @@ paths:
       tags:
       - user
       summary: Logs out current logged in user session. Invalidate the token
-      operationId: logoutUser
+      operationId: logUserOut
       responses:
         200:
           description: successful operation
