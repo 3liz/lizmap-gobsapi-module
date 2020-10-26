@@ -2,6 +2,7 @@
 
 class apiController extends jController
 {
+
     protected $error_codes = array(
         'error' => 0,
         'success' => 1,
@@ -15,6 +16,33 @@ class apiController extends jController
         '405' => 'Method Not Allowed',
         '500' => 'Internal Server Error',
     );
+
+    /**
+     * Authenticate the user via JWC token
+     * Token is given in Authorization header as: Authorization: Bearer <token>
+     *
+     */
+    protected function authIsValid()
+    {
+
+        // Get token tool
+        jClasses::inc('gobs~Token');
+        $token_manager = new Token();
+
+        // Get request token
+        $token = $token_manager->getTokenFromHeader();
+        if (!$token) {
+            return false;
+        }
+
+        // Validate token
+        $user = $token_manager->getUserFromToken($token);
+        if (!$user) {
+            return false;
+        }
+
+        return $user;
+    }
 
     /**
      * Return api response in JSON format

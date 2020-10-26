@@ -4,62 +4,16 @@ include jApp::getModulePath('gobs').'controllers/apiController.php';
 
 class userCtrl extends apiController
 {
-    /**
-     * Generate a JWC token.
-     *
-     * @param string username Username of the user logged in
-     * @param mixed $username
-     *
-     * @return string JWC token
-     */
-    private function generateToken($username)
-    {
-        // Todo: use PHP lib JWT
-        // https://github.com/lcobucci/jwt/
-        return md5($username);
-    }
 
     /**
-     * Validate a JWC token and give corresponding user name.
-     *
-     * @param string token Token passed in Authentication header
-     * @param mixed $token
-     *
-     * @return string Login of the corresponding user name
-     */
-    private function validateToken($token)
-    {
-        // TODO
-        if (true) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Destroy a JWC token.
-     *
-     * @param string username Username of the user logged in
-     * @param mixed $username
-     *
-     * @return string JWC token
-     */
-    private function destroyToken($username)
-    {
-        // TODO
-        // Invalidate token and related session
-    }
-
-    /**
-     * Logs user into the system.
+     * Logs user into the system and returns JWC token
      *
      * @httpmethod GET
-     * @httpparam string username Username of the user to log in
-     * @httpparam string password Password of the user to log in
-     * @httpresponse {"token": "1mx6L2L7AMdEsyKy5LW9s8gt6mBxdICwosVn5sjhbwykOoQJFUru6752dwsj2THN"}
+     * @param string username Username of the user to log in
+     * @param string password Password of the user to log in
      *
-     * @return jResponseJson JWC token or error code
+     * @return jResponseJson JWC token or error code:
+     * {"token": "1mx6L2L7AMdEsyKy5LW9s8gt6mBxdICwosVn5sjhbwykOoQJFUru6752dwsj2THN"}
      */
     public function logUserIn()
     {
@@ -81,24 +35,22 @@ class userCtrl extends apiController
             );
         }
 
-        // Temporary for dev purpose only
-        // return success
-        return $this->apiResponse(
-            '200',
-            'success',
-            'User successfully logged in'
-        );
+        // Get logged user
+        $user = jAuth::getUserSession();
+        $login = $user->login;
 
         // Generate token
         // TODO use a real class for this
-        $user_session = jAuth::getUserSession();
-        $token = $this->generateJwcToken($user_session->login);
+        jClasses::inc('gobs~Token');
+        $token_manager = new Token();
+        $token = $token_manager->generateToken($login);
 
         // Return token
         $rep->setHttpStatus('200', 'Successfully authenticated');
         $data = array(
             'token' => $token,
         );
+        $rep->data = $data;
 
         return $rep;
     }
@@ -113,13 +65,24 @@ class userCtrl extends apiController
      */
     public function logUserOut()
     {
+        // Get to
+        jClasses::inc('gobs~Token');
+        $token_manager = new Token();
 
-        // TODO: use PHP lib JWC
+        // Get request token
+        $token = $token_manager->getTokenFromHeader();
 
-        // Get and validate the token
-        $token = 'test';
-        $validate_token = $this->validateToken($token);
-        if (!$validate_token) {
+        if (!$token) {
+            return $this->apiResponse(
+                '401',
+                'error',
+                'Access token is missing or invalid'
+            );
+        }
+
+        // Validate token
+        $user = $token_manager->getUserFromToken($token);
+        if (!$user) {
             return $this->apiResponse(
                 '401',
                 'error',
@@ -128,12 +91,11 @@ class userCtrl extends apiController
         }
 
         // Log the user out
-        //$log_user = jAuth::logout($username);
-        $login = 'admin';
-        $log_user = jAuth::logout($login);
+        $login = $user['usr_login'];
+        $log_user_out = jAuth::logout($login);
 
-        // Clear session and destroy token
-        $this->destroyToken($login);
+        // Destroy token
+        $token_manager->destroyToken($token);
 
         // Return succces
         return $this->apiResponse(
@@ -154,17 +116,21 @@ class userCtrl extends apiController
     public function getUserProjects()
     {
         // Get authenticated user
-        $user_session = jAuth::getUserSession();
-        if (!$user_session) {
+        $user = $this->authIsValid();
+        if (!$user) {
             return $this->apiResponse(
                 '401',
                 'error',
-                'You must authenticate to get the user projects'
+                'Access token is missing or invalid'
             );
         }
+        $login = $user['usr_login'];
 
+        // Get gobs user instance
         jClasses::inc('gobs~User');
-        $user = new User($user_session->login);
+        $user_instance = new User($login);
+
+        // Get projects
         $projects = $user->getProjects();
 
         return $this->objectResponse($projects);

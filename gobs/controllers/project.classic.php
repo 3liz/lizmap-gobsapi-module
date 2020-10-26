@@ -26,6 +26,18 @@ class projectCtrl extends apiController
      */
     public function getProjectByKey()
     {
+
+        // Get authenticated user
+        $user = $this->authIsValid();
+        if (!$user) {
+            return $this->apiResponse(
+                '401',
+                'error',
+                'Access token is missing or invalid'
+            );
+        }
+        $login = $user['usr_login'];
+
         // Check projectKey parameter
         $project_key = $this->param('projectKey');
         if (!$project_key) {
@@ -83,6 +95,18 @@ class projectCtrl extends apiController
      */
     public function getProjectIndicators()
     {
+
+        // Get authenticated user
+        $user = $this->authIsValid();
+        if (!$user) {
+            return $this->apiResponse(
+                '401',
+                'error',
+                'Access token is missing or invalid'
+            );
+        }
+        $login = $user['usr_login'];
+
         $data = array();
 
         return $this->objectResponse($data);
