@@ -13,9 +13,9 @@ class gobsModuleInstaller extends jInstallerModule
     {
 
         // Copy configuration file
-        $gobsConfigPath = jApp::configPath('gobs.ini.php');
-        if (!file_exists($gobsConfigPath)) {
-            $this->copyFile('config/gobs.ini.php.dist', $gobsConfigPath);
+        $gobs_config_target = jApp::configPath('gobs.ini.php');
+        if (!file_exists($gobs_config_target)) {
+            $this->copyFile('config/gobs.ini.php.dist', $gobs_config_target);
         }
     }
 }

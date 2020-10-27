@@ -17,12 +17,22 @@ checkAppOpened();
 // mapping of url to basic url (/module/controller/method)
 $mapping = array(
     '/user/login' => '/gobs/user/logUserIn',
-    '/project/:projectkey' => '/gobs/project/getProjectByKey',
+    '/user/logout' => '/gobs/user/logUserOut',
+    '/user/projects' => '/gobs/user/getUserProjects',
+
+    '/project/:projectKey' => '/gobs/project/getProjectByKey',
+    '/project/:projectKey/indicators' => '/gobs/project/getProjectIndicators',
+
+    '/indicator/:indicatorCode' => '/gobs/indicator/getIndicatorByCode',
+    '/indicator/:indicatorCode/documents' => '/gobs/indicator/getIndicatorDocuments',
+    '/indicator/:indicatorCode/observations' => '/gobs/indicator/getObservationsByIndicator',
+    '/indicator/:indicatorCode/deletedObservations' => '/gobs/indicator/getDeletedObservationsByIndicator',
+
     '/observation' => array(
             'POST'=>'/gobs/observation/createObservation',
             'PUT'=>'/gobs/observation/updateObservation'
     ),
-    '/observation/:obsid' => array(
+    '/observation/:observationId' => array(
             'GET'=>'/gobs/observation/getObservation',
             'DELETE'=>'/gobs/observation/deleteObservation'
     ),
