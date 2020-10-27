@@ -40,6 +40,8 @@ class apiController extends jController
         if (!$user) {
             return false;
         }
+
+        // Add user in property
         $this->user = $user;
 
         return true;

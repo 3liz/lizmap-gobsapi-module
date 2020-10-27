@@ -22,8 +22,8 @@ class projectCtrl extends apiController
     private function checkProject()
     {
         // Get authenticated user
-        $this->authenticate();
-        if (!$this->user) {
+        $auth_ok = $this->authenticate();
+        if (!$auth_ok) {
             return array(
                 '401',
                 'error',
@@ -144,7 +144,17 @@ class projectCtrl extends apiController
             );
         }
 
-        $indicators = $gobs_project->getProjectIndicators();
+        // Get indicator codes
+        $indicator_codes = $gobs_project->getProjectIndicators();
+
+        // Get indicators
+        $indicators = array();
+        jClasses::inc('gobs~Indicator');
+        foreach ($indicator_codes as $code) {
+            $gobs_indicator = new Indicator($code);
+            $indicator = $gobs_indicator->get();
+            $indicators[] = $indicator;
+        }
 
         return $this->objectResponse($indicators);
     }

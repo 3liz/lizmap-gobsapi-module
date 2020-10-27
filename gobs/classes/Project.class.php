@@ -29,20 +29,31 @@ class Project
     {
         $this->project = $project;
 
+        // Create Gobs projet expected data
+        $this->buildGobsProject();
+    }
+
+
+    /* Create G-Obs project object from Lizmap project
+     *
+     *
+     */
+    private function buildGobsProject()
+    {
+
         // Compute bbox
-        $bbox = $project->getData('bbox');
+        $bbox = $this->project->getData('bbox');
         $extent = explode(', ', $bbox);
 
-        // Create Gobs projet expected data
         $this->data = array(
-            'key' => $project->getData('repository').'~'.$project->getData('id'),
-            'label' => $project->getData('title'),
-            'description' => $project->getData('abstract'),
+            'key' => $this->project->getData('repository').'~'.$this->project->getData('id'),
+            'label' => $this->project->getData('title'),
+            'description' => $this->project->getData('abstract'),
             'media_url' => jUrl::getFull(
                 'view~media:illustration',
                 array(
-                    'repository' => $project->getData('repository'),
-                    'project' => $project->getData('id'),
+                    'repository' => $this->project->getData('repository'),
+                    'project' => $this->project->getData('id'),
                 )
             ),
             'geopackage_url' => null,

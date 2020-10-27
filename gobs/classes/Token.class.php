@@ -53,16 +53,13 @@ class Token
         $cache_login = jCache::get($cache_key);
         if ($cache_login) {
             // Check that the user exists
-            $list = jAuth::getUserList();
-            $login = null;
-            foreach ($list as $juser) {
-                if ($juser->login == $cache_login) {
-                    $login = $cache_login;
+            $user_jelix = jAuth::getUser($cache_login);
+            if ($user_jelix) {
+                $login = $user_jelix->login;
 
-                    break;
-                }
-            }
-            if ($login) {
+                // Set jelix user session
+                //jAuth::setUserSession($login);
+
                 return array(
                     'usr_login' => $login,
                 );
@@ -83,8 +80,8 @@ class Token
     {
         // Todo: use PHP lib JWT
         // https://github.com/lcobucci/jwt/
-
-        $token = md5($login);
+        $rand = substr(md5(microtime()),rand(0,26),10);
+        $token = md5($login . $rand);
 
         // Store token in cache to keep track of token for this login
         $cache_key = 'gobs_token_'.$token;
@@ -107,10 +104,7 @@ class Token
 
         // Invalidate token in cache
         $cache_key = 'gobs_token_'.$token;
-        $cache = jCache::get($cache_key);
-        if ($cache) {
-            jCache::delete($cache_key);
-        }
+        jCache::delete($cache_key);
 
         return true;
     }

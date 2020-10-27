@@ -90,7 +90,7 @@ class userCtrl extends apiController
             );
         }
 
-        // Log the user out
+        // Log the user out. Can be useless because no session, but usefull for sending events
         $login = $user['usr_login'];
         $log_user_out = jAuth::logout($login);
 
@@ -116,8 +116,8 @@ class userCtrl extends apiController
     public function getUserProjects()
     {
         // Get authenticated user
-        $this->authenticate();
-        if (!$this->user) {
+        $auth_ok = $this->authenticate();
+        if (!$auth_ok) {
             return $this->apiResponse(
                 '401',
                 'error',
