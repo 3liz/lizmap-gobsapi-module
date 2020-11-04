@@ -1,5 +1,5 @@
 {
-    "name": "lizmap/lizmap-gobs-module",
+    "name": "lizmap/lizmap-gobsapi-module",
     "type": "jelix-module",
     "description": "Jelix module for Lizmap, which adds tools to manage data from G-Obs database",
     "keywords": ["module", "jelix", "lizmap", "G-Obs", "observation", "database"],
@@ -17,7 +17,7 @@
     "extra" : {
         "jelix" : {
             "modules": [
-                "gobs/"
+                "gobsapi/"
             ]
         }
     }

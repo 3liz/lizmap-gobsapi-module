@@ -51,7 +51,7 @@ class User
                 }
 
                 // Get project instance from Lizmap project
-                jClasses::inc('gobs~Project');
+                jClasses::inc('gobsapi~Project');
                 $gobs_project = new Project($project);
 
                 // Add it only if project has gobs indicators

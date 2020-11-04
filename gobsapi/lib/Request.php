@@ -1,6 +1,6 @@
 <?php
 
-namespace Gobs;
+namespace Gobsapi;
 
 /**
  * Request for Jelix that support additionnal url mapping.

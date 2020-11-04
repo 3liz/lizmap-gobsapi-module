@@ -1,7 +1,7 @@
 
 ## Synchronization
 
-API Documentation URL: https://3liz.github.io/lizmap-gobs-module/api/
+API Documentation URL: https://3liz.github.io/lizmap-gobsapi-module/api/
 
 ### Prerequisites:
 

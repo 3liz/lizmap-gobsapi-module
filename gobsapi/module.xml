@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module xmlns="http://jelix.org/ns/module/1.0">
-    <info id="gobs" name="gobs" createdate="2020-10-02">
+    <info id="gobsapi" name="gobsapi" createdate="2020-10-02">
         <version date="2020-11-04">0.1.0</version>
-        <label lang="en_US">gobs</label>
+        <label lang="en_US">gobsapi</label>
         <description lang="en_US" />
         <license URL="">Mozilla Public Licence (MPL)</license>
         <copyright>2017 3liz</copyright>
@@ -14,6 +14,6 @@
         <module name="lizmap" />
     </dependencies>
     <autoload>
-        <namespacePathMap name="Gobs" dir="lib"/>
+        <namespacePathMap name="Gobsapi" dir="lib"/>
     </autoload>
 </module>

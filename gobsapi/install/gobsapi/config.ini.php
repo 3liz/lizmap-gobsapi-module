@@ -7,7 +7,7 @@ jacl2db_admin.access=1
 jauthdb_admin.access=1
 master_admin.access=1
 
-gobs.access=2
+gobsapi.access=2
 
 [coordplugins]
 jacl2=1

@@ -1,6 +1,6 @@
 <?php
 
-include jApp::getModulePath('gobs').'controllers/apiController.php';
+include jApp::getModulePath('gobsapi').'controllers/apiController.php';
 
 class observationCtrl extends apiController
 {

@@ -7,15 +7,15 @@
  *
  * @license   GPL 3
  */
-class gobsModuleInstaller extends jInstallerModule
+class gobsapiModuleInstaller extends jInstallerModule
 {
     public function install()
     {
 
         // Copy configuration file
-        $gobs_config_target = jApp::configPath('gobs.ini.php');
+        $gobs_config_target = jApp::configPath('gobsapi.ini.php');
         if (!file_exists($gobs_config_target)) {
-            $this->copyFile('config/gobs.ini.php.dist', $gobs_config_target);
+            $this->copyFile('config/gobsapi.ini.php.dist', $gobs_config_target);
         }
     }
 }

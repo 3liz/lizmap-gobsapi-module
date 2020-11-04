@@ -26,7 +26,7 @@ class apiController extends jController
     {
 
         // Get token tool
-        jClasses::inc('gobs~Token');
+        jClasses::inc('gobsapi~Token');
         $token_manager = new Token();
 
         // Get request token

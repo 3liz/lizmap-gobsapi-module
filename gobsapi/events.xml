@@ -1,5 +1,7 @@
 <events xmlns="http://jelix.org/ns/events/1.0">
-   <listener name="gobs">
+<!--
+   <listener name="gobsapi">
        <event name="mapDockable" />
    </listener>
+-->
 </events>

@@ -127,7 +127,7 @@ class Indicator
             row_to_json(last.*) AS indicator_json
         FROM last
         ";
-        $gobs_profile = 'gobs';
+        $gobs_profile = 'gobsapi';
         $cnx = jDb::getConnection($gobs_profile);
         $stmt = $cnx->prepare($sql);
 

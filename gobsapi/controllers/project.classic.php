@@ -1,17 +1,6 @@
 <?php
 
-//TODO: utiliser un plugin de coordinateur pour tester les méthodes HTTP
-//$method = $_SERVER['REQUEST_METHOD'];
-//if ($method != 'GET') {
-
-    //return $this->apiResponse(
-        //'405',
-        //'error',
-        //'"project/{projectKey}" api entry point only accepts GET request method'
-    //);
-//}
-
-include jApp::getModulePath('gobs').'controllers/apiController.php';
+include jApp::getModulePath('gobsapi').'controllers/apiController.php';
 
 class projectCtrl extends apiController
 {
@@ -76,7 +65,7 @@ class projectCtrl extends apiController
         }
 
         // Get gobs project manager
-        jClasses::inc('gobs~Project');
+        jClasses::inc('gobsapi~Project');
         $gobs_project = new Project($project);
 
         // Test if project has and indicator
@@ -149,7 +138,7 @@ class projectCtrl extends apiController
 
         // Get indicators
         $indicators = array();
-        jClasses::inc('gobs~Indicator');
+        jClasses::inc('gobsapi~Indicator');
         foreach ($indicator_codes as $code) {
             $gobs_indicator = new Indicator($code);
             $indicator = $gobs_indicator->get();

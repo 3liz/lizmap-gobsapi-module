@@ -1,6 +1,6 @@
 <?php
 
-include jApp::getModulePath('gobs').'controllers/apiController.php';
+include jApp::getModulePath('gobsapi').'controllers/apiController.php';
 
 class userCtrl extends apiController
 {
@@ -41,7 +41,7 @@ class userCtrl extends apiController
 
         // Generate token
         // TODO use a real class for this
-        jClasses::inc('gobs~Token');
+        jClasses::inc('gobsapi~Token');
         $token_manager = new Token();
         $token = $token_manager->generateToken($login);
 
@@ -66,7 +66,7 @@ class userCtrl extends apiController
     public function logUserOut()
     {
         // Get to
-        jClasses::inc('gobs~Token');
+        jClasses::inc('gobsapi~Token');
         $token_manager = new Token();
 
         // Get request token
@@ -127,8 +127,8 @@ class userCtrl extends apiController
         $user = $this->user;
         $login = $user['usr_login'];
 
-        // Get gobs user instance
-        jClasses::inc('gobs~User');
+        // Get gobsapi user instance
+        jClasses::inc('gobsapi~User');
         $user_instance = new User($login);
 
         // Get projects

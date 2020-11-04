@@ -7,7 +7,7 @@
  *
  * @license   GPL 3
  */
-class gobsModuleUpgrader extends jInstallerModule
+class gobsapiModuleUpgrader extends jInstallerModule
 {
     public function install()
     {

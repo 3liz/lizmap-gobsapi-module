@@ -2,7 +2,7 @@
 
 $finder = PhpCsFixer\Finder::create()
           ->in(array(
-                __DIR__.'/gobs/',
+                __DIR__.'/gobsapi/',
               ))
           //->exclude(__DIR__.'/lizmap/modules/proj4php/classes/')
         ;

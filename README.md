@@ -1,20 +1,20 @@
-# lizmap-gobs-module
+# lizmap-gobsapi-module
 
 ## Introduction
 
-This is a Lizmap module to generate an API for G-Obs: https://docs.3liz.org/lizmap-gobs-module/api/
+This is a Lizmap module to generate an API for G-Obs: https://docs.3liz.org/lizmap-gobsapi-module/api/
 
 ## Installation
 
 NB: all the path given are relative to your Lizmap Web Client instance folder.
 
-* Copy the `gobs` directory inside the `lizmap/lizmap-modules/` of a working Lizmap Web Client instance to have a new `lizmap/lizmap-modules/gobs/` folder containing the files `module.xml`, `events.xml`, and folders.
+* Copy the `gobsapi` directory inside the `lizmap/lizmap-modules/` of a working Lizmap Web Client instance to have a new `lizmap/lizmap-modules/gobsapi/` folder containing the files `module.xml`, `events.xml`, and folders.
 
-* Then modify the file `lizmap/var/config/localconfig.ini.php` to add `gobs.access=2` in the `[modules]` section, such as
+* Then modify the file `lizmap/var/config/localconfig.ini.php` to add `gobsapi.access=2` in the `[modules]` section, such as
 
 ```ini
 [modules]
-gobs.access=2
+gobsapi.access=2
 
 ```
 
@@ -35,16 +35,16 @@ Afterwards, you should have a content like this in the `entrypoints` section
     </entrypoints>
 ```
 
-* Copy the folder `gobs/install/gobsapi` inside the Lizmap folder `lizmap/var/config/` to have a new folder `lizmap/var/config/gobsapi` with a file `config.ini.php` inside
+* Copy the folder `gobsapi/install/gobsapi` inside the Lizmap folder `lizmap/var/config/` to have a new folder `lizmap/var/config/gobsapi` with a file `config.ini.php` inside
 
 ```bash
-cp -R lizmap/lizmap-modules/gobs/install/gobsapi lizmap/var/config/gobsapi
+cp -R lizmap/lizmap-modules/gobsapi/install/gobsapi lizmap/var/config/gobsapi
 ```
 
-* Copy the file `gobs/install/gobsapi.php` inside the `lizmap/www/` folder
+* Copy the file `gobsapi/install/gobsapi.php` inside the `lizmap/www/` folder
 
 ```bash
-cp -R lizmap/lizmap-modules/gobs/install/gobsapi.php lizmap/www/
+cp -R lizmap/lizmap-modules/gobsapi/install/gobsapi.php lizmap/www/
 ```
 
 * Then you need to run the Lizmap installer
@@ -58,7 +58,7 @@ php lizmap/install/installer.php
 * You need to add a new database profile in the `lizmap/var/config/profiles.ini.php` like the following example (change the required fields)
 
 ```ini
-[jdb:gobs]
+[jdb:gobsapi]
 driver=pgsql
 database=gobs
 host=localhost
@@ -86,7 +86,7 @@ echo $(curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" ht
 echo $(curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" http://lizmap.localhost/gobsapi.php/project/lizmapdemo~lampadaires/indicators)
 
 # logUserOut
-echo $(curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" http://lizmap.localhost/gobsapi.php/user/logUserOut)
+echo $(curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" http://lizmap.localhost/gobsapi.php/user/logout)
 
 ```
 
