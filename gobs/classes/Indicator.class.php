@@ -29,19 +29,13 @@ class Indicator
     {
         $this->indicator_code = $indicator_code;
 
-
         // Create Gobs projet expected data
         $this->buildGobsIndicator();
     }
 
-
-    /* Create G-Obs project object from Lizmap project
-     *
-     *
-     */
+    // Create G-Obs project object from Lizmap project
     private function buildGobsIndicator()
     {
-
         $sql = "
         WITH decompose_values AS (
             SELECT
@@ -152,5 +146,4 @@ class Indicator
     {
         return $this->data;
     }
-
 }

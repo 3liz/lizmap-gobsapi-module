@@ -7,9 +7,10 @@
  *
  * @license   GPL 3
  */
-class gobsModuleUpgrader extends jInstallerModule {
-
-    function install() {
+class gobsModuleUpgrader extends jInstallerModule
+{
+    public function install()
+    {
         // Copy entry point
         // Needed in the upgrade process
         // if the variable $mapping has changed

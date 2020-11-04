@@ -1,6 +1,7 @@
 <?php
 /**
- * Entry point for G-Obs API
+ * Entry point for G-Obs API.
+ *
  * @author    3liz
  * @copyright 2018-2020 3liz
  *
@@ -8,9 +9,8 @@
  *
  * @license   GPL 3
  */
-
-require ('../application.init.php');
-require (JELIX_LIB_CORE_PATH.'request/jClassicRequest.class.php');
+require '../application.init.php';
+require JELIX_LIB_CORE_PATH.'request/jClassicRequest.class.php';
 
 checkAppOpened();
 
@@ -29,12 +29,12 @@ $mapping = array(
     '/indicator/:indicatorCode/deletedObservations' => '/gobs/indicator/getDeletedObservationsByIndicator',
 
     '/observation' => array(
-            'POST'=>'/gobs/observation/createObservation',
-            'PUT'=>'/gobs/observation/updateObservation'
+        'POST' => '/gobs/observation/createObservation',
+        'PUT' => '/gobs/observation/updateObservation',
     ),
     '/observation/:observationId' => array(
-            'GET'=>'/gobs/observation/getObservation',
-            'DELETE'=>'/gobs/observation/deleteObservation'
+        'GET' => '/gobs/observation/getObservation',
+        'DELETE' => '/gobs/observation/deleteObservation',
     ),
 );
 
@@ -42,4 +42,3 @@ jApp::loadConfig('gobsapi/config.ini.php');
 
 jApp::setCoord(new jCoordinator());
 jApp::coord()->process(new \Gobs\Request($mapping));
-

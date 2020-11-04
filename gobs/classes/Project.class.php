@@ -33,11 +33,7 @@ class Project
         $this->buildGobsProject();
     }
 
-
-    /* Create G-Obs project object from Lizmap project
-     *
-     *
-     */
+    // Create G-Obs project object from Lizmap project
     private function buildGobsProject()
     {
 

@@ -82,8 +82,8 @@ class Token
     {
         // Todo: use PHP lib JWT
         // https://github.com/lcobucci/jwt/
-        $rand = substr(md5(microtime()),rand(0,26),10);
-        $token = md5($login . $rand);
+        $rand = substr(md5(microtime()), rand(0, 26), 10);
+        $token = md5($login.$rand);
 
         // Store token in cache to keep track of token for this login
         $cache_key = 'gobs_token_'.$token;
