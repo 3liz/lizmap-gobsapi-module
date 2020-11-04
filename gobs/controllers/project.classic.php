@@ -66,7 +66,7 @@ class projectCtrl extends apiController
         }
 
         // Check the authenticated user can access to the project
-        if (!$project->checkAclByUser($login)) {
+        if (!$project->checkAcl($login)) {
             return array(
                 '403',
                 'error',

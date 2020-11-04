@@ -46,7 +46,7 @@ class User
             foreach ($get_projects as $project) {
 
                 // Check rights
-                if (!$project->checkAclByUser($this->login)) {
+                if (!$project->checkAcl($this->login)) {
                     continue;
                 }
 
