@@ -55,7 +55,10 @@ class projectCtrl extends apiController
         }
 
         // Check the authenticated user can access to the project
-        if (!$project->checkAcl($login)) {
+        jClasses::inc('gobsapi~gobsapiLizmapProject');
+        $gobsapiLizmapProject = new gobsapiLizmapProject();
+        if (!$gobsapiLizmapProject->checkAclByUser($project, $login)) {
+        //if (!$project->checkAclByUser($login)) {
             return array(
                 '403',
                 'error',

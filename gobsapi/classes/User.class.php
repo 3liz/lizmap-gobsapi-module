@@ -36,7 +36,7 @@ class User
         foreach ($repositories as $repository) {
 
             // Check rights
-            if (!jAcl2::check('lizmap.repositories.view', $repository)) {
+            if (!jAcl2::checkByUser($this->login, 'lizmap.repositories.view', $repository)) {
                 continue;
             }
 
@@ -46,7 +46,10 @@ class User
             foreach ($get_projects as $project) {
 
                 // Check rights
-                if (!$project->checkAcl($this->login)) {
+                jClasses::inc('gobsapi~gobsapiLizmapProject');
+                $gobsapiLizmapProject = new gobsapiLizmapProject();
+                if (!$gobsapiLizmapProject->checkAclByUser($project, $this->login)) {
+                //if (!$project->checkAclByUser($this->login)) {
                     continue;
                 }
 

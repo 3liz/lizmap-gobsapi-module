@@ -60,7 +60,7 @@ class Token
                 // Set jelix user session
                 // This allow to use jAuth and jAcl2 methods
                 // within the API
-                jAuth::setUserSession($login);
+                //jAuth::setUserSession($login);
 
                 return array(
                     'usr_login' => $login,
