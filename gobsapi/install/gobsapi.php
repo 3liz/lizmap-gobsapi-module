@@ -32,9 +32,16 @@ $mapping = array(
         'POST' => '/gobsapi/observation/createObservation',
         'PUT' => '/gobsapi/observation/updateObservation',
     ),
+    '/observation/observations' => '/gobsapi/observation/createObservations'
     '/observation/:observationId' => array(
-        'GET' => '/gobsapi/observation/getObservation',
-        'DELETE' => '/gobsapi/observation/deleteObservation',
+        'GET' => '/gobsapi/observation/getObservationById',
+        'DELETE' => '/gobsapi/observation/deleteObservationById',
+    ),
+    '/observation/:observationId/uploadMedia' => array(
+        'POST' => '/gobsapi/observation/uploadObservationMedia',
+    ),
+    '/observation/:observationId/deleteMedia' => array(
+        'DELETE' => '/gobsapi/observation/deleteObservationMedia',
     ),
 );
 

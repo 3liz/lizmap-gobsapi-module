@@ -4,35 +4,6 @@ include jApp::getModulePath('gobsapi').'controllers/apiController.php';
 
 class observationCtrl extends apiController
 {
-    /**
-     * Create or update a new observation
-     * /observation
-     * Redirect to specific function depending on http method.
-     *
-     * @httpparam string Observation data in JSON
-     *
-     * @return jResponseJson Observation object created or updated
-     */
-    public function index()
-    {
-
-        // Get http method
-        $method = $_SERVER['REQUEST_METHOD'];
-
-        // Redirect depending on method
-        if ($method == 'POST') {
-            return $this->createObservation();
-        }
-        if ($method == 'PUT') {
-            return $this->updateObservation();
-        }
-
-        return $this->apiResponse(
-            '405',
-            'error',
-            '"observation/" api entry point only accepts POST OR PUT request method'
-        );
-    }
 
     /**
      * Create a new observation.
@@ -71,42 +42,13 @@ class observationCtrl extends apiController
      *
      * @return jResponseJson List of created observations
      */
-    public function observations()
+    public function createObservations()
     {
         $data = array();
 
         return $this->objectResponse($data);
     }
 
-    /**
-     * Get or delete an observation by UID
-     * /observation/{observationId}
-     * Redirect to specific function depending on http method.
-     *
-     * @httpparam string Observation UID
-     *
-     * @return jResponseJson Observation object or standard api response
-     */
-    public function observationId()
-    {
-
-        // Get http method
-        $method = $_SERVER['REQUEST_METHOD'];
-
-        // Redirect depending on method
-        if ($method == 'GET') {
-            return $this->getObservation();
-        }
-        if ($method == 'DELETE') {
-            return $this->deleteObservation();
-        }
-
-        return $this->apiResponse(
-            '405',
-            'error',
-            '"observation/{observationId}" api entry point only accepts GET OR DELETE request method'
-        );
-    }
 
     /**
      * Get an observation by UID
@@ -117,7 +59,7 @@ class observationCtrl extends apiController
      *
      * @return jResponseJson Observation data
      */
-    private function getObservation()
+    private function getObservationById()
     {
         $data = array();
 
@@ -133,7 +75,7 @@ class observationCtrl extends apiController
      *
      * @return jResponseJson Standard api response
      */
-    private function deleteObservation()
+    private function deleteObservationById()
     {
         return $this->apiResponse(
             '200',

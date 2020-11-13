@@ -1176,7 +1176,7 @@
           "observation"
         ],
         "summary": "Deletes an observation",
-        "operationId": "deleteObservation",
+        "operationId": "deleteObservationById",
         "parameters": [
           {
             "name": "observationId",
@@ -1244,7 +1244,7 @@
           "observation"
         ],
         "summary": "uploads an media for the observation",
-        "operationId": "uploadMedia",
+        "operationId": "uploadObservationMedia",
         "parameters": [
           {
             "name": "observationId",

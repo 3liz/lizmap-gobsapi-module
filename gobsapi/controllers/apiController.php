@@ -9,6 +9,7 @@ class apiController extends jController
 
     protected $http_codes = array(
         '200' => 'Successfull operation',
+        '401' => 'Unauthorize',
         '400' => 'Bad Request',
         '403' => 'Forbidden',
         '404' => 'Not found',

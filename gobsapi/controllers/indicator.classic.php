@@ -13,39 +13,15 @@ class indicatorCtrl extends apiController
      *
      * @return jResponseJson Indicator object or standard api response
      */
-    public function indicatorCode()
+    public function getIndicatorByCode()
     {
 
-        // Get http method
-        $method = $_SERVER['REQUEST_METHOD'];
-
-        // Redirect depending on method
-        if ($method == 'GET') {
-            return $this->getIndicator();
-        }
-
-        return $this->apiResponse(
-            '405',
-            'error',
-            '"indicator/{indicatorCode}" api entry point only accepts GET request method'
-        );
-    }
-
-    /**
-     * Get an indicator by Code
-     * /observation/{observationId}.
-     *
-     * @param string Indicator Code
-     * @httpresponse JSON Indicator data
-     *
-     * @return jResponseJson Indicator data
-     */
-    private function getIndicator()
-    {
         $data = array();
 
         return $this->objectResponse($data);
+
     }
+
 
     /**
      * Get documents for an indicator by indicator Code
@@ -56,7 +32,7 @@ class indicatorCtrl extends apiController
      *
      * @return jResponseJson documents data
      */
-    private function documents()
+    private function getIndicatorDocuments()
     {
         $data = array();
 
@@ -75,7 +51,7 @@ class indicatorCtrl extends apiController
      *
      * @return jResponseJson observations data
      */
-    private function observations()
+    private function getObservationsByIndicator()
     {
         $data = array();
 
@@ -94,7 +70,7 @@ class indicatorCtrl extends apiController
      *
      * @return jResponseJson deletedObservations data
      */
-    private function deletedObservations()
+    private function getDeletedObservationsByIndicator()
     {
         $data = array();
 
