@@ -24,7 +24,6 @@ $mapping = array(
     '/project/:projectKey/indicators' => '/gobsapi/project/getProjectIndicators',
 
     '/indicator/:indicatorCode' => '/gobsapi/indicator/getIndicatorByCode',
-    '/indicator/:indicatorCode/documents' => '/gobsapi/indicator/getIndicatorDocuments',
     '/indicator/:indicatorCode/observations' => '/gobsapi/indicator/getObservationsByIndicator',
     '/indicator/:indicatorCode/deletedObservations' => '/gobsapi/indicator/getDeletedObservationsByIndicator',
 

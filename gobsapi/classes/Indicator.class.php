@@ -33,6 +33,17 @@ class Indicator
         $this->buildGobsIndicator();
     }
 
+    // Check indicator code is valid
+    public function checkCode()
+    {
+        $i = $this->indicator_code;
+
+        return (
+            preg_match('/^[a-zA-Z0-9_\-]+$/', $i)
+            and strlen($i) > 2
+        );
+    }
+
     // Create G-Obs project object from Lizmap project
     private function buildGobsIndicator()
     {

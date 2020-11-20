@@ -8,7 +8,7 @@ class projectCtrl extends apiController
      * Check given project can be accessed by the user
      * and that it is a G-Obs project with indicators.
      */
-    private function checkProject()
+    private function check()
     {
         // Get authenticated user
         $auth_ok = $this->authenticate();
@@ -96,7 +96,7 @@ class projectCtrl extends apiController
     {
 
         // Check project can be accessed and is a valid G-Obs project
-        list($code, $status, $message, $gobs_project) = $this->checkProject();
+        list($code, $status, $message, $gobs_project) = $this->check();
         if ($status == 'error') {
             return $this->apiResponse(
                 $code,
@@ -124,7 +124,7 @@ class projectCtrl extends apiController
     {
 
         // Check project can be accessed and is a valid G-Obs project
-        list($code, $status, $message, $gobs_project) = $this->checkProject();
+        list($code, $status, $message, $gobs_project) = $this->check();
         if ($status == 'error') {
             return $this->apiResponse(
                 $code,

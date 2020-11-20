@@ -4,7 +4,6 @@ include jApp::getModulePath('gobsapi').'controllers/apiController.php';
 
 class observationCtrl extends apiController
 {
-
     /**
      * Create a new observation.
      *
@@ -48,7 +47,6 @@ class observationCtrl extends apiController
 
         return $this->objectResponse($data);
     }
-
 
     /**
      * Get an observation by UID
