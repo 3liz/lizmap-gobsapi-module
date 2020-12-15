@@ -195,7 +195,20 @@ class indicatorCtrl extends apiController
      */
     public function getDeletedObservationsByIndicator()
     {
-        $data = array();
+        // Check indicator can be accessed and is a valid G-Obs indicator
+        list($code, $status, $message, $gobs_indicator) = $this->check();
+        if ($status == 'error') {
+            return $this->apiResponse(
+                $code,
+                $status,
+                $message
+            );
+        }
+
+        $data = $gobs_indicator->getDeletedObservations(
+            $this->requestSyncDate,
+            $this->lastSyncDate
+        );
 
         return $this->objectResponse($data);
     }

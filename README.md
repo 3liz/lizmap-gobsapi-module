@@ -104,7 +104,9 @@ echo $(curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" ht
 echo $(curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "lastSyncDate: $(date '+%Y-%m-%d %H:%M:%S' -d '7 days ago')" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" http://lizmap.localhost/gobsapi.php/indicator/pluviometry/observations)
 
 # getDeletedObservationsByIndicator
-echo $(curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" http://lizmap.localhost/gobsapi.php/indicator/pluviometry/deletedObservations)
+echo $(curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "lastSyncDate: $(date '+%Y-%m-%d %H:%M:%S' -d '13 days ago')" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" http://lizmap.localhost/gobsapi.php/indicator/pluviometry/deletedObservations)
+
+
 ```
 
 ## License

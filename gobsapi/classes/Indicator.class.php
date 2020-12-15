@@ -195,7 +195,8 @@ class Indicator
         ";
         if ($requestSyncDate && $lastSyncDate) {
             // updated_at is always set (=created_at or last time object has been modified)
-            $sql.= " AND (
+            $sql.= "
+            AND (
                 o.updated_at > $2 AND o.updated_at <= $3
             )
             ";
@@ -224,4 +225,49 @@ class Indicator
 
         return $data;
     }
+
+    // Get indicator deleted observations
+    public function getDeletedObservations($requestSyncDate=null, $lastSyncDate=null)
+    {
+        $sql = "
+        WITH
+        del AS (
+            SELECT
+                de_uid AS uid
+            FROM gobs.deleted_data_log
+            WHERE True
+            AND de_table = 'observation'
+        ";
+        if ($requestSyncDate && $lastSyncDate) {
+            $sql.= "
+            AND (
+                de_timestamp BETWEEN $1 AND $2
+            )
+            ";
+        }
+        $sql.= "
+        )
+        SELECT
+            uid
+        FROM del
+        ";
+        //jLog::log($sql, 'error');
+
+        $gobs_profile = 'gobsapi';
+        $cnx = jDb::getConnection($gobs_profile);
+        $resultset = $cnx->prepare($sql);
+        $params = array();
+        if ($requestSyncDate && $lastSyncDate) {
+            $params[] = $lastSyncDate;
+            $params[] = $requestSyncDate;
+        }
+        $resultset->execute($params);
+        $data = [];
+        foreach ($resultset->fetchAll() as $record) {
+            $data[] = $record->uid;
+        }
+
+        return $data;
+    }
+
 }
