@@ -173,7 +173,10 @@ class indicatorCtrl extends apiController
             );
         }
 
-        $data = $gobs_indicator->getObservations();
+        $data = $gobs_indicator->getObservations(
+            $this->requestSyncDate,
+            $this->lastSyncDate
+        );
 
         return $this->objectResponse($data);
     }

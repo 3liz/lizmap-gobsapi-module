@@ -103,8 +103,7 @@ class Project
         if ($data) {
             $indicators = trim((string) $data[0]);
             $indicators = array_map('trim', explode(',', $indicators));
-            jLog::log(json_encode($indicators), 'error');
-
+            //jLog::log(json_encode($indicators), 'error');
             return $indicators;
         }
 

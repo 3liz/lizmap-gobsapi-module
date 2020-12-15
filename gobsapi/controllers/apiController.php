@@ -19,6 +19,10 @@ class apiController extends jController
 
     protected $user;
 
+    protected $requestSyncDate = null;
+
+    protected $lastSyncDate = null;
+
     /**
      * Authenticate the user via JWC token
      * Token is given in Authorization header as: Authorization: Bearer <token>.
@@ -45,7 +49,35 @@ class apiController extends jController
         // Add user in property
         $this->user = $user;
 
+        // Add requestSyncDate & lastSyncDate
+        $headers = jApp::coord()->request->headers();
+        $sync_dates = array(
+            'Requestsyncdate'=> 'requestSyncDate',
+            'Lastsyncdate'=>'lastSyncDate'
+        );
+        foreach($sync_dates as $key=>$prop) {
+            if (array_key_exists($key, $headers)) {
+                $sync_date = $headers[$key];
+                if ($this->validateDate($sync_date)) {
+                    $this->$prop = $sync_date;
+                }
+            }
+        }
+
         return true;
+    }
+
+    /**
+     * Validate a string containing date
+     * @param string date String to validate. Ex: "2020-12-12 08:34:45"
+     * @param string format Format of the date to validate against. Default "Y-m-d H:i:s"
+     *
+     * @return boolean
+     */
+    private function validateDate($date, $format = 'Y-m-d H:i:s')
+    {
+        $d = DateTime::createFromFormat($format, $date);
+        return $d && $d->format($format) == $date;
     }
 
     /**

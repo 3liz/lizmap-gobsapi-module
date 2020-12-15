@@ -158,7 +158,7 @@ class Indicator
 
 
     // Get indicator observations
-    public function getObservations()
+    public function getObservations($requestSyncDate=null, $lastSyncDate=null)
     {
         $sql = "
         WITH ind AS (
@@ -192,21 +192,33 @@ class Indicator
             WHERE fk_id_series IN (
                 SELECT ser.id FROM ser
             )
+        ";
+        if ($requestSyncDate && $lastSyncDate) {
+            // updated_at is always set (=created_at or last time object has been modified)
+            $sql.= " AND (
+                o.updated_at > $2 AND o.updated_at <= $3
+            )
+            ";
+        }
+        $sql.= "
         )
         SELECT
             row_to_json(obs.*) AS observation_json
         FROM obs
-        LIMIT 10
         ";
-        jLog::log($sql, 'error');
+        //jLog::log($sql, 'error');
 
         $gobs_profile = 'gobsapi';
         $cnx = jDb::getConnection($gobs_profile);
         $resultset = $cnx->prepare($sql);
-        $resultset->execute(array($this->indicator_code));
+        $params = array($this->indicator_code);
+        if ($requestSyncDate && $lastSyncDate) {
+            $params[] = $lastSyncDate;
+            $params[] = $requestSyncDate;
+        }
+        $resultset->execute($params);
         $data = [];
         foreach ($resultset->fetchAll() as $record) {
-            jLog::log($record->observation_json, 'error');
             $data[] = json_decode($record->observation_json);
         }
 
