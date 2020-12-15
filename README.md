@@ -73,11 +73,20 @@ Then you are ready to test. For example with curl (you need curl to pass JWT tok
 
 ```bash
 
+# USER
+###
+
 # login
 TOKEN=$(curl -s -X GET -H 'Content-Type: application/json' "http://lizmap.localhost/gobsapi.php/user/login?username=admin&password=admin" | jq -r '.token') && echo $TOKEN
 
 # User Projects
 echo $(curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" http://lizmap.localhost/gobsapi.php/user/projects)
+
+# logUserOut
+echo $(curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" http://lizmap.localhost/gobsapi.php/user/logout)
+
+# PROJECT
+###
 
 # getProjectByKey
 echo $(curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" http://lizmap.localhost/gobsapi.php/project/lizmapdemo~lampadaires)
@@ -85,9 +94,17 @@ echo $(curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" ht
 # getProjectIndicators
 echo $(curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" http://lizmap.localhost/gobsapi.php/project/lizmapdemo~lampadaires/indicators)
 
-# logUserOut
-echo $(curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" http://lizmap.localhost/gobsapi.php/user/logout)
+# INDICATOR
+###
 
+# getIndicatorByCode
+echo $(curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" http://lizmap.localhost/gobsapi.php/indicator/pluviometry)
+
+# getObservationsByIndicator
+echo $(curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" http://lizmap.localhost/gobsapi.php/indicator/pluviometry/observations)
+
+# getDeletedObservationsByIndicator
+echo $(curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" http://lizmap.localhost/gobsapi.php/indicator/pluviometry/deletedObservations)
 ```
 
 ## License

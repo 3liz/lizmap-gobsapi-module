@@ -11,7 +11,7 @@ class observationCtrl extends apiController
      *
      * @return jResponseJson Created observation object
      */
-    private function createObservation()
+    public function createObservation()
     {
         $data = array();
 
@@ -25,7 +25,7 @@ class observationCtrl extends apiController
      *
      * @return jResponseJson Updated observation object
      */
-    private function updateObservation()
+    public function updateObservation()
     {
         $data = array();
 
@@ -57,7 +57,7 @@ class observationCtrl extends apiController
      *
      * @return jResponseJson Observation data
      */
-    private function getObservationById()
+    public function getObservationById()
     {
         $data = array();
 
@@ -73,7 +73,7 @@ class observationCtrl extends apiController
      *
      * @return jResponseJson Standard api response
      */
-    private function deleteObservationById()
+    public function deleteObservationById()
     {
         return $this->apiResponse(
             '200',

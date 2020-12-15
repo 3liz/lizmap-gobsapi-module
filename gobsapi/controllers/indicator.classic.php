@@ -160,9 +160,20 @@ class indicatorCtrl extends apiController
      *
      * @return jResponseJson observations data
      */
-    private function getObservationsByIndicator()
+    public function getObservationsByIndicator()
     {
-        $data = array();
+
+        // Check indicator can be accessed and is a valid G-Obs indicator
+        list($code, $status, $message, $gobs_indicator) = $this->check();
+        if ($status == 'error') {
+            return $this->apiResponse(
+                $code,
+                $status,
+                $message
+            );
+        }
+
+        $data = $gobs_indicator->getObservations();
 
         return $this->objectResponse($data);
     }
@@ -179,7 +190,7 @@ class indicatorCtrl extends apiController
      *
      * @return jResponseJson deletedObservations data
      */
-    private function getDeletedObservationsByIndicator()
+    public function getDeletedObservationsByIndicator()
     {
         $data = array();
 

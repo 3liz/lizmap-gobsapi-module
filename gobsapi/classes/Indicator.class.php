@@ -140,8 +140,6 @@ class Indicator
         ";
         $gobs_profile = 'gobsapi';
         $cnx = jDb::getConnection($gobs_profile);
-        $stmt = $cnx->prepare($sql);
-
         $resultset = $cnx->prepare($sql);
         $resultset->execute(array($this->indicator_code));
         $json = null;
@@ -156,5 +154,62 @@ class Indicator
     public function get()
     {
         return $this->data;
+    }
+
+
+    // Get indicator observations
+    public function getObservations()
+    {
+        $sql = "
+        WITH ind AS (
+            SELECT id, id_code
+            FROM gobs.indicator
+            WHERE id_code = $1
+        ),
+        ser AS (
+            SELECT s.id
+            FROM gobs.series AS s
+            JOIN ind AS i
+                ON fk_id_indicator = i.id
+        ),
+        obs AS (
+            SELECT
+                o.id, ind.id_code AS indicator, o.ob_uid AS uuid,
+                o.ob_start_timestamp AS start_timestamp,
+                o.ob_end_timestamp AS end_timestamp,
+                json_build_object(
+                    'x', ST_X(ST_Centroid(so.geom)),
+                    'y', ST_Y(ST_Centroid(so.geom))
+                ) AS coordinates,
+                ST_AsText(ST_Centroid(so.geom)) AS wkt,
+                ob_value AS values,
+                NULL AS photo,
+                o.created_at::timestamp(0), o.updated_at::timestamp(0)
+            FROM gobs.observation AS o
+            JOIN gobs.spatial_object AS so
+                ON so.id = o.fk_id_spatial_object,
+            ind
+            WHERE fk_id_series IN (
+                SELECT ser.id FROM ser
+            )
+        )
+        SELECT
+            row_to_json(obs.*) AS observation_json
+        FROM obs
+        LIMIT 10
+        ";
+        jLog::log($sql, 'error');
+
+        $gobs_profile = 'gobsapi';
+        $cnx = jDb::getConnection($gobs_profile);
+        $resultset = $cnx->prepare($sql);
+        $resultset->execute(array($this->indicator_code));
+        $data = [];
+        foreach ($resultset->fetchAll() as $record) {
+            jLog::log($record->observation_json, 'error');
+            $data[] = json_decode($record->observation_json);
+        }
+
+        return $data;
     }
 }
