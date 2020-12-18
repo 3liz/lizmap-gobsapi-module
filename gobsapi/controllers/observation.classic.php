@@ -63,8 +63,8 @@ class observationCtrl extends apiController
             }
 
             // Check observation exists
-            $observation = $gobs_observation->get();
-            if (empty($observation)) {
+            list($status, $message, $data) = $gobs_observation->get();
+            if ($status == 'error') {
                 return array(
                     '404',
                     'error',
@@ -97,10 +97,10 @@ class observationCtrl extends apiController
         }
 
         // Body is given
-        $uid_actions = array(
+        $body_actions = array(
             'createObservation', 'updateObservation'
         );
-        if (in_array($from, $uid_actions)) {
+        if (in_array($from, $body_actions)) {
             // Body content is passed
 
             // Parameters
@@ -132,12 +132,10 @@ class observationCtrl extends apiController
                     null,
                 );
             }
+
             return array('200', 'success', 'Observation is a G-Obs observation', $gobs_observation);
 
         }
-
-        // If uid is given, we get the instance of observation and check it
-        // else we get the content of the body
 
         return array('500', 'error', 'An unknown error has occured', null);
 
@@ -163,7 +161,18 @@ class observationCtrl extends apiController
             );
         }
 
-        $data = array();
+        list($status, $message, $data) = $gobs_observation->create();
+
+        if ($status == 'error') {
+            return $this->apiResponse(
+                '400',
+                $status,
+                $message
+            );
+        }
+
+        // Remove login before sending back data
+        unset($data->actor_email);
 
         return $this->objectResponse($data);
     }
@@ -241,12 +250,19 @@ class observationCtrl extends apiController
             );
         }
 
-        $observation = $gobs_observation->get();
+        list($status, $message, $data) = $gobs_observation->get();
+        if ($status == 'error') {
+            return $this->apiResponse(
+                '400',
+                $status,
+                $message
+            );
+        }
 
         // Remove login before sending back data
-        unset($observation->actor_email);
+        unset($data->actor_email);
 
-        return $this->objectResponse($observation);
+        return $this->objectResponse($data);
     }
 
     /**
@@ -271,18 +287,18 @@ class observationCtrl extends apiController
             );
         }
 
-        $delete_observation = $gobs_observation->delete();
-        if (empty($delete_observation)) {
+        list($status, $message, $data) = $gobs_observation->delete();
+        if ($status == 'error') {
             return $this->apiResponse(
                 '400',
-                'error',
-                'An error occured while deleting the observation'
+                $status,
+                $message
             );
         } else {
             return $this->apiResponse(
                 '200',
-                'success',
-                'Observation has been successfully deleted'
+                $status,
+                $message
             );
         }
     }

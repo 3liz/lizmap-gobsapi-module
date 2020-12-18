@@ -108,6 +108,7 @@ class Observation
     public function checkObservationJsonFormat($action='create') {
         $data = $this->data;
         if (empty($data)) {
+            $this->observation_valid = false;
             return array(
                 'error',
                 'Observation JSON data is empty'
@@ -117,12 +118,14 @@ class Observation
 
         // Check fields
         if (!property_exists($data, 'start_timestamp') || !$this->isValidDate($data->start_timestamp)) {
+            $this->observation_valid = false;
             return array(
                 'error',
                 'Observation JSON data must have a valid start_timestamp'
             );
         }
         if (property_exists($data, 'end_timestamp') && !$this->isValidDate($data->end_timestamp)) {
+            $this->observation_valid = false;
             return array(
                 'error',
                 'Observation JSON data must have a valid end_timestamp'
@@ -151,6 +154,7 @@ class Observation
             // CREATION
             // Check indicator
             if (!property_exists($data, 'indicator') || !$this->checkIndicatorCode($data->indicator)) {
+                $this->observation_valid = false;
                 return array(
                     'error',
                     'Observation JSON data must have a valid indicator'
@@ -167,8 +171,8 @@ class Observation
         }
 
         $this->data  = json_encode($data);
-//jLog::log('DATA', 'error');
-//jLog::log(json_encode($data), 'error');
+        $this->observation_valid = true;
+
         return array(
             'success',
             'Observation JSON data is valid'
@@ -200,6 +204,7 @@ class Observation
         $indicator_code = $data->indicator;
 
         // Check indicator
+        // Todo: Observation - Check connected user has access to the indicator
 
         return $capabilities;
     }
@@ -208,16 +213,20 @@ class Observation
     private function query($sql, $params) {
         $gobs_profile = 'gobsapi';
         $cnx = jDb::getConnection($gobs_profile);
-        $resultset = $cnx->prepare($sql);
-        try {
-            $resultset->execute($params);
-        } catch (Exception $e) {
-            return null;
-        }
         $json = null;
-        foreach ($resultset->fetchAll() as $record) {
-            $json = $record->object_json;
+        $cnx->beginTransaction();
+        try {
+            $resultset = $cnx->prepare($sql);
+            $resultset->execute($params);
+            foreach ($resultset->fetchAll() as $record) {
+                $json = $record->object_json;
+            }
+            $cnx->commit();
+        } catch (Exception $e) {
+            $cnx->rollback();
+            throw $e;
         }
+
         return $json;
     }
 
@@ -267,7 +276,12 @@ class Observation
         ";
         //jLog::log($sql, 'error');
         $params = array($uid);
-        $json = $this->query($sql, $params);
+        try {
+            $json = $this->query($sql, $params);
+        } catch (Exception $e) {
+            $msg = $e->getMessage();
+            $json = null;
+        }
         $this->observation_valid = (!empty($json));
 
         return $json;
@@ -277,9 +291,17 @@ class Observation
     public function get()
     {
         if (!($this->observation_valid)) {
-            return null;
+            return array(
+                'error',
+                'The given observation is not valid',
+                null
+            );
         }
-        return json_decode($this->data);
+        return array(
+            'success',
+            'Observation has been fetched',
+            json_decode($this->data)
+        );
     }
 
     // Get Gobs representation of an observation object
@@ -287,7 +309,11 @@ class Observation
     {
         // Check observation
         if (!($this->observation_valid)) {
-            return null;
+            return array(
+                'error',
+                'The given observation is not valid',
+                null
+            );
         }
 
         // Delete observation
@@ -304,15 +330,30 @@ class Observation
         "
         ;
         $params = array($this->observation_uid);
-        $json = $this->query($sql, $params);
+        try {
+            $json = $this->query($sql, $params);
+        } catch (Exception $e) {
+            $msg = $e->getMessage();
+            $json = null;
+        }
         if (empty($json)) {
-            return false;
+            return array(
+                'error',
+                'An error occured while deleting the observation',
+                null
+            );
         }
 
         // Delete also orphan medias and documents
         // Todo Observation - delete medias and documents
 
-        return $json;
+        // Todo Observation - delete also spatial objects and imports
+
+        return array(
+            'success',
+            'The observation has been sucessfully deleted',
+            json_decode($json)
+        );
     }
 
 
@@ -320,10 +361,120 @@ class Observation
     // Create a new observation
     public function create()
     {
+        // Check observation
         if (!($this->observation_valid)) {
-            return null;
+            return array(
+                'error',
+                'The given observation is not valid',
+                null
+            );
         }
-        return null;
+
+        // Create import, spatial object & observation
+        $sql = "
+            WITH source AS (
+                SELECT $1::json AS o
+            ),
+            ind AS (
+                SELECT
+                    id, id_code, id_date_format
+                FROM gobs.indicator
+                JOIN source
+                    ON o->>'indicator' = id_code
+                LIMIT 1
+            ),
+            ser AS (
+                SELECT
+                    s.id, s.fk_id_spatial_layer
+                FROM gobs.series AS s
+                JOIN ind AS i
+                    ON fk_id_indicator = i.id
+                JOIN gobs.actor AS a
+                    ON s.fk_id_actor = a.id
+                WHERE a.a_email = $2
+                ORDER BY s.id DESC
+                LIMIT 1
+            ),
+            so AS (
+                INSERT INTO gobs.spatial_object (
+                    so_unique_id,
+                    so_unique_label,
+                    geom, fk_id_spatial_layer,
+                    so_valid_from, so_valid_to
+                )
+                SELECT
+                    md5(concat(
+                        ser.id, ser.fk_id_spatial_layer, ind.id_code,
+                        o->>'wkt',
+                        date_trunc(ind.id_date_format, (o->>'start_timestamp')::timestamp),
+                        $2
+                    )) AS so_unique_id,
+                    'api_gevent',
+                    ST_GeomFromText(o->>'wkt', 4326), ser.fk_id_spatial_layer,
+                    date_trunc(ind.id_date_format, (o->>'start_timestamp')::timestamp),  NULL
+                FROM source, ser, ind
+                LIMIT 1
+                ON CONFLICT DO NOTHING
+                RETURNING id
+            ),
+            imp AS (
+                INSERT INTO gobs.import (
+                    fk_id_series, im_status
+                )
+                SELECT
+                    ser.id, 'P'
+                FROM ser
+                RETURNING id
+            ),
+            obs AS (
+                INSERT INTO gobs.observation (
+                    fk_id_series, fk_id_spatial_object, fk_id_import,
+                    ob_value, ob_start_timestamp, ob_end_timestamp
+                )
+                SELECT
+                    ser.id, so.id, imp.id,
+                    (o->'values')::jsonb, (o->>'start_timestamp')::timestamp, (o->>'end_timestamp')::timestamp
+                FROM
+                    ser, so, imp, source
+                RETURNING *
+            )
+            SELECT row_to_json(obs.*) AS object_json
+            FROM obs
+        ";
+
+        $params = array(
+            $this->data,
+            $this->user['usr_email']
+        );
+
+        try {
+            $json = $this->query($sql, $params);
+        } catch (Exception $e) {
+            $msg = $e->getMessage();
+            $json = null;
+            return array(
+                'error',
+                'A database error occured while creating the observation',
+                null
+            );
+        }
+        if (empty($json)) {
+            return array(
+                'error',
+                'The observation has not been created',
+                null
+            );
+        }
+
+        // Get this observation as G-Obs format
+        $created = json_decode($json);
+        $db_obs = $this->getObservationFromDatabase($created->ob_uid);
+
+        return array(
+            'success',
+            'The observation has been sucessfully created',
+            json_decode($db_obs)
+        );
     }
 
     // Update the observation
