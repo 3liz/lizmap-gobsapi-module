@@ -5,8 +5,8 @@ include jApp::getModulePath('gobsapi').'controllers/apiController.php';
 class projectCtrl extends apiController
 {
     /**
-     * Check given project can be accessed by the user
-     * and that it is a G-Obs project with indicators.
+     * Check access by the user
+     * and given parameters
      */
     private function check()
     {

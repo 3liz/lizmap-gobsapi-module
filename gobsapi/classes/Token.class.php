@@ -47,7 +47,7 @@ class Token
      */
     public function getUserFromToken($token)
     {
-        // Todo: use PHP lib JWT
+        // Todo: Token - use PHP lib JWT
         // https://github.com/lcobucci/jwt/
         $cache_key = 'gobs_token_'.$token;
         $cache_login = jCache::get($cache_key);
@@ -64,6 +64,7 @@ class Token
 
                 return array(
                     'usr_login' => $login,
+                    'usr_email' => $user_jelix->email,
                 );
             }
         }
@@ -80,7 +81,7 @@ class Token
      */
     public function generateToken($login)
     {
-        // Todo: use PHP lib JWT
+        // Todo: Token - use PHP lib JWT
         // https://github.com/lcobucci/jwt/
         $rand = substr(md5(microtime()), rand(0, 26), 10);
         $token = md5($login.$rand);
@@ -101,7 +102,7 @@ class Token
      */
     public function destroyToken($token)
     {
-        // TODO: use PHP lib JWT
+        // TODO: Token - use PHP lib JWT
         // https://github.com/lcobucci/jwt/
 
         // Invalidate token in cache

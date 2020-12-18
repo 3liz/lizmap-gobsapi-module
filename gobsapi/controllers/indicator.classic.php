@@ -5,8 +5,8 @@ include jApp::getModulePath('gobsapi').'controllers/apiController.php';
 class indicatorCtrl extends apiController
 {
     /**
-     * Check given indicator can be accessed by the user
-     * and that it is a valid G-Obs indicator.
+     * Check access by the user
+     * and given parameters
      */
     private function check()
     {
@@ -61,6 +61,7 @@ class indicatorCtrl extends apiController
 
         return array('200', 'success', 'Indicator is a G-Obs indicator', $gobs_indicator);
 
+        // Todo: Indicator - Ask for the project key and check indicator ok ?
         // Check projectKey parameter
         $project_key = $this->param('projectKey');
         if (!$project_key) {

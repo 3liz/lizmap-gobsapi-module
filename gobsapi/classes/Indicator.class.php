@@ -10,7 +10,7 @@
 class Indicator
 {
     /**
-     * @var project: Indicator code
+     * @var indicator_code: Indicator code
      */
     protected $indicator_code;
 
@@ -30,7 +30,9 @@ class Indicator
         $this->indicator_code = $indicator_code;
 
         // Create Gobs projet expected data
-        $this->buildGobsIndicator();
+        if ($this->checkCode()) {
+            $this->buildGobsIndicator();
+        }
     }
 
     // Check indicator code is valid
@@ -42,6 +44,21 @@ class Indicator
             preg_match('/^[a-zA-Z0-9_\-]+$/', $i)
             and strlen($i) > 2
         );
+    }
+
+    /**
+     * Check if a given string is a valid UUID
+     *
+     * @param   string  $uuid   The string to check
+     * @return  boolean
+     */
+    public function isValidUuid($uuid) {
+
+        if (!is_string($uuid) || (preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/', $uuid) !== 1)) {
+            return false;
+        }
+
+        return true;
     }
 
     // Create G-Obs project object from Lizmap project
@@ -135,7 +152,7 @@ class Indicator
             FROM consolidated
         )
         SELECT
-            row_to_json(last.*) AS indicator_json
+            row_to_json(last.*) AS object_json
         FROM last
         ";
         $gobs_profile = 'gobsapi';
@@ -144,7 +161,7 @@ class Indicator
         $resultset->execute(array($this->indicator_code));
         $json = null;
         foreach ($resultset->fetchAll() as $record) {
-            $json = $record->indicator_json;
+            $json = $record->object_json;
         }
 
         $this->data = json_decode($json);
@@ -158,7 +175,7 @@ class Indicator
 
 
     // Get indicator observations
-    public function getObservations($requestSyncDate=null, $lastSyncDate=null)
+    public function getObservations($requestSyncDate=null, $lastSyncDate=null, $uids=null)
     {
         $sql = "
         WITH ind AS (
@@ -193,6 +210,8 @@ class Indicator
                 SELECT ser.id FROM ser
             )
         ";
+
+        // Filter between last sync date & request sync date
         if ($requestSyncDate && $lastSyncDate) {
             // updated_at is always set (=created_at or last time object has been modified)
             $sql.= "
@@ -201,10 +220,30 @@ class Indicator
             )
             ";
         }
+
+        // Filter for given observation uids
+        if (!empty($uids)) {
+            $keep = array();
+            foreach ($uuids as $uuid) {
+                if ($this->isValidUuid($uuid)) {
+                    $keep[] = $uuid;
+                }
+            }
+            if (!empty($keep)) {
+                $sql_uids = implode("', '", $keep);
+                $sql.= "
+                AND (
+                    o.ob_uid IN ('" . $sql_uids. "')
+                )
+                ";
+            }
+        }
+
+        // Transform result into JSON for each row
         $sql.= "
         )
         SELECT
-            row_to_json(obs.*) AS observation_json
+            row_to_json(obs.*) AS object_json
         FROM obs
         ";
         //jLog::log($sql, 'error');
@@ -220,7 +259,7 @@ class Indicator
         $resultset->execute($params);
         $data = [];
         foreach ($resultset->fetchAll() as $record) {
-            $data[] = json_decode($record->observation_json);
+            $data[] = json_decode($record->object_json);
         }
 
         return $data;

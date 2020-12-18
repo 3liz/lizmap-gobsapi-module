@@ -31,7 +31,7 @@ $mapping = array(
         'POST' => '/gobsapi/observation/createObservation',
         'PUT' => '/gobsapi/observation/updateObservation',
     ),
-    '/observation/observations' => '/gobsapi/observation/createObservations'
+    '/observation/observations' => '/gobsapi/observation/createObservations',
     '/observation/:observationId' => array(
         'GET' => '/gobsapi/observation/getObservationById',
         'DELETE' => '/gobsapi/observation/deleteObservationById',

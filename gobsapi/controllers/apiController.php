@@ -58,7 +58,7 @@ class apiController extends jController
         foreach($sync_dates as $key=>$prop) {
             if (array_key_exists($key, $headers)) {
                 $sync_date = $headers[$key];
-                if ($this->validateDate($sync_date)) {
+                if ($this->isValidDate($sync_date)) {
                     $this->$prop = $sync_date;
                 }
             }
@@ -74,7 +74,7 @@ class apiController extends jController
      *
      * @return boolean
      */
-    private function validateDate($date, $format = 'Y-m-d H:i:s')
+    private function isValidDate($date, $format = 'Y-m-d H:i:s')
     {
         $d = DateTime::createFromFormat($format, $date);
         return $d && $d->format($format) == $date;

@@ -10,7 +10,7 @@
 class User
 {
     /**
-     * @var Repository
+     * @var User login
      */
     protected $login;
 
