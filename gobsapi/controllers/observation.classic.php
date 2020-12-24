@@ -196,7 +196,19 @@ class observationCtrl extends apiController
                 $message
             );
         }
-        $data = array();
+
+        list($status, $message, $data) = $gobs_observation->update();
+
+        if ($status == 'error') {
+            return $this->apiResponse(
+                '400',
+                $status,
+                $message
+            );
+        }
+
+        // Remove login before sending back data
+        unset($data->actor_email);
 
         return $this->objectResponse($data);
     }
