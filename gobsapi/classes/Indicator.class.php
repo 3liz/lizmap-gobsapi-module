@@ -20,6 +20,16 @@ class Indicator
     protected $data;
 
     /**
+     * @var media destination directory
+     */
+    protected $observation_media_directory = '';
+
+    /**
+     * @var media allowed mime types
+     */
+    protected $media_mimes = array('jpg', 'jpeg', 'png', 'gif');
+
+    /**
      * constructor.
      *
      * @param string $indicator_code: the code of the indicator
@@ -33,6 +43,9 @@ class Indicator
         if ($this->checkCode()) {
             $this->buildGobsIndicator();
         }
+
+        // Set observation media directory
+        $this->observation_media_directory = jApp::varPath('uploads/gobsapi~media');
     }
 
     // Check indicator code is valid
@@ -200,7 +213,7 @@ class Indicator
                 ) AS coordinates,
                 ST_AsText(ST_Centroid(so.geom)) AS wkt,
                 ob_value AS values,
-                NULL AS photo,
+                NULL AS media_url,
                 o.created_at::timestamp(0), o.updated_at::timestamp(0)
             FROM gobs.observation AS o
             JOIN gobs.spatial_object AS so
@@ -258,8 +271,22 @@ class Indicator
         }
         $resultset->execute($params);
         $data = [];
+
+        // Process data
         foreach ($resultset->fetchAll() as $record) {
-            $data[] = json_decode($record->object_json);
+            $item = json_decode($record->object_json);
+
+            // Check media exists
+            $destination_basename = $item->uuid;
+            $destination_basepath = $this->observation_media_directory.'/'.$destination_basename;
+            foreach ($this->media_mimes as $mime) {
+                $path = $destination_basepath.'.'.$mime;
+                if (file_exists($path)) {
+                    $item->media_url = $path;
+                    break;
+                }
+            }
+            $data[] = $item;
         }
 
         return $data;

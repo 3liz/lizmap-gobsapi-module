@@ -62,9 +62,8 @@ class observationCtrl extends apiController
                 );
             }
 
-            // Check observation exists
-            list($status, $message, $data) = $gobs_observation->get();
-            if ($status == 'error') {
+            // Check observation is valid
+            if (!$gobs_observation->observation_valid) {
                 return array(
                     '404',
                     'error',
@@ -171,9 +170,6 @@ class observationCtrl extends apiController
             );
         }
 
-        // Remove login before sending back data
-        unset($data->actor_email);
-
         return $this->objectResponse($data);
     }
 
@@ -206,9 +202,6 @@ class observationCtrl extends apiController
                 $message
             );
         }
-
-        // Remove login before sending back data
-        unset($data->actor_email);
 
         return $this->objectResponse($data);
     }
@@ -270,9 +263,6 @@ class observationCtrl extends apiController
                 $message
             );
         }
-
-        // Remove login before sending back data
-        unset($data->actor_email);
 
         return $this->objectResponse($data);
     }

@@ -22,7 +22,7 @@ class Observation
     /**
      * @var observation_valid: Boolean telling the observation is valid or not
      */
-    protected $observation_valid = false;
+    public $observation_valid = false;
 
     /**
      * @var data G-Obs Representation of an observation or many observations
@@ -30,9 +30,14 @@ class Observation
     protected $data;
 
     /**
-     * @var media destinatino directory
+     * @var media destination directory
      */
-    protected $destination_directory = '';
+    protected $observation_media_directory = '';
+
+    /**
+     * @var media allowed mime types
+     */
+    protected $media_mimes = array('jpg', 'jpeg', 'png', 'gif');
 
 
     /**
@@ -56,7 +61,8 @@ class Observation
             }
         }
 
-        $this->destination_directory = jApp::varPath('uploads/gobsapi~media');
+        // Set observation media directory
+        $this->observation_media_directory = jApp::varPath('uploads/gobsapi~media');
     }
 
     // Check observation indicator code is valid
@@ -176,13 +182,13 @@ class Observation
             // Set data to null before inserting into database
             $data->id = null;
             $data->uuid = null;
-            $data->photo = null;
+            $data->media_url = null;
             $data->created_at = null;
             $data->updated_at = null;
             $data->actor_email = $this->user['usr_email'];
         }
 
-        $this->data  = json_encode($data);
+        $this->data = json_encode($data);
         $this->observation_valid = true;
 
         return array(
@@ -290,7 +296,7 @@ class Observation
                     ) AS coordinates,
                     ST_AsText(ST_Centroid(so.geom)) AS wkt,
                     ob_value AS values,
-                    NULL AS photo,
+                    NULL AS media_url,
                     o.created_at::timestamp(0), o.updated_at::timestamp(0)
                 FROM gobs.observation AS o
                 JOIN gobs.series AS s
@@ -573,15 +579,55 @@ class Observation
             );
         }
 
-        // Get this observation as G-Obs format
-        $created = json_decode($json);
-        $db_obs = $this->getObservationFromDatabase($created->ob_uid);
+        // For insert or update, get this observation as G-Obs format
+        if (in_array($action, array('insert','update'))) {
+            // Get data for publication
+            $observation = json_decode($json);
+            $db_obs = $this->getObservationFromDatabase($observation->ob_uid);
+            $data = $this->getForPublication(json_decode($db_obs));
 
-        return array(
-            'success',
-            'The observation has been sucessfully ' . $messages[$action][2],
-            json_decode($db_obs)
-        );
+            // Return response
+            return array(
+                'success',
+                'The observation has been sucessfully ' . $messages[$action][2],
+                $data
+            );
+        }
+
+        // For delete
+        if ($action == 'delete') {
+            // Delete also orphan medias
+            $delete = $this->deleteMedia();
+            if ($delete[0] == 'error') {
+                return $delete;
+            }
+
+            // Return response
+            return array(
+                'success',
+                'The observation has been sucessfully ' . $messages[$action][2],
+                json_decode($json)
+            );
+        }
+    }
+
+    private function getForPublication($data) {
+
+        // Remove login before sending back data
+        unset($data->actor_email);
+
+        // Check media exists
+        $destination_basename = $data->uuid;
+        $destination_basepath = $this->observation_media_directory.'/'.$destination_basename;
+        foreach ($this->media_mimes as $mime) {
+            $path = $destination_basepath.'.'.$mime;
+            if (file_exists($path)) {
+                $data->media_url = $path;
+                break;
+            }
+        }
+
+        return $data;
     }
 
     // Get Gobs representation of an observation object
@@ -594,10 +640,11 @@ class Observation
                 null
             );
         }
+        $data = $this->getForPublication(json_decode($this->data));
         return array(
             'success',
             'Observation has been fetched',
-            json_decode($this->data)
+            $data
         );
     }
 
@@ -645,14 +692,13 @@ class Observation
 
         // Destination folder and filename
         $destination_basename = $this->observation_uid;
-        $destination_basepath = $this->destination_directory.'/'.$destination_basename;
 
         // Save file
         $delete = $this->deleteMedia();
         if ($delete[0] == 'error') {
             return $delete;
         }
-        $save = $form->saveFile('mediaFile', $this->destination_directory, $destination_basename.'.'.$extension);
+        $save = $form->saveFile('mediaFile', $this->observation_media_directory, $destination_basename.'.'.$extension);
         if (!$save) {
             jForms::destroy('gobsapi~media', $this->observation_uid);
             return array(
@@ -670,13 +716,15 @@ class Observation
     }
 
     // Delete observation media from destination directory
-    public function deleteMedia() {
+    public function deleteMedia($uid=null) {
         // Delete existing file
         $destination_basename = $this->observation_uid;
-        $destination_basepath = $this->destination_directory.'/'.$destination_basename;
-        $mimes = array('jpg', 'jpeg', 'png', 'gif');
+        if ($this->isValidUuid($uid)) {
+            $destination_basename = $uid;
+        }
+        $destination_basepath = $this->observation_media_directory.'/'.$destination_basename;
         $deleted = 0;
-        foreach ($mimes as $mime) {
+        foreach ($this->media_mimes as $mime) {
             $path = $destination_basepath.'.'.$mime;
             if (file_exists($path)) {
                 try {

@@ -391,9 +391,9 @@
               "example": 20
             }
           },
-          "photo": {
+          "media_url": {
             "type": "string",
-            "description": "Photography of the observation (optionnal)"
+            "description": "URL of the observation media"
           },
           "created_at": {
             "type": "string",
@@ -1056,7 +1056,7 @@
           {
             "name": "observationId",
             "in": "path",
-            "description": "UID of observation concerned for which to store the media",
+            "description": "UID of the observation",
             "required": true,
             "schema": {
               "type": "string",
@@ -1133,7 +1133,7 @@
           {
             "name": "observationId",
             "in": "path",
-            "description": "UID of observation concerned for which to store the media",
+            "description": "UID of the observation",
             "required": true,
             "schema": {
               "type": "string",
@@ -1195,13 +1195,13 @@
         "tags": [
           "observation"
         ],
-        "summary": "uploads an media for the observation",
+        "summary": "uploads a media for the chosen observation",
         "operationId": "uploadObservationMedia",
         "parameters": [
           {
             "name": "observationId",
             "in": "path",
-            "description": "UID of observation concerned for which to store the media",
+            "description": "UID of the observation",
             "required": true,
             "schema": {
               "type": "string",
@@ -1278,13 +1278,13 @@
         "tags": [
           "observation"
         ],
-        "summary": "delete a media for the observation",
+        "summary": "delete the media of the chosen observation",
         "operationId": "deleteObservationMedia",
         "parameters": [
           {
             "name": "observationId",
             "in": "path",
-            "description": "UID of observation concerned for which to store the media",
+            "description": "UID of the observation",
             "required": true,
             "schema": {
               "type": "string",
