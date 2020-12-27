@@ -300,19 +300,17 @@ class observationCtrl extends apiController
         }
 
         list($status, $message, $data) = $gobs_observation->delete();
+        $code = '200';
         if ($status == 'error') {
-            return $this->apiResponse(
-                '400',
-                $status,
-                $message
-            );
-        } else {
-            return $this->apiResponse(
-                '200',
-                $status,
-                $message
-            );
+            $code = '400';
         }
+
+        // Return response
+        return $this->apiResponse(
+            $code,
+            $status,
+            $message
+        );
     }
 
     /**
@@ -336,12 +334,18 @@ class observationCtrl extends apiController
             );
         }
 
-        // Todo: Observation - Upload observation media
+        // Proces form data
+        list($status, $message, $data) = $gobs_observation->processMediaForm();
+        $code = '200';
+        if ($status == 'error') {
+            $code = '400';
+        }
 
+        // Return response
         return $this->apiResponse(
-            '200',
-            'success',
-            'Media successfully added'
+            $code,
+            $status,
+            $message
         );
     }
 
@@ -366,12 +370,18 @@ class observationCtrl extends apiController
             );
         }
 
-        // Todo: Observation - Delete observation media
+        // Proces form data
+        list($status, $message, $data) = $gobs_observation->deleteMedia();
+        $code = '200';
+        if ($status == 'error') {
+            $code = '400';
+        }
 
+        // Return response
         return $this->apiResponse(
-            '200',
-            'success',
-            'Media successfully deleted'
+            $code,
+            $status,
+            $message
         );
     }
 }

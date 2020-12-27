@@ -30,6 +30,12 @@ class Observation
     protected $data;
 
     /**
+     * @var media destinatino directory
+     */
+    protected $destination_directory = '';
+
+
+    /**
      * constructor.
      *
      * @param string $indicator_code: the code of the indicator
@@ -49,6 +55,8 @@ class Observation
                 $this->data = $json;
             }
         }
+
+        $this->destination_directory = jApp::varPath('uploads/gobsapi~media');
     }
 
     // Check observation indicator code is valid
@@ -612,6 +620,96 @@ class Observation
 
         // Delete also orphan medias and documents
         // Todo Observation - delete medias and documents
+    }
+
+    // Process upload
+    public function processMediaForm() {
+        // Create and initialize form
+        $form = jForms::create('gobsapi~media', $this->observation_uid);
+        $form->initFromRequest();
+
+        // Check data
+        if (!$form->check()) {
+            jForms::destroy('gobsapi~media', $this->observation_uid);
+            return array(
+                'error',
+                'An error occured while initializing the form: media mime type must be jpg, jpeg, png or gif and the media size must be under 10Mo',
+                null
+            );
+        }
+
+        // Get values
+        $mediaFile = trim($form->getData('mediaFile'));
+        $info = pathinfo($mediaFile);
+        $extension = strtolower($info['extension']);
+
+        // Destination folder and filename
+        $destination_basename = $this->observation_uid;
+        $destination_basepath = $this->destination_directory.'/'.$destination_basename;
+
+        // Save file
+        $delete = $this->deleteMedia();
+        if ($delete[0] == 'error') {
+            return $delete;
+        }
+        $save = $form->saveFile('mediaFile', $this->destination_directory, $destination_basename.'.'.$extension);
+        if (!$save) {
+            jForms::destroy('gobsapi~media', $this->observation_uid);
+            return array(
+                'error',
+                'An error occured while saving the media file',
+                null
+            );
+        }
+
+        return array(
+            'success',
+            'Observation media has been sucessfully uploaded',
+            null
+        );
+    }
+
+    // Delete observation media from destination directory
+    public function deleteMedia() {
+        // Delete existing file
+        $destination_basename = $this->observation_uid;
+        $destination_basepath = $this->destination_directory.'/'.$destination_basename;
+        $mimes = array('jpg', 'jpeg', 'png', 'gif');
+        $deleted = 0;
+        foreach ($mimes as $mime) {
+            $path = $destination_basepath.'.'.$mime;
+            if (file_exists($path)) {
+                try {
+                    unlink($path);
+                    $deleted++;
+                } catch(Exception $e) {
+                    $msg = $e->getMessage();
+                    $deleted = -1;
+                    break;
+                }
+            }
+        }
+
+        // Return response
+        if ($deleted == -1) {
+            return array(
+                'error',
+                'An error occured while deleting the observation media file',
+                null
+            );
+        } elseif ($deleted == 0) {
+            return array(
+                'success',
+                'No media file to delete has been found for this observation',
+                null
+            );
+        } else {
+            return array(
+                'success',
+                'The observation media file has been successfully deleted',
+                null
+            );
+        }
     }
 
 }

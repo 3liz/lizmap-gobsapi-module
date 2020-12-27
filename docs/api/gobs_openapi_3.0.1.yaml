@@ -13,7 +13,7 @@ externalDocs:
   description: Find out more about G-Obs
   url: https://3liz.github.io/qgis-gobs-plugin/
 servers:
-- url: https://gobs.3liz.com/1.0.0
+- url: http://lizmap.localhost/gobsapi.php
 security:
   - bearerAuth: []
 components:
@@ -505,39 +505,6 @@ paths:
           description: Indicator not found
           content: {}
           
-  /indicator/{indicatorCode}/documents:
-    get:
-      tags:
-      - indicator
-      summary: Get the documents for a given indicator
-      description: Indicator code must be given in the path.
-      operationId: getIndicatorDocuments
-      parameters:
-      - name: indicatorCode
-        in: path
-        description: Indicator code to filter by
-        required: true
-        schema:
-          type: string
-          example: weather_status
-      responses:
-        200:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/IndicatorDocument'
-        400:
-          description: Invalid code supplied
-          content: {}
-        401:
-           $ref: '#/components/responses/UnauthorizedError'
-        404:
-          description: Indicator not found
-          content: {}
-          
   /indicator/{indicatorCode}/observations:
     get:
       tags:
@@ -901,9 +868,7 @@ paths:
             schema:
               type: object
               properties:
-                imageDate:
-                  type: string
-                fileName:
+                mediaFile:
                   type: string
                   format: binary
       responses:
@@ -913,8 +878,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+        400:
+          description: An error occured while uploading the observation media
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
         401:
            $ref: '#/components/responses/UnauthorizedError'
+        404:
+          description: Observation not found
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
            
   /observation/{observationId}/deleteMedia:
     delete:
@@ -945,12 +922,18 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApiResponse'     
+                $ref: '#/components/schemas/ApiResponse'  
         400:
-          description: Invalid ID supplied
-          content: {}
+          description: An error occured while deleting the observation media
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
         401:
            $ref: '#/components/responses/UnauthorizedError'
         404:
           description: Observation not found
-          content: {} 
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'

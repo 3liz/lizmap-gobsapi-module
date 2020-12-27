@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form xmlns="http://jelix.org/ns/forms/1.1" allowAnyOrigin="true" >
+
+<hidden ref="mediaDate"/>
+<hidden ref="mediaName"/>
+<upload ref="mediaFile" mimetype="image/jpg;image/jpeg;image/pjpeg;image/png;image/gif" accept="image/jpg;image/jpeg;image/pjpeg;image/png;image/gif" maxsize="10000000">
+    <label></label>
+</upload>
+
+<!--
+cancel is placed after the _submit because HTML 5 defines that the default submit button is the first one
+We need this to handle the default submit button used when the ENTER key is pressed -> we want it to be submit (and not cancel)
+-->
+
+</form>

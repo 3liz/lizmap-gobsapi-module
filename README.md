@@ -113,6 +113,7 @@ echo $(curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H
 # createObservation
 echo $(curl -X POST -H "Accept: application/json" -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" -H "Content-Type: application/json" -d "{\"id\":null,\"indicator\":\"pluviometry\",\"uuid\":null,\"start_timestamp\":\"2019-07-19 03:30:00\",\"end_timestamp\":null,\"coordinates\":{\"x\":-3.785956510771293,\"y\":48.4744332531894},\"wkt\":\"POINT(-3.78595651077129 48.4744332531894)\",\"values\":[0.8],\"photo\":null,\"created_at\":null,\"updated_at\":null}" "http://lizmap.localhost/gobsapi.php/observation")
 
+{"id":3595,"indicator":"pluviometry","uuid":"04686b0c-2ccd-4130-bc00-18ccf06cf573","start_timestamp":"2019-07-19T03:30:00","end_timestamp":null,"coordinates":{"x":-3.78595651077129,"y":48.4744332531894},"wkt":"POINT(-3.78595651077129 48.4744332531894)","values":[0.8],"photo":null,"created_at":"2020-12-24T15:17:43","updated_at":"2020-12-24T15:17:43"}
 
 # updateObservation
 echo $(curl -X PUT -H "Accept: application/json" -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" -H "Content-Type: application/json" -d "{\"id\":1,\"indicator\":\"pluviometry\",\"uuid\":\"745b18a6-1c1c-4576-9f26-72a0216d420e\",\"start_timestamp\":\"2019-07-16 03:35:00\",\"end_timestamp\":null,\"coordinates\":{\"x\":-3.785956510771293,\"y\":48.4744332531894},\"wkt\":\"POINT(-3.78595651077000 48.4744332531000)\",\"values\":[1.2],\"photo\":null,\"created_at\":\"2020-12-03 15:04:40\",\"updated_at\":\"2020-12-03 17:55:59\"}" "http://lizmap.localhost/gobsapi.php/observation")
@@ -121,15 +122,16 @@ echo $(curl -X PUT -H "Accept: application/json" -H "Authorization: Bearer ${TOK
 todo
 
 # getObservationsById
-echo $(curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" http://lizmap.localhost/gobsapi.php/observation/19c861dc-4453-46d0-9247-ebe305cc0d9b)
+echo $(curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" http://lizmap.localhost/gobsapi.php/observation/04686b0c-2ccd-4130-bc00-18ccf06cf573)
 
 # deleteObservationById
-echo $(curl -X DELETE -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" http://lizmap.localhost/gobsapi.php/observation/19c861dc-4453-46d0-9247-ebe305cc0d9b)
+echo $(curl -X DELETE -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" http://lizmap.localhost/gobsapi.php/observation/04686b0c-2ccd-4130-bc00-18ccf06cf573)
 
 # uploadObservationMedia
+echo $(curl -X POST -H  "Accept: application/json" -H  "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" -H  "Content-Type: multipart/form-data" -F "mediaFile=@/home/mdouchin/Documents/3liz/mdouchin_carre.jpeg;type=image/jpeg" http://lizmap.localhost/gobsapi.php/observation/04686b0c-2ccd-4130-bc00-18ccf06cf573/uploadMedia)
 
 # deleteObservationMedia
-
+echo $(curl -X DELETE -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" http://lizmap.localhost/gobsapi.php/observation/04686b0c-2ccd-4130-bc00-18ccf06cf573/deleteMedia)
 
 ```
 
