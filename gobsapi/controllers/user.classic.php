@@ -40,7 +40,6 @@ class userCtrl extends apiController
         $login = $user->login;
 
         // Generate token
-        // TODO use a real class for this
         jClasses::inc('gobsapi~Token');
         $token_manager = new Token();
         $token = $token_manager->generateToken($login);

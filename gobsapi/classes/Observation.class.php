@@ -763,7 +763,10 @@ class Observation
                 null
             );
         }
+
+        // Get data for publication
         $data = $this->getForPublication();
+
         return array(
             'success',
             'Observation has been fetched',

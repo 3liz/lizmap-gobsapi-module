@@ -9,6 +9,9 @@
  */
 class Token
 {
+    // Todo: Token - use PHP lib JWT
+    // https://github.com/lcobucci/jwt/
+
     /**
      * Get the token from the Authentication request header.
      *
@@ -47,8 +50,6 @@ class Token
      */
     public function getUserFromToken($token)
     {
-        // Todo: Token - use PHP lib JWT
-        // https://github.com/lcobucci/jwt/
         $cache_key = 'gobs_token_'.$token;
         $cache_login = jCache::get($cache_key);
         if ($cache_login) {
@@ -81,8 +82,6 @@ class Token
      */
     public function generateToken($login)
     {
-        // Todo: Token - use PHP lib JWT
-        // https://github.com/lcobucci/jwt/
         $rand = substr(md5(microtime()), rand(0, 26), 10);
         $token = md5($login.$rand);
 
@@ -102,9 +101,6 @@ class Token
      */
     public function destroyToken($token)
     {
-        // TODO: Token - use PHP lib JWT
-        // https://github.com/lcobucci/jwt/
-
         // Invalidate token in cache
         $cache_key = 'gobs_token_'.$token;
         jCache::delete($cache_key);

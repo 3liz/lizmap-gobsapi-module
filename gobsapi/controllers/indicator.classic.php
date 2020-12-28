@@ -67,7 +67,7 @@ class indicatorCtrl extends apiController
             );
         }
 
-        $indicator = $this->indicator->get();
+        $indicator = $this->indicator->get('publication');
 
         return $this->objectResponse($indicator);
     }

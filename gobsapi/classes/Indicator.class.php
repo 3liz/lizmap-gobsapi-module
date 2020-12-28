@@ -182,7 +182,7 @@ class Indicator
             SELECT
                 id, code, label, description, category, date_format,
                 values, documents,
-                'avatar' AS avatar,
+                NULL AS preview,
                 'blue' AS color,
                 created_at,
                 updated_at
@@ -205,9 +205,16 @@ class Indicator
     }
 
     // Get Gobs representation of a indicator object
-    public function get()
+    public function get($context='internal')
     {
-        return $this->raw_data;
+        $data = $this->raw_data;
+
+        if ($context == 'publication') {
+            // Get data for publication
+            $data = $this->getForPublication();
+        }
+
+        return $data;
     }
 
     // Modify and return data for publication purpose
@@ -215,9 +222,31 @@ class Indicator
         // Get observation instance data
         $data = $this->raw_data;
 
-        // Check media exists
-        // todo: use ROOT/media/gobsapi/indicator/observations/
-
+        // Transform document paths into lizmap media URL
+        $docs = array();
+        if (count($data->documents) == 1 && !$data->documents[0]) {
+            $docs = array();
+        } else {
+            foreach ($data->documents AS $document) {
+                // Check if document is preview
+                if ($document->type == 'preview') {
+                    // We move the doc from documents to preview property
+                    $media_url = $this->setDocumentUrl($document->type, $document->url);
+                    if ($media_url) {
+                        $data->preview = $media_url;
+                    }
+                } elseif ($document->type == 'url') {
+                    $docs[] = $document;
+                } else {
+                    $media_url = $this->setDocumentUrl($document->type, $document->url);
+                    if ($media_url) {
+                        $document->url = $media_url;
+                    }
+                    $docs[] = $document;
+                }
+            }
+        }
+        $data->documents = $docs;
         return $data;
     }
 
@@ -353,6 +382,30 @@ class Indicator
         return $data;
     }
 
+    // Transform the indicator document file path into a public lizMap media URL
+    public function setDocumentUrl($type, $path) {
+        $document_url = null;
+
+        // Indicator code and document type are already contained in the dabase document URL
+        $destination_basename = $path;
+        $document_dir = '/../media/gobsapi/indicator/documents/';
+        $media_path = $document_dir.$destination_basename;
+        $file_path = $this->document_root_directory.'/'.$destination_basename;
+        if (file_exists($file_path)) {
+            $document_url = jUrl::getFull(
+                'view~media:getMedia',
+                array(
+                    'repository' => $this->lizmap_project->getData('repository'),
+                    'project' => $this->lizmap_project->getData('id'),
+                    'path' => $media_path
+                )
+            );
+        }
+
+        return $document_url;
+    }
+
+    // Transform the observation media file path into a public lizMap media URL
     public function setObservationMediaUrl($uid) {
         $media_url = null;
 

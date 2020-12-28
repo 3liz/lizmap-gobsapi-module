@@ -162,7 +162,7 @@ class apiController extends jController
         }
 
         // Check indicator exists
-        $indicator = $gobs_indicator->get();
+        $indicator = $gobs_indicator->get('internal');
         if (!$indicator) {
             return array(
                 '404',

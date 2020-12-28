@@ -232,7 +232,7 @@ components:
             wrapped: true
           items:
             $ref: '#/components/schemas/IndicatorDocument'
-        avatar:
+        preview:
           type: string
           description: Url of the image illustrating the indicator
         color:

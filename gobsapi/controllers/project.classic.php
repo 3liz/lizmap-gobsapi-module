@@ -91,7 +91,7 @@ class projectCtrl extends apiController
         jClasses::inc('gobsapi~Indicator');
         foreach ($indicator_codes as $code) {
             $gobs_indicator = new Indicator($code, $this->lizmap_project);
-            $indicator = $gobs_indicator->get();
+            $indicator = $gobs_indicator->get('publication');
             $indicators[] = $indicator;
         }
 
