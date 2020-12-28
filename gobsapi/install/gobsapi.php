@@ -23,23 +23,23 @@ $mapping = array(
     '/project/:projectKey' => '/gobsapi/project/getProjectByKey',
     '/project/:projectKey/indicators' => '/gobsapi/project/getProjectIndicators',
 
-    '/indicator/:indicatorCode' => '/gobsapi/indicator/getIndicatorByCode',
-    '/indicator/:indicatorCode/observations' => '/gobsapi/indicator/getObservationsByIndicator',
-    '/indicator/:indicatorCode/deletedObservations' => '/gobsapi/indicator/getDeletedObservationsByIndicator',
+    '/project/:projectKey/indicator/:indicatorCode' => '/gobsapi/indicator/getIndicatorByCode',
+    '/project/:projectKey/indicator/:indicatorCode/observations' => '/gobsapi/indicator/getObservationsByIndicator',
+    '/project/:projectKey/indicator/:indicatorCode/deletedObservations' => '/gobsapi/indicator/getDeletedObservationsByIndicator',
 
-    '/observation' => array(
+    '/project/:projectKey/indicator/:indicatorCode/observation' => array(
         'POST' => '/gobsapi/observation/createObservation',
         'PUT' => '/gobsapi/observation/updateObservation',
     ),
-    '/observation/observations' => '/gobsapi/observation/createObservations',
-    '/observation/:observationId' => array(
+    '/project/:projectKey/indicator/:indicatorCode/observation/observations' => '/gobsapi/observation/createObservations',
+    '/project/:projectKey/indicator/:indicatorCode/observation/:observationId' => array(
         'GET' => '/gobsapi/observation/getObservationById',
         'DELETE' => '/gobsapi/observation/deleteObservationById',
     ),
-    '/observation/:observationId/uploadMedia' => array(
+    '/project/:projectKey/indicator/:indicatorCode/observation/:observationId/uploadMedia' => array(
         'POST' => '/gobsapi/observation/uploadObservationMedia',
     ),
-    '/observation/:observationId/deleteMedia' => array(
+    '/project/:projectKey/indicator/:indicatorCode/observation/:observationId/deleteMedia' => array(
         'DELETE' => '/gobsapi/observation/deleteObservationMedia',
     ),
 );

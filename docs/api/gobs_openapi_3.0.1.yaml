@@ -91,7 +91,7 @@ components:
         key:
           type: string
           description: unique key of the project
-          example: environment_weather
+          example: environment~weather
         label:
           type: string
           description: Label of the project, to be used as title
@@ -424,7 +424,7 @@ paths:
       - name: projectKey
         in: path
         description: Key of the project to return
-        example: environment_weather
+        example: environment~weather
         required: true
         schema:
           type: string
@@ -455,7 +455,7 @@ paths:
       - name: projectKey
         in: path
         description: Project key to filter by.
-        example: environment_weather
+        example: environment~weather
         required: true
         schema:
           type: string
@@ -474,7 +474,7 @@ paths:
         401:
            $ref: '#/components/responses/UnauthorizedError'
            
-  /indicator/{indicatorCode}:
+  /project/{projectKey}/indicator/{indicatorCode}:
     get:
       tags:
       - indicator
@@ -482,6 +482,13 @@ paths:
       description: Returns a single indicator
       operationId: getIndicatorByCode
       parameters:
+      - name: projectKey
+        in: path
+        description: Project key to filter by.
+        example: environment~weather
+        required: true
+        schema:
+          type: string
       - name: indicatorCode
         in: path
         description: Code of indicator to return
@@ -505,7 +512,7 @@ paths:
           description: Indicator not found
           content: {}
           
-  /indicator/{indicatorCode}/observations:
+  /project/{projectKey}/indicator/{indicatorCode}/observations:
     get:
       tags:
       - indicator
@@ -513,6 +520,13 @@ paths:
       description: Indicator code must be given in the path. For synchronization purpose, last synchronization timestamp and request timestamp must be passed in header.
       operationId: getObservationsByIndicator
       parameters:
+      - name: projectKey
+        in: path
+        description: Project key to filter by.
+        example: environment~weather
+        required: true
+        schema:
+          type: string
       - name: indicatorCode
         in: path
         description: Indicator code to filter by
@@ -554,7 +568,7 @@ paths:
           description: Indicator not found
           content: {}
 
-  /indicator/{indicatorCode}/deletedObservations:
+  /project/{projectKey}/indicator/{indicatorCode}/deletedObservations:
     get:
       tags:
       - indicator
@@ -562,6 +576,13 @@ paths:
       description: Indicator code must be given in the path. For synchronization purpose, last synchronization timestamp and request timestamp must be passed in header.
       operationId: getDeletedObservationsByIndicator
       parameters:
+      - name: projectKey
+        in: path
+        description: Project key to filter by.
+        example: environment~weather
+        required: true
+        schema:
+          type: string
       - name: indicatorCode
         in: path
         description: Indicator code to filter by
@@ -605,13 +626,27 @@ paths:
           description: Indicator not found
           content: {}
           
-  /observation:
+  /project/{projectKey}/indicator/{indicatorCode}/observation:
     post:
       tags:
       - observation
       summary: Create a new observation
       operationId: createObservation
       parameters:
+      - name: projectKey
+        in: path
+        description: Project key to filter by.
+        example: environment~weather
+        required: true
+        schema:
+          type: string
+      - name: indicatorCode
+        in: path
+        description: Code of indicator to return
+        required: true
+        schema:
+          type: string
+        example: weather_status
       - name: requestSyncDate
         in: query
         description: Request synchronisation date
@@ -652,6 +687,20 @@ paths:
       summary: Update an existing observation
       operationId: updateObservation
       parameters:
+      - name: projectKey
+        in: path
+        description: Project key to filter by.
+        example: environment~weather
+        required: true
+        schema:
+          type: string
+      - name: indicatorCode
+        in: path
+        description: Code of indicator to return
+        required: true
+        schema:
+          type: string
+        example: weather_status
       - name: requestSyncDate
         in: header
         description: Request synchronisation date
@@ -698,13 +747,27 @@ paths:
                 $ref: '#/components/schemas/ApiResponse'
       x-codegen-request-body-name: body
       
-  /observation/observations:
+  /project/{projectKey}/indicator/{indicatorCode}/observation/observations:
     post:
       tags:
       - observation
       summary: Create new observations by sending a list of objects
       operationId: createObservations
       parameters:
+      - name: projectKey
+        in: path
+        description: Project key to filter by.
+        example: environment~weather
+        required: true
+        schema:
+          type: string
+      - name: indicatorCode
+        in: path
+        description: Code of indicator to return
+        required: true
+        schema:
+          type: string
+        example: weather_status
       - name: requestSyncDate
         in: header
         description: Request synchronisation date
@@ -741,7 +804,7 @@ paths:
                 $ref: '#/components/schemas/ApiResponse'
       x-codegen-request-body-name: body  
       
-  /observation/{observationId}:
+  /project/{projectKey}/indicator/{indicatorCode}/observation/{observationId}:
     get:
       tags:
       - observation
@@ -749,6 +812,20 @@ paths:
       description: Returns a single observation
       operationId: getObservationById
       parameters:
+      - name: projectKey
+        in: path
+        description: Project key to filter by.
+        example: environment~weather
+        required: true
+        schema:
+          type: string
+      - name: indicatorCode
+        in: path
+        description: Code of indicator to return
+        required: true
+        schema:
+          type: string
+        example: weather_status
       - name: observationId
         in: path
         description: UID of the observation
@@ -801,6 +878,20 @@ paths:
       summary: Deletes an observation
       operationId: deleteObservationById
       parameters:
+      - name: projectKey
+        in: path
+        description: Project key to filter by.
+        example: environment~weather
+        required: true
+        schema:
+          type: string
+      - name: indicatorCode
+        in: path
+        description: Code of indicator to return
+        required: true
+        schema:
+          type: string
+        example: weather_status
       - name: observationId
         in: path
         description: UID of the observation
@@ -839,13 +930,27 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
           
-  /observation/{observationId}/uploadMedia:
+  /project/{projectKey}/indicator/{indicatorCode}/observation/{observationId}/uploadMedia:
     post:
       tags:
       - observation
       summary: uploads a media for the chosen observation
       operationId: uploadObservationMedia
       parameters:
+      - name: projectKey
+        in: path
+        description: Project key to filter by.
+        example: environment~weather
+        required: true
+        schema:
+          type: string
+      - name: indicatorCode
+        in: path
+        description: Code of indicator to return
+        required: true
+        schema:
+          type: string
+        example: weather_status
       - name: observationId
         in: path
         description: UID of the observation
@@ -893,13 +998,27 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
            
-  /observation/{observationId}/deleteMedia:
+  /project/{projectKey}/indicator/{indicatorCode}/observation/{observationId}/deleteMedia:
     delete:
       tags:
       - observation
       summary: delete the media of the chosen observation
       operationId: deleteObservationMedia
       parameters:
+      - name: projectKey
+        in: path
+        description: Project key to filter by.
+        example: environment~weather
+        required: true
+        schema:
+          type: string
+      - name: indicatorCode
+        in: path
+        description: Code of indicator to return
+        required: true
+        schema:
+          type: string
+        example: weather_status
       - name: observationId
         in: path
         description: UID of the observation
