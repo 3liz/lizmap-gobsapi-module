@@ -55,7 +55,7 @@ class User
                 $gobs_project = new Project($project);
 
                 // Add it only if project has gobs indicators
-                if ($gobs_project->getProjectIndicators()) {
+                if (!empty($gobs_project->getIndicators())) {
                     $projects[] = $gobs_project->get();
                 }
             }

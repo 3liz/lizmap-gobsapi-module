@@ -10,14 +10,14 @@
 class Indicator
 {
     /**
-     * @var indicator_code: Indicator code
+     * @var code: Indicator code
      */
-    protected $indicator_code;
+    protected $code;
 
     /**
      * @var data G-Obs Representation of a indicator
      */
-    protected $data;
+    protected $raw_data;
 
     /**
      * @var media destination directory
@@ -32,12 +32,12 @@ class Indicator
     /**
      * constructor.
      *
-     * @param string $indicator_code: the code of the indicator
+     * @param string $code: the code of the indicator
      * @param mixed  $project
      */
-    public function __construct($indicator_code)
+    public function __construct($code)
     {
-        $this->indicator_code = $indicator_code;
+        $this->code = $code;
 
         // Create Gobs projet expected data
         if ($this->checkCode()) {
@@ -48,10 +48,16 @@ class Indicator
         $this->observation_media_directory = jApp::varPath('uploads/gobsapi~media');
     }
 
+    // Get indicator code
+    public function getCode()
+    {
+        return $this->code;
+    }
+
     // Check indicator code is valid
     public function checkCode()
     {
-        $i = $this->indicator_code;
+        $i = $this->code;
 
         return (
             preg_match('/^[a-zA-Z0-9_\-]+$/', $i)
@@ -171,21 +177,31 @@ class Indicator
         $gobs_profile = 'gobsapi';
         $cnx = jDb::getConnection($gobs_profile);
         $resultset = $cnx->prepare($sql);
-        $resultset->execute(array($this->indicator_code));
+        $resultset->execute(array($this->code));
         $json = null;
         foreach ($resultset->fetchAll() as $record) {
             $json = $record->object_json;
         }
 
-        $this->data = json_decode($json);
+        $this->raw_data = json_decode($json);
     }
 
     // Get Gobs representation of a indicator object
     public function get()
     {
-        return $this->data;
+        return $this->raw_data;
     }
 
+    // Modify and return data for publication purpose
+    private function getForPublication() {
+        // Get observation instance data
+        $data = $this->raw_data;
+
+        // Check media exists
+        // todo: use ROOT/media/gobsapi/indicator/observations/
+
+        return $data;
+    }
 
     // Get indicator observations
     public function getObservations($requestSyncDate=null, $lastSyncDate=null, $uids=null)
@@ -264,7 +280,7 @@ class Indicator
         $gobs_profile = 'gobsapi';
         $cnx = jDb::getConnection($gobs_profile);
         $resultset = $cnx->prepare($sql);
-        $params = array($this->indicator_code);
+        $params = array($this->code);
         if ($requestSyncDate && $lastSyncDate) {
             $params[] = $lastSyncDate;
             $params[] = $requestSyncDate;

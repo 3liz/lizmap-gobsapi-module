@@ -10,9 +10,9 @@ class observationCtrl extends apiController
     protected $observation_uid;
 
     /**
-     * @var data G-Obs Representation of an observation or many observations
+     * @var observation G-Obs Representation of an observation or many observations
      */
-    protected $data;
+    protected $observation;
 
     /**
      * @var access Boolean saying if the user has the right to edit the observation
@@ -32,111 +32,165 @@ class observationCtrl extends apiController
                 '401',
                 'error',
                 'Access token is missing or invalid',
-                null,
             );
         }
         $user = $this->user;
 
+        // Check project
+        list($code, $status, $message) = $this->checkProject();
+        if ($status == 'error') {
+            return array(
+                $code,
+                $status,
+                $message,
+            );
+        }
+
+        // Check indicator
+        list($code, $status, $message) = $this->checkIndicator();
+        if ($status == 'error') {
+            return array(
+                $code,
+                $status,
+                $message,
+            );
+        }
+
         // Get Observation class
         jClasses::inc('gobsapi~Observation');
 
-        // Observation uid is passed
+        // Check parameters given for /observation/ path
         $uid_actions = array(
             'getObservationById', 'deleteObservationById',
             'uploadObservationMedia', 'deleteObservationMedia'
         );
-        if (in_array($from, $uid_actions)) {
-
-            // Parameters
-            $observation_uid = $this->param('observationId');
-
-            $gobs_observation = new Observation($user, $observation_uid, null);
-
-            // Check uid is valid
-            if (!$gobs_observation->isValidUuid($observation_uid)) {
-                return array(
-                    '400',
-                    'error',
-                    'The observation id parameter is invalid',
-                    null,
-                );
-            }
-
-            // Check observation is valid
-            if (!$gobs_observation->observation_valid) {
-                return array(
-                    '404',
-                    'error',
-                    'The observation does not exists',
-                    null,
-                );
-            }
-
-            // Check logged user can deleted the observation
-            $capabilities = $gobs_observation->capabilities();
-            if (!$capabilities['get']) {
-                return array(
-                    '401',
-                    'error',
-                    'The authenticated user hasnot right to access this observation',
-                    null,
-                );
-            }
-            if ($from != 'getObservationById' && !$capabilities['edit']) {
-                return array(
-                    '401',
-                    'error',
-                    'The authenticated user has not right to edit this observation',
-                    null,
-                );
-            }
-            else {
-                return array('200', 'success', 'Observation is a G-Obs observation', $gobs_observation);
-            }
-        }
-
-        // Body is given
         $body_actions = array(
             'createObservation', 'updateObservation'
         );
-        if (in_array($from, $body_actions)) {
-            // Body content is passed
-
-            // Parameters
-            $body = $this->request->readHttpBody();
-            $gobs_observation = new Observation($user, null, $body);
-
-            // Check observation JSON
-            $action = 'create';
-            if ($from == 'updateObservation') {
-                $action = 'update';
-            }
-            list($check_status, $check_message) = $gobs_observation->checkObservationJsonFormat($action);
-            if ($check_status == 'error') {
-                return array(
-                    '400',
-                    'error',
-                    $check_message,
-                    null,
-                );
-            }
-
-            // Check capabilities
-            $capabilities = $gobs_observation->capabilities();
-            if (!$capabilities['edit']) {
-                return array(
-                    '401',
-                    'error',
-                    'The authenticated user has not right to edit this observation',
-                    null,
-                );
-            }
-
-            return array('200', 'success', 'Observation is a G-Obs observation', $gobs_observation);
-
+        if (in_array($from, $uid_actions)) {
+            // Observation uid is passed
+            $check_method = 'checkUidActions';
+        } elseif (in_array($from, $body_actions)) {
+            // Observation is given in body
+            $check_method = 'checkBodyActions';
         }
 
-        return array('500', 'error', 'An unknown error has occured', null);
+        // Run the check
+        list($code, $status, $message) = $this->$check_method($from);
+        return array(
+            $code,
+            $status,
+            $message,
+        );
+
+    }
+
+    // Check parameters for action having an observation id parameter
+    private function checkUidActions($from) {
+        // Parameters
+        $observation_uid = $this->param('observationId');
+
+        $gobs_observation = new Observation($this->user, $this->indicator, $observation_uid, null);
+
+        // Check uid is valid
+        if (!$gobs_observation->isValidUuid($observation_uid)) {
+            return array(
+                '400',
+                'error',
+                'The observation id parameter is invalid',
+            );
+        }
+
+        // Check observation is valid
+        if (!$gobs_observation->observation_valid) {
+            return array(
+                '404',
+                'error',
+                'The observation does not exists',
+            );
+        }
+
+        // Check logged user can deleted the observation
+        $capabilities = $gobs_observation->capabilities();
+        if (!$capabilities['get']) {
+            return array(
+                '401',
+                'error',
+                'The authenticated user hasnot right to access this observation',
+            );
+        }
+        if ($from != 'getObservationById' && !$capabilities['edit']) {
+            return array(
+                '401',
+                'error',
+                'The authenticated user has not right to edit this observation',
+            );
+        }
+        else {
+            // Set observation property
+            $this->observation = $gobs_observation;
+
+            return array(
+                '200',
+                'success',
+                'Observation is a G-Obs observation'
+            );
+        }
+
+        // Unknown error
+        return array('500', 'error', 'An unknown error has occured');
+    }
+
+    // Check parameters for actions having the body of an observation as parameter
+    private function checkBodyActions($from) {
+        // Parameters
+        $body = $this->request->readHttpBody();
+        $gobs_observation = new Observation($this->user, $this->indicator, null, $body);
+
+        // Check observation JSON
+        $action = 'create';
+        if ($from == 'updateObservation') {
+            $action = 'update';
+        }
+        list($check_status, $check_message) = $gobs_observation->checkObservationBodyJSONFormat($action);
+        if ($check_status == 'error') {
+            return array(
+                '400',
+                'error',
+                $check_message,
+            );
+        }
+
+        // Check observation is valid
+        if (!$gobs_observation->observation_valid) {
+            return array(
+                '404',
+                'error',
+                'The observation is not valid',
+            );
+        }
+
+        // Check capabilities
+        $capabilities = $gobs_observation->capabilities();
+        if (!$capabilities['edit']) {
+            return array(
+                '401',
+                'error',
+                'The authenticated user has not right to edit this observation',
+            );
+        } else {
+            // Set observation property
+            $this->observation = $gobs_observation;
+
+            return array(
+                '200',
+                'success',
+                'Observation is a G-Obs observation'
+            );
+        }
+
+        // Unknown error
+        return array('500', 'error', 'An unknown error has occured');
 
     }
 
@@ -149,9 +203,9 @@ class observationCtrl extends apiController
      */
     public function createObservation()
     {
-        // Check observation can be accessed and is a valid G-Obs observation
+        // Check resource can be accessed and is valid
         $from = 'createObservation';
-        list($code, $status, $message, $gobs_observation) = $this->check($from);
+        list($code, $status, $message) = $this->check($from);
         if ($status == 'error') {
             return $this->apiResponse(
                 $code,
@@ -160,7 +214,7 @@ class observationCtrl extends apiController
             );
         }
 
-        list($status, $message, $data) = $gobs_observation->create();
+        list($status, $message, $data) = $this->observation->create();
 
         if ($status == 'error') {
             return $this->apiResponse(
@@ -182,9 +236,9 @@ class observationCtrl extends apiController
      */
     public function updateObservation()
     {
-        // Check observation can be accessed and is a valid G-Obs observation
+        // Check resource can be accessed and is valid
         $from = 'updateObservation';
-        list($code, $status, $message, $gobs_observation) = $this->check($from);
+        list($code, $status, $message) = $this->check($from);
         if ($status == 'error') {
             return $this->apiResponse(
                 $code,
@@ -193,7 +247,7 @@ class observationCtrl extends apiController
             );
         }
 
-        list($status, $message, $data) = $gobs_observation->update();
+        list($status, $message, $data) = $this->observation->update();
 
         if ($status == 'error') {
             return $this->apiResponse(
@@ -217,9 +271,9 @@ class observationCtrl extends apiController
      */
     public function createObservations()
     {
-        // Check observation can be accessed and is a valid G-Obs observation
+        // Check resource can be accessed and is valid
         $from = 'createObservations';
-        list($code, $status, $message, $gobs_observation) = $this->check($from);
+        list($code, $status, $message) = $this->check($from);
         if ($status == 'error') {
             return $this->apiResponse(
                 $code,
@@ -244,9 +298,9 @@ class observationCtrl extends apiController
      */
     public function getObservationById()
     {
-        // Check observation can be accessed and is a valid G-Obs observation
+        // Check resource can be accessed and is valid
         $from = 'getObservationById';
-        list($code, $status, $message, $gobs_observation) = $this->check($from);
+        list($code, $status, $message) = $this->check($from);
         if ($status == 'error') {
             return $this->apiResponse(
                 $code,
@@ -255,7 +309,7 @@ class observationCtrl extends apiController
             );
         }
 
-        list($status, $message, $data) = $gobs_observation->get();
+        list($status, $message, $data) = $this->observation->get();
         if ($status == 'error') {
             return $this->apiResponse(
                 '400',
@@ -278,9 +332,9 @@ class observationCtrl extends apiController
      */
     public function deleteObservationById()
     {
-        // Check observation can be accessed and is a valid G-Obs observation
+        // Check resource can be accessed and is valid
         $from = 'deleteObservationById';
-        list($code, $status, $message, $gobs_observation) = $this->check($from);
+        list($code, $status, $message) = $this->check($from);
         if ($status == 'error') {
             return $this->apiResponse(
                 $code,
@@ -289,7 +343,7 @@ class observationCtrl extends apiController
             );
         }
 
-        list($status, $message, $data) = $gobs_observation->delete();
+        list($status, $message, $data) = $this->observation->delete();
         $code = '200';
         if ($status == 'error') {
             $code = '400';
@@ -315,7 +369,7 @@ class observationCtrl extends apiController
     public function uploadObservationMedia()
     {
         $from = 'uploadObservationMedia';
-        list($code, $status, $message, $gobs_observation) = $this->check($from);
+        list($code, $status, $message) = $this->check($from);
         if ($status == 'error') {
             return $this->apiResponse(
                 $code,
@@ -325,7 +379,7 @@ class observationCtrl extends apiController
         }
 
         // Proces form data
-        list($status, $message, $data) = $gobs_observation->processMediaForm();
+        list($status, $message, $data) = $this->observation->processMediaForm();
         $code = '200';
         if ($status == 'error') {
             $code = '400';
@@ -351,7 +405,7 @@ class observationCtrl extends apiController
     public function deleteObservationMedia()
     {
         $from = 'deleteObservationMedia';
-        list($code, $status, $message, $gobs_observation) = $this->check($from);
+        list($code, $status, $message) = $this->check($from);
         if ($status == 'error') {
             return $this->apiResponse(
                 $code,
@@ -361,7 +415,7 @@ class observationCtrl extends apiController
         }
 
         // Proces form data
-        list($status, $message, $data) = $gobs_observation->deleteMedia();
+        list($status, $message, $data) = $this->observation->deleteMedia();
         $code = '200';
         if ($status == 'error') {
             $code = '400';

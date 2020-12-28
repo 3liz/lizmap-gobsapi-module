@@ -17,109 +17,32 @@ class indicatorCtrl extends apiController
                 '401',
                 'error',
                 'Access token is missing or invalid',
-                null,
             );
         }
         $user = $this->user;
-        $login = $user['usr_login'];
 
-        // Check indicatorKey parameter
-        $indicator_code = $this->param('indicatorCode');
-        if (!$indicator_code) {
+        // Check project
+        list($code, $status, $message) = $this->checkProject();
+        if ($status == 'error') {
             return array(
-                '400',
-                'error',
-                'The indicatorKey parameter is mandatory',
-                null,
+                $code,
+                $status,
+                $message,
             );
         }
 
-        // Get indicator
-        jClasses::inc('gobsapi~Indicator');
-        $gobs_indicator = new Indicator($indicator_code);
-
-        // Check indicatorKey is valid
-        if (!$gobs_indicator->checkCode()) {
+        // Check indicator
+        list($code, $status, $message) = $this->checkIndicator();
+        if ($status == 'error') {
             return array(
-                '400',
-                'error',
-                'The indicatorKey parameter is invalid',
-                null,
+                $code,
+                $status,
+                $message,
             );
         }
 
-        // Check indicator exists
-        $indicator = $gobs_indicator->get();
-        if (!$indicator) {
-            return array(
-                '404',
-                'error',
-                'The given indicator code does not refer to a known indicator',
-                null,
-            );
-        }
+        return array('200', 'success', 'Indicator is a G-Obs indicator');
 
-        return array('200', 'success', 'Indicator is a G-Obs indicator', $gobs_indicator);
-
-        // Todo: Indicator - Ask for the project key and check indicator ok ?
-        // Check projectKey parameter
-        $project_key = $this->param('projectKey');
-        if (!$project_key) {
-            return array(
-                '400',
-                'error',
-                'The projectKey parameter is mandatory',
-                null,
-            );
-        }
-
-        // Check project is valid
-        try {
-            $project = lizmap::getProject($project_key);
-            if (!$project) {
-                return array(
-                    '404',
-                    'error',
-                    'The given project key does not refer to a known project',
-                    null,
-                );
-            }
-        } catch (UnknownLizmapProjectException $e) {
-            return array(
-                '404',
-                'error',
-                'The given project key does not refer to a known project',
-                null,
-            );
-        }
-
-        // Check the authenticated user can access to the project
-        if (!$project->checkAcl($login)) {
-            return array(
-                '403',
-                'error',
-                jLocale::get('view~default.repository.access.denied'),
-                null,
-            );
-        }
-
-        // Get gobs project manager
-        jClasses::inc('gobsapi~Project');
-        $gobs_project = new Project($project);
-
-        // Test if project has and indicator
-        $indicators = $gobs_project->getProjectIndicators();
-        if (!$indicators) {
-            return array(
-                '404',
-                'error',
-                'The given project key does not refer to a G-Obs project',
-                null,
-            );
-        }
-
-        // Ok
-        return array('200', 'success', 'Project is a G-Obs project', $gobs_project);
     }
 
     /**
@@ -135,7 +58,7 @@ class indicatorCtrl extends apiController
     {
 
         // Check indicator can be accessed and is a valid G-Obs indicator
-        list($code, $status, $message, $gobs_indicator) = $this->check();
+        list($code, $status, $message) = $this->check();
         if ($status == 'error') {
             return $this->apiResponse(
                 $code,
@@ -144,7 +67,7 @@ class indicatorCtrl extends apiController
             );
         }
 
-        $indicator = $gobs_indicator->get();
+        $indicator = $this->indicator->get();
 
         return $this->objectResponse($indicator);
     }
@@ -165,7 +88,7 @@ class indicatorCtrl extends apiController
     {
 
         // Check indicator can be accessed and is a valid G-Obs indicator
-        list($code, $status, $message, $gobs_indicator) = $this->check();
+        list($code, $status, $message) = $this->check();
         if ($status == 'error') {
             return $this->apiResponse(
                 $code,
@@ -174,7 +97,7 @@ class indicatorCtrl extends apiController
             );
         }
 
-        $data = $gobs_indicator->getObservations(
+        $data = $this->indicator->getObservations(
             $this->requestSyncDate,
             $this->lastSyncDate
         );
@@ -196,8 +119,8 @@ class indicatorCtrl extends apiController
      */
     public function getDeletedObservationsByIndicator()
     {
-        // Check indicator can be accessed and is a valid G-Obs indicator
-        list($code, $status, $message, $gobs_indicator) = $this->check();
+        // Check resource can be accessed and is a valid G-Obs indicator
+        list($code, $status, $message) = $this->check();
         if ($status == 'error') {
             return $this->apiResponse(
                 $code,
@@ -206,7 +129,7 @@ class indicatorCtrl extends apiController
             );
         }
 
-        $data = $gobs_indicator->getDeletedObservations(
+        $data = $this->indicator->getDeletedObservations(
             $this->requestSyncDate,
             $this->lastSyncDate
         );

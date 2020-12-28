@@ -17,70 +17,22 @@ class projectCtrl extends apiController
                 '401',
                 'error',
                 'Access token is missing or invalid',
-                null,
             );
         }
         $user = $this->user;
-        $login = $user['usr_login'];
 
-        // Check projectKey parameter
-        $project_key = $this->param('projectKey');
-        if (!$project_key) {
+        // Check project
+        list($code, $status, $message) = $this->checkProject();
+        if ($status == 'error') {
             return array(
-                '400',
-                'error',
-                'The projectKey parameter is mandatory',
-                null,
-            );
-        }
-
-        // Check project is valid
-        try {
-            $project = lizmap::getProject($project_key);
-            if (!$project) {
-                return array(
-                    '404',
-                    'error',
-                    'The given project key does not refer to a known project',
-                    null,
-                );
-            }
-        } catch (UnknownLizmapProjectException $e) {
-            return array(
-                '404',
-                'error',
-                'The given project key does not refer to a known project',
-                null,
-            );
-        }
-
-        // Check the authenticated user can access to the project
-        if (!$project->checkAcl($login)) {
-            return array(
-                '403',
-                'error',
-                jLocale::get('view~default.repository.access.denied'),
-                null,
-            );
-        }
-
-        // Get gobs project manager
-        jClasses::inc('gobsapi~Project');
-        $gobs_project = new Project($project);
-
-        // Test if project has and indicator
-        $indicators = $gobs_project->getProjectIndicators();
-        if (!$indicators) {
-            return array(
-                '404',
-                'error',
-                'The given project key does not refer to a G-Obs project',
-                null,
+                $code,
+                $status,
+                $message,
             );
         }
 
         // Ok
-        return array('200', 'success', 'Project is a G-Obs project', $gobs_project);
+        return array('200', 'success', 'Project is a G-Obs project');
     }
 
     /**
@@ -94,9 +46,8 @@ class projectCtrl extends apiController
      */
     public function getProjectByKey()
     {
-
-        // Check project can be accessed and is a valid G-Obs project
-        list($code, $status, $message, $gobs_project) = $this->check();
+        // Check resource can be accessed and is valid
+        list($code, $status, $message) = $this->check();
         if ($status == 'error') {
             return $this->apiResponse(
                 $code,
@@ -106,7 +57,7 @@ class projectCtrl extends apiController
         }
 
         // Get gobs project object
-        $data = $gobs_project->get();
+        $data = $this->project->get();
 
         return $this->objectResponse($data);
     }
@@ -122,9 +73,8 @@ class projectCtrl extends apiController
      */
     public function getProjectIndicators()
     {
-
-        // Check project can be accessed and is a valid G-Obs project
-        list($code, $status, $message, $gobs_project) = $this->check();
+        // Check resource can be accessed and is valid
+        list($code, $status, $message) = $this->check();
         if ($status == 'error') {
             return $this->apiResponse(
                 $code,
@@ -134,7 +84,7 @@ class projectCtrl extends apiController
         }
 
         // Get indicator codes
-        $indicator_codes = $gobs_project->getProjectIndicators();
+        $indicator_codes = $this->project->getIndicators();
 
         // Get indicators
         $indicators = array();

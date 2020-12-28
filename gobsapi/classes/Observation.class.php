@@ -20,14 +20,24 @@ class Observation
     protected $user;
 
     /**
+     * @var indicator: G-Obs indicator
+     */
+    protected $indicator;
+
+    /**
      * @var observation_valid: Boolean telling the observation is valid or not
      */
     public $observation_valid = false;
 
     /**
-     * @var data G-Obs Representation of an observation or many observations
+     * @var json_data JSON G-Obs Representation of an observation
      */
-    protected $data;
+    protected $json_data;
+
+    /**
+     * @var data Object G-Obs Representation of an observation
+     */
+    protected $raw_data;
 
     /**
      * @var media destination directory
@@ -46,32 +56,35 @@ class Observation
      * @param string $indicator_code: the code of the indicator
      * @param mixed  $project
      */
-    public function __construct($user, $observation_uid=null, $data=null)
+    public function __construct($user, $indicator, $observation_uid=null, $data=null)
     {
         $this->observation_uid = $observation_uid;
-        $this->data = $data;
+        $this->json_data = $data;
+        $this->raw_data = null;
         $this->user = $user;
+        $this->indicator = $indicator;
 
         // Get data from database if uid is given
-        if (!empty($observation_uid) && $this->isValidUuid($observation_uid)) {
-            // Get observation by id
-            $json = $this->getObservationFromDatabase($observation_uid);
-            if ($this->observation_valid) {
-                $this->data = $json;
+        if (!empty($observation_uid)) {
+            if ($this->isValidUuid($observation_uid)) {
+                // Get observation by id
+                $this->getObservationFromDatabase($observation_uid);
+                if ($this->observation_valid) {
+                    // Check if indicator code is correct
+                    if ($indicator->getCode() != $this->raw_data->indicator) {
+                        $this->observation_valid = false;
+                    }
+                }
             }
+        }
+
+        // Check JSON given if body is passed
+        if ($data) {
+            // Do nothing
         }
 
         // Set observation media directory
         $this->observation_media_directory = jApp::varPath('uploads/gobsapi~media');
-    }
-
-    // Check observation indicator code is valid
-    public function checkIndicatorCode($indicator_code)
-    {
-        return (
-            preg_match('/^[a-zA-Z0-9_\-]+$/', $indicator_code)
-            and strlen($indicator_code) > 2
-        );
     }
 
     /**
@@ -119,8 +132,8 @@ class Observation
      * @param   string  $action   create or update
      * @return  boolean
      */
-    public function checkObservationJsonFormat($action='create') {
-        $data = $this->data;
+    public function checkObservationBodyJSONFormat($action='create') {
+        $data = $this->json_data;
         if (empty($data)) {
             $this->observation_valid = false;
             return array(
@@ -128,17 +141,26 @@ class Observation
                 'Observation JSON data is empty'
             );
         }
-        $data = json_decode($data);
+        $body_data = json_decode($data);
+
+        // Check indicator given in body corresponds to the observation indicator instance
+        if (!property_exists($body_data, 'indicator') || $body_data->indicator != $this->indicator->getCode()) {
+            $this->observation_valid = false;
+            return array(
+                'error',
+                'Observation JSON data must have a valid indicator'
+            );
+        }
 
         // Check fields
-        if (!property_exists($data, 'start_timestamp') || !$this->isValidDate($data->start_timestamp)) {
+        if (!property_exists($body_data, 'start_timestamp') || !$this->isValidDate($body_data->start_timestamp)) {
             $this->observation_valid = false;
             return array(
                 'error',
                 'Observation JSON data must have a valid start_timestamp'
             );
         }
-        if (property_exists($data, 'end_timestamp') && $data->end_timestamp && !$this->isValidDate($data->end_timestamp)) {
+        if (property_exists($body_data, 'end_timestamp') && $body_data->end_timestamp && !$this->isValidDate($body_data->end_timestamp)) {
             $this->observation_valid = false;
             return array(
                 'error',
@@ -149,29 +171,17 @@ class Observation
             // UPDATE
 
             // Check observation exists
-            $db_obs = $this->getObservationFromDatabase($data->uuid);
+            $this->getObservationFromDatabase($body_data->uuid);
             if (!$this->observation_valid) {
                 return array(
                     'error',
                     'Observation JSON data does not correspond to an existing observation'
                 );
             }
-            $db_obs = json_decode($db_obs);
+            $db_obs = $this->raw_data;
 
-            // Do not allow to modify some fields
-            $keys = array(
-                'id', 'indicator', 'uuid', 'created_at', 'updated_at', 'actor_email'
-            );
-            foreach ($keys as $key) {
-                $data->$key = $db_obs->$key;
-            }
-
-            // Set uid from data
-            $this->observation_uid = $data->uuid;
-        } else {
-            // CREATION
-            // Check indicator
-            if (!property_exists($data, 'indicator') || !$this->checkIndicatorCode($data->indicator)) {
+            // Check database observation indicator is valid
+            if ($db_obs->indicator != $this->indicator->getCode()) {
                 $this->observation_valid = false;
                 return array(
                     'error',
@@ -179,16 +189,30 @@ class Observation
                 );
             }
 
+            // Do not allow to modify some fields
+            $keys = array(
+                'id', 'indicator', 'uuid', 'created_at', 'updated_at', 'actor_email'
+            );
+            foreach ($keys as $key) {
+                $body_data->$key = $db_obs->$key;
+            }
+
+            // Set uid from data
+            $this->observation_uid = $body_data->uuid;
+        } else {
+            // CREATION
+
             // Set data to null before inserting into database
-            $data->id = null;
-            $data->uuid = null;
-            $data->media_url = null;
-            $data->created_at = null;
-            $data->updated_at = null;
-            $data->actor_email = $this->user['usr_email'];
+            $body_data->id = null;
+            $body_data->uuid = null;
+            $body_data->media_url = null;
+            $body_data->created_at = null;
+            $body_data->updated_at = null;
+            $body_data->actor_email = $this->user['usr_email'];
         }
 
-        $this->data = json_encode($data);
+        $this->json_data = json_encode($body_data);
+        $this->raw_data = $body_data;
         $this->observation_valid = true;
 
         return array(
@@ -201,15 +225,13 @@ class Observation
     public function capabilities() {
 
         // Observation reading: only for valid observations
-        // todo: Observation - capabilities check observation validity
         $capabilities = array(
             'get'=>true,
             'edit'=>false
         );
-        //$capabilities['edit'] = true;
 
         // Get obervation data
-        $data = json_decode($this->data);
+        $data = $this->raw_data;
 
         // Observation editing: only for login author of a series of observation
         // For creation, we put the auth user email in actor_email, so this check is not enough
@@ -218,11 +240,8 @@ class Observation
             $capabilities['edit'] = true;
         }
 
-        // Check if authenticated user has a series for the given indicator
-        $indicator_code = $data->indicator;
+        // todo: Observation - Check user can edit data for this indicator
 
-        // Check indicator
-        // Todo: Observation - Check connected user has access to the indicator
 
         return $capabilities;
     }
@@ -271,7 +290,13 @@ class Observation
         }
         $this->observation_valid = (!empty($json));
 
-        return $json;
+        if ($this->observation_valid) {
+            $this->json_data = $json;
+            $this->raw_data = json_decode($json);
+        } else {
+            $this->json_data = null;
+            $this->raw_data = array();
+        }
     }
 
     // Return the SQL for the creation of an observation
@@ -530,10 +555,10 @@ class Observation
         // Set parameters
         $params = array();
         if ($action == 'insert') {
-            $params[] = $this->data;
+            $params[] = $this->json_data;
             $params[] = $this->user['usr_email'];
         } elseif ($action == 'update') {
-            $params[] = $this->data;
+            $params[] = $this->json_data;
             $params[] = $this->user['usr_email'];
             $params[] = $this->observation_uid;
         } elseif ($action == 'delete') {
@@ -583,8 +608,9 @@ class Observation
         if (in_array($action, array('insert','update'))) {
             // Get data for publication
             $observation = json_decode($json);
-            $db_obs = $this->getObservationFromDatabase($observation->ob_uid);
-            $data = $this->getForPublication(json_decode($db_obs));
+            $uid = $observation->ob_uid;
+            $this->getObservationFromDatabase($uid);
+            $data = $this->getForPublication();
 
             // Return response
             return array(
@@ -611,12 +637,16 @@ class Observation
         }
     }
 
-    private function getForPublication($data) {
+    // Modify and return data for publication purpose
+    private function getForPublication() {
+        // Get observation instance data
+        $data = $this->raw_data;
 
         // Remove login before sending back data
         unset($data->actor_email);
 
         // Check media exists
+        // todo: use ROOT/media/gobsapi/indicator/observations/
         $destination_basename = $data->uuid;
         $destination_basepath = $this->observation_media_directory.'/'.$destination_basename;
         foreach ($this->media_mimes as $mime) {
@@ -640,7 +670,7 @@ class Observation
                 null
             );
         }
-        $data = $this->getForPublication(json_decode($this->data));
+        $data = $this->getForPublication();
         return array(
             'success',
             'Observation has been fetched',
@@ -761,3 +791,4 @@ class Observation
     }
 
 }
+// todo: Observation - Remove coordinates and keep wkt

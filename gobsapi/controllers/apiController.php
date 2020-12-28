@@ -19,6 +19,10 @@ class apiController extends jController
 
     protected $user;
 
+    protected $project;
+
+    protected $indicator;
+
     protected $requestSyncDate = null;
 
     protected $lastSyncDate = null;
@@ -29,7 +33,6 @@ class apiController extends jController
      */
     protected function authenticate()
     {
-
         // Get token tool
         jClasses::inc('gobsapi~Token');
         $token_manager = new Token();
@@ -65,6 +68,109 @@ class apiController extends jController
         }
 
         return true;
+    }
+
+    // Check if the given project in parameter is valid and accessible
+    protected function checkProject() {
+        // Check projectKey parameter
+        $project_key = $this->param('projectKey');
+        if (!$project_key) {
+            return array(
+                '400',
+                'error',
+                'The projectKey parameter is mandatory',
+            );
+        }
+        // Check project is valid
+        try {
+            $project = lizmap::getProject($project_key);
+            if (!$project) {
+                return array(
+                    '404',
+                    'error',
+                    'The given project key does not refer to a known project',
+                );
+            }
+        } catch (UnknownLizmapProjectException $e) {
+            return array(
+                '404',
+                'error',
+                'The given project key does not refer to a known project',
+            );
+        }
+
+        // Check the authenticated user can access to the project
+        if (!$project->checkAcl($this->user['usr_login'])) {
+            return array(
+                '403',
+                'error',
+                jLocale::get('view~default.repository.access.denied'),
+            );
+        }
+
+        // Get gobs project manager
+        jClasses::inc('gobsapi~Project');
+        $gobs_project = new Project($project);
+
+        // Test if project has and indicator
+        $indicators = $gobs_project->getIndicators();
+        if (empty($indicators)) {
+            return array(
+                '404',
+                'error',
+                'The given project key does not refer to a G-Obs project',
+            );
+        }
+
+        // Set project property
+        $this->project = $gobs_project;
+
+        // Ok
+        return array('200', 'success', 'Project is a valid G-Obs project');
+
+    }
+
+    // Check if the given indicator in parameter is valid and accessible
+    protected function checkIndicator() {
+        // Check indicatorKey parameter
+        $indicator_code = $this->param('indicatorCode');
+        if (!$indicator_code) {
+            return array(
+                '400',
+                'error',
+                'The indicatorKey parameter is mandatory',
+            );
+        }
+
+        // Get indicator
+        jClasses::inc('gobsapi~Indicator');
+        $gobs_indicator = new Indicator($indicator_code);
+
+        // Check indicatorKey is valid
+        if (!$gobs_indicator->checkCode()) {
+            return array(
+                '400',
+                'error',
+                'The indicatorKey parameter is invalid',
+            );
+        }
+
+        // Check indicator exists
+        $indicator = $gobs_indicator->get();
+        if (!$indicator) {
+            return array(
+                '404',
+                'error',
+                'The given indicator code does not refer to a known indicator',
+            );
+        }
+
+        // Set indicator property
+        $this->indicator = $gobs_indicator;
+
+        // Ok
+        return array('200', 'success', 'Indicator is a valid G-Obs indicator');
+
     }
 
     /**

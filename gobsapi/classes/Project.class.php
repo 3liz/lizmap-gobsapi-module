@@ -15,9 +15,19 @@ class Project
     protected $project;
 
     /**
-     * @var data G-Obs Representation of a project
+     * @var SimpleXMLElement QGIS project XML
+     */
+    protected $xml = null;
+
+    /**
+     * @var data: G-Obs Representation of a project
      */
     protected $data;
+
+    /**
+     * @var indicators: Array of project indicator codes
+     */
+    protected $indicators = array();
 
     /**
      * constructor.
@@ -29,14 +39,19 @@ class Project
     {
         $this->project = $project;
 
+        // Get simpleXmlElement representation
+        $this->setProjectXml();
+
         // Create Gobs projet expected data
         $this->buildGobsProject();
+
+        // Get indicators
+        $this->setIndicators();
     }
 
     // Create G-Obs project object from Lizmap project
     private function buildGobsProject()
     {
-
         // Compute bbox
         $bbox = $this->project->getData('bbox');
         $extent = explode(', ', $bbox);
@@ -65,6 +80,8 @@ class Project
     // Get Gobs representation of a project object
     public function get()
     {
+        // Todo: Project - Add geopackage url if file present
+
         return $this->data;
     }
 
@@ -74,7 +91,7 @@ class Project
      *
      * @return XML of the QGIS project
      */
-    private function getProjectXml()
+    private function setProjectXml()
     {
         $qgs_path = $this->project->getQgisPath();
         if (!file_exists($qgs_path) ||
@@ -86,27 +103,30 @@ class Project
             throw new Exception('Qgs File of project '.$this->key.' has invalid content');
         }
 
-        return $xml;
+        $this->xml = $xml;
     }
 
-    /* Get project gobs indicators
-     *
-     *
-     * return Gobs list of indicators codes or null if none has been found
-     */
-    public function getProjectIndicators()
+    // Set project gobs indicators
+    private function setIndicators()
     {
-        $xml = $this->getProjectXml($this->project);
+        // Get Gobs special project variable gobs_indicators
         $xpath = '//properties/Variables/variableNames/value[.="gobs_indicators"]/parent::variableNames/following-sibling::variableValues/value';
-        $data = $xml->xpath($xpath);
+        $data = $this->xml->xpath($xpath);
 
         if ($data) {
             $indicators = trim((string) $data[0]);
             $indicators = array_map('trim', explode(',', $indicators));
             //jLog::log(json_encode($indicators), 'error');
-            return $indicators;
+            if (!empty($indicators)) {
+                $this->indicators = $indicators;
+            }
         }
-
-        return null;
     }
+
+    // Get Gobs project indicators
+    public function getIndicators()
+    {
+        return $this->indicators;
+    }
+
 }
