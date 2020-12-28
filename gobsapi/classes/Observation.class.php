@@ -127,6 +127,24 @@ class Observation
     }
 
     /**
+     * Validate a string containing a WKT
+     * @param string wkt String to validate. Ex: "POLYGON((1 1,5 1,5 5,1 5,1 1))"
+     *
+     * @return boolean
+     */
+    private function isValidWkt($wkt)
+    {
+        $patterns = array('/multi/', '/point/', '/polygon/', '/linestring/');
+        $replacements = array('', '', '', '');
+        $wkt = preg_replace($patterns, $replacements, trim(strtolower($wkt)));
+        jLog::log($wkt, 'error');
+        $regex = '#^[0-9 \.,\-\(\)]+$#';
+        $valid = preg_match($regex, trim($wkt));
+
+        return $valid;
+    }
+
+    /**
      * Check observation JSON data
      *
      * @param   string  $action   create or update
@@ -153,6 +171,7 @@ class Observation
         }
 
         // Check fields
+        // start_timestamp
         if (!property_exists($body_data, 'start_timestamp') || !$this->isValidDate($body_data->start_timestamp)) {
             $this->observation_valid = false;
             return array(
@@ -160,6 +179,8 @@ class Observation
                 'Observation JSON data must have a valid start_timestamp'
             );
         }
+
+        // end_timestamp
         if (property_exists($body_data, 'end_timestamp') && $body_data->end_timestamp && !$this->isValidDate($body_data->end_timestamp)) {
             $this->observation_valid = false;
             return array(
@@ -167,6 +188,16 @@ class Observation
                 'Observation JSON data must have a valid end_timestamp'
             );
         }
+
+        // wkt
+        if (!property_exists($body_data, 'wkt') || !$this->isValidWkt($body_data->wkt)) {
+            $this->observation_valid = false;
+            return array(
+                'error',
+                'Observation JSON data must have a valid wkt'
+            );
+        }
+
         if ($action == 'update') {
             // UPDATE
 
@@ -750,9 +781,6 @@ class Observation
     public function delete()
     {
         return $this->runDatabaseAction('delete');
-
-        // Delete also orphan medias and documents
-        // Todo Observation - delete medias and documents
     }
 
     // Process upload

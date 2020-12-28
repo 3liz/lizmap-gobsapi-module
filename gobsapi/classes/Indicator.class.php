@@ -33,7 +33,6 @@ class Indicator
      * constructor.
      *
      * @param string $code: the code of the indicator
-     * @param mixed  $project
      */
     public function __construct($code)
     {
