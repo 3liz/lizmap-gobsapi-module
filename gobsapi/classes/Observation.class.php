@@ -221,27 +221,83 @@ class Observation
         );
     }
 
-    // Check observation access capabilities by authenticated user
-    public function capabilities() {
+    //
 
-        // Observation reading: only for valid observations
+    /**
+     * Check observation access capabilities for the authenticated user
+     *
+     * @param   string  $context Context of the check: read, create or modify
+     * @return  boolean
+     */
+    public function getCapabilities($context='read') {
+
+        // Set default capabilities
         $capabilities = array(
-            'get'=>true,
+            'get'=>false,
             'edit'=>false
         );
 
-        // Get obervation data
-        $data = $this->raw_data;
+        // Get: only for valid observations
+        // todo: Observation - capabilities: reading only for valid observations ?
+        $capabilities['get'] = true;
 
-        // Observation editing: only for login author of a series of observation
-        // For creation, we put the auth user email in actor_email, so this check is not enough
-        // For update, we override actor_email from the database observation, so this check is enough
-        if ($data->actor_email == $this->user['usr_email']) {
-            $capabilities['edit'] = true;
+        // Do not check edit capabilities in read context
+        if ($context == 'read') {
+            return $capabilities;
         }
 
-        // todo: Observation - Check user can edit data for this indicator
+        // Edit
+        // For creation, check that the authenticated user is author
+        // of at least one series for this indicator
+        if ($context == 'create') {
+            $sql = "
+                WITH
+                ind AS (
+                    SELECT
+                        id, id_code, id_date_format
+                    FROM gobs.indicator
+                    WHERE True
+                    AND id_code = $1
+                    LIMIT 1
+                ),
+                ser AS (
+                    SELECT
+                        s.id, s.fk_id_spatial_layer
+                    FROM gobs.series AS s
+                    JOIN ind AS i
+                        ON fk_id_indicator = i.id
+                    JOIN gobs.actor AS a
+                        ON s.fk_id_actor = a.id
+                    WHERE a.a_email = $2::text
+                    ORDER BY s.id DESC
+                    LIMIT 1
+                )
+                SELECT row_to_json(ser.*) AS object_json
+                FROM ser
+            ";
+            $params = array(
+                $this->indicator->getCode(),
+                $this->user['usr_email']
+            );
+            try {
+                $json = $this->query($sql, $params);
+            } catch (Exception $e) {
+                $msg = $e->getMessage();
+                $json = null;
+            }
+            $capabilities['edit'] = (!empty($json));
+        }
 
+        // Modification
+        if ($context == 'modify') {
+            // For update, we just check if the authenticated user is the author of the observation series
+            // NB: the previously called method checkObservationBodyJSONFormat
+            // has replaced the actor_email property by the database value
+            // We can check if it corresponds to the authenticated user
+            if ($this->raw_data->actor_email == $this->user['usr_email']) {
+                $capabilities['edit'] = true;
+            }
+        }
 
         return $capabilities;
     }

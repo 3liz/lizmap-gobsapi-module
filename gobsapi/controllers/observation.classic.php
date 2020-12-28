@@ -111,7 +111,11 @@ class observationCtrl extends apiController
         }
 
         // Check logged user can deleted the observation
-        $capabilities = $gobs_observation->capabilities();
+        $context = 'read';
+        if ($from != 'getObservationById') {
+            $context = 'modify';
+        }
+        $capabilities = $gobs_observation->getCapabilities($context);
         if (!$capabilities['get']) {
             return array(
                 '401',
@@ -123,7 +127,7 @@ class observationCtrl extends apiController
             return array(
                 '401',
                 'error',
-                'The authenticated user has not right to edit this observation',
+                'The authenticated user has not right to modify this observation',
             );
         }
         else {
@@ -171,12 +175,17 @@ class observationCtrl extends apiController
         }
 
         // Check capabilities
-        $capabilities = $gobs_observation->capabilities();
+        $context = 'create';
+        if ($from != 'createObservation') {
+            $context = 'modify';
+        }
+        $capabilities = $gobs_observation->getCapabilities($context);
+
         if (!$capabilities['edit']) {
             return array(
                 '401',
                 'error',
-                'The authenticated user has not right to edit this observation',
+                'The authenticated user has not right to '.$context.' this observation',
             );
         } else {
             // Set observation property
