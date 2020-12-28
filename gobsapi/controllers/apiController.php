@@ -19,7 +19,9 @@ class apiController extends jController
 
     protected $user;
 
-    protected $project;
+    protected $lizmap_project;
+
+    protected $gobs_project;
 
     protected $indicator;
 
@@ -83,8 +85,8 @@ class apiController extends jController
         }
         // Check project is valid
         try {
-            $project = lizmap::getProject($project_key);
-            if (!$project) {
+            $lizmap_project = lizmap::getProject($project_key);
+            if (!$lizmap_project) {
                 return array(
                     '404',
                     'error',
@@ -100,7 +102,7 @@ class apiController extends jController
         }
 
         // Check the authenticated user can access to the project
-        if (!$project->checkAcl($this->user['usr_login'])) {
+        if (!$lizmap_project->checkAcl($this->user['usr_login'])) {
             return array(
                 '403',
                 'error',
@@ -108,9 +110,12 @@ class apiController extends jController
             );
         }
 
+        // Set lizmap project property
+        $this->lizmap_project = $lizmap_project;
+
         // Get gobs project manager
         jClasses::inc('gobsapi~Project');
-        $gobs_project = new Project($project);
+        $gobs_project = new Project($lizmap_project);
 
         // Test if project has and indicator
         $indicators = $gobs_project->getIndicators();
@@ -123,7 +128,7 @@ class apiController extends jController
         }
 
         // Set project property
-        $this->project = $gobs_project;
+        $this->gobs_project = $gobs_project;
 
         // Ok
         return array('200', 'success', 'Project is a valid G-Obs project');
@@ -144,7 +149,8 @@ class apiController extends jController
 
         // Get indicator
         jClasses::inc('gobsapi~Indicator');
-        $gobs_indicator = new Indicator($indicator_code);
+
+        $gobs_indicator = new Indicator($indicator_code, $this->lizmap_project);
 
         // Check indicatorKey is valid
         if (!$gobs_indicator->checkCode()) {

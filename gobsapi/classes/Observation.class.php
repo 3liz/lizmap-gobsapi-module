@@ -25,6 +25,11 @@ class Observation
     protected $indicator;
 
     /**
+     * @var lizmap_project: Lizmap project
+     */
+    protected $lizmap_project;
+
+    /**
      * @var observation_valid: Boolean telling the observation is valid or not
      */
     public $observation_valid = false;
@@ -54,12 +59,15 @@ class Observation
      * constructor.
      *
      * @param string $indicator_code: the code of the indicator
-     * @param mixed  $project
+     * @param mixed  $user Authenticated user
+     * @param mixed  $indicator Instance of G-Obs Indicator
+     * @param mixed  $observation_uid Uid of the observation
+     * @param mixed  $data JSON data of the observation given as request body
      */
-    public function __construct($user, $indicator, $observation_uid=null, $data=null)
+    public function __construct($user, $indicator, $observation_uid=null, $body_data=null)
     {
         $this->observation_uid = $observation_uid;
-        $this->json_data = $data;
+        $this->json_data = $body_data;
         $this->raw_data = null;
         $this->user = $user;
         $this->indicator = $indicator;
@@ -79,12 +87,17 @@ class Observation
         }
 
         // Check JSON given if body is passed
-        if ($data) {
+        if ($body_data) {
             // Do nothing
         }
 
+        // Set Lizmap project from indicator
+        $lizmap_project = $indicator->getLizmapProject();
+        $this->lizmap_project = $lizmap_project;
+
         // Set observation media directory
-        $this->observation_media_directory = jApp::varPath('uploads/gobsapi~media');
+        $this->observation_media_directory = $indicator->observation_media_directory;
+
     }
 
     /**
@@ -137,7 +150,6 @@ class Observation
         $patterns = array('/multi/', '/point/', '/polygon/', '/linestring/');
         $replacements = array('', '', '', '');
         $wkt = preg_replace($patterns, $replacements, trim(strtolower($wkt)));
-        jLog::log($wkt, 'error');
         $regex = '#^[0-9 \.,\-\(\)]+$#';
         $valid = preg_match($regex, trim($wkt));
 
@@ -733,15 +745,9 @@ class Observation
         unset($data->actor_email);
 
         // Check media exists
-        // todo: use ROOT/media/gobsapi/indicator/observations/
-        $destination_basename = $data->uuid;
-        $destination_basepath = $this->observation_media_directory.'/'.$destination_basename;
-        foreach ($this->media_mimes as $mime) {
-            $path = $destination_basepath.'.'.$mime;
-            if (file_exists($path)) {
-                $data->media_url = $path;
-                break;
-            }
+        $media_url = $this->indicator->setObservationMediaUrl($data->uuid);
+        if ($media_url) {
+            $data->media_url = $media_url;
         }
 
         return $data;
@@ -876,3 +882,4 @@ class Observation
 
 }
 // todo: Observation - Remove coordinates and keep wkt
+// todo: Observation - Check given values are valid: is array and check content agains indicator metadata

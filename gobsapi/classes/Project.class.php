@@ -10,9 +10,9 @@
 class Project
 {
     /**
-     * @var project: Lizmap project instance
+     * @var lizmap_project: Lizmap project instance
      */
-    protected $project;
+    protected $lizmap_project;
 
     /**
      * @var SimpleXMLElement QGIS project XML
@@ -33,11 +33,11 @@ class Project
      * constructor.
      *
      * @param string $username: the user login
-     * @param mixed  $project
+     * @param mixed  $lizmap_project
      */
-    public function __construct($project)
+    public function __construct($lizmap_project)
     {
-        $this->project = $project;
+        $this->lizmap_project = $lizmap_project;
 
         // Get simpleXmlElement representation
         $this->setProjectXml();
@@ -53,18 +53,18 @@ class Project
     private function buildGobsProject()
     {
         // Compute bbox
-        $bbox = $this->project->getData('bbox');
+        $bbox = $this->lizmap_project->getData('bbox');
         $extent = explode(', ', $bbox);
 
         $this->data = array(
-            'key' => $this->project->getData('repository').'~'.$this->project->getData('id'),
-            'label' => $this->project->getData('title'),
-            'description' => $this->project->getData('abstract'),
+            'key' => $this->lizmap_project->getData('repository').'~'.$this->lizmap_project->getData('id'),
+            'label' => $this->lizmap_project->getData('title'),
+            'description' => $this->lizmap_project->getData('abstract'),
             'media_url' => jUrl::getFull(
                 'view~media:illustration',
                 array(
-                    'repository' => $this->project->getData('repository'),
-                    'project' => $this->project->getData('id'),
+                    'repository' => $this->lizmap_project->getData('repository'),
+                    'project' => $this->lizmap_project->getData('id'),
                 )
             ),
             'geopackage_url' => null,
@@ -93,7 +93,7 @@ class Project
      */
     private function setProjectXml()
     {
-        $qgs_path = $this->project->getQgisPath();
+        $qgs_path = $this->lizmap_project->getQgisPath();
         if (!file_exists($qgs_path) ||
             !file_exists($qgs_path.'.cfg')) {
             throw new Error('Files of project '.$this->key.' does not exists');

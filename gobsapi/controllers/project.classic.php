@@ -57,7 +57,7 @@ class projectCtrl extends apiController
         }
 
         // Get gobs project object
-        $data = $this->project->get();
+        $data = $this->gobs_project->get();
 
         return $this->objectResponse($data);
     }
@@ -84,13 +84,13 @@ class projectCtrl extends apiController
         }
 
         // Get indicator codes
-        $indicator_codes = $this->project->getIndicators();
+        $indicator_codes = $this->gobs_project->getIndicators();
 
         // Get indicators
         $indicators = array();
         jClasses::inc('gobsapi~Indicator');
         foreach ($indicator_codes as $code) {
-            $gobs_indicator = new Indicator($code);
+            $gobs_indicator = new Indicator($code, $this->lizmap_project);
             $indicator = $gobs_indicator->get();
             $indicators[] = $indicator;
         }

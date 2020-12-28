@@ -15,14 +15,24 @@ class Indicator
     protected $code;
 
     /**
+     * @var lizmap_project: Indicator lizMap project
+     */
+    protected $lizmap_project;
+
+    /**
      * @var data G-Obs Representation of a indicator
      */
     protected $raw_data;
 
     /**
+     * @var document root directory
+     */
+    public $document_root_directory = '';
+
+    /**
      * @var media destination directory
      */
-    protected $observation_media_directory = '';
+    public $observation_media_directory = '';
 
     /**
      * @var media allowed mime types
@@ -33,24 +43,33 @@ class Indicator
      * constructor.
      *
      * @param string $code: the code of the indicator
+     * @param lizmapProject $lizmap_project: the lizMap project of the indicator
      */
-    public function __construct($code)
+    public function __construct($code, $lizmap_project)
     {
         $this->code = $code;
+        $this->lizmap_project = $lizmap_project;
 
         // Create Gobs projet expected data
         if ($this->checkCode()) {
             $this->buildGobsIndicator();
         }
 
-        // Set observation media directory
-        $this->observation_media_directory = jApp::varPath('uploads/gobsapi~media');
+        // Set document and observation media directories
+        $this->setDocumentDirectory();
+        $this->setMediaDirectory();
     }
 
     // Get indicator code
     public function getCode()
     {
         return $this->code;
+    }
+
+    // Get indicator lizmap project
+    public function getLizmapProject()
+    {
+        return $this->lizmap_project;
     }
 
     // Check indicator code is valid
@@ -202,6 +221,37 @@ class Indicator
         return $data;
     }
 
+
+    // Set the root folder for the indicator document files
+    public function setDocumentDirectory() {
+        $this->document_root_directory = jApp::varPath('uploads/gobsapi~media');
+        $repository_dir = $this->lizmap_project->getRepository()->getPath();
+        $root_dir = realpath($repository_dir.'../media/');
+        if (is_dir($root_dir) && is_writable($root_dir)) {
+            $document_dir = '/../media/gobsapi/indicator/documents/';
+            $dest_dir = $repository_dir.$document_dir;
+            $create_dir = jFile::createDir($dest_dir);
+            if (is_dir($dest_dir)) {
+                $this->document_root_directory = realpath($dest_dir);
+            }
+        }
+    }
+
+    // Set the root folder for the observation media files
+    public function setMediaDirectory() {
+        $this->observation_media_directory = jApp::varPath('uploads/gobsapi~media');
+        $repository_dir = $this->lizmap_project->getRepository()->getPath();
+        $root_dir = realpath($repository_dir.'../media/');
+        if (is_dir($root_dir) && is_writable($root_dir)) {
+            $observation_dir = '/../media/gobsapi/indicator/observations/';
+            $dest_dir = $repository_dir.$observation_dir;
+            $create_dir = jFile::createDir($dest_dir);
+            if (is_dir($dest_dir)) {
+                $this->observation_media_directory = realpath($dest_dir);
+            }
+        }
+    }
+
     // Get indicator observations
     public function getObservations($requestSyncDate=null, $lastSyncDate=null, $uids=null)
     {
@@ -292,19 +342,42 @@ class Indicator
             $item = json_decode($record->object_json);
 
             // Check media exists
-            $destination_basename = $item->uuid;
-            $destination_basepath = $this->observation_media_directory.'/'.$destination_basename;
-            foreach ($this->media_mimes as $mime) {
-                $path = $destination_basepath.'.'.$mime;
-                if (file_exists($path)) {
-                    $item->media_url = $path;
-                    break;
-                }
+            $media_url = $this->setObservationMediaUrl($item->uuid);
+            if ($media_url) {
+                $item->media_url = $media_url;
             }
+
             $data[] = $item;
         }
 
         return $data;
+    }
+
+    public function setObservationMediaUrl($uid) {
+        $media_url = null;
+
+        $destination_basename = $uid;
+        $observation_dir = '/../media/gobsapi/indicator/observations/';
+        $relative_path = $observation_dir.$destination_basename;
+        $full_path = $this->observation_media_directory.'/'.$destination_basename;
+        foreach ($this->media_mimes as $mime) {
+            $file_path = $full_path.'.'.$mime;
+            $media_path = $relative_path.'.'.$mime;
+
+            if (file_exists($file_path)) {
+                $media_url = jUrl::getFull(
+                    'view~media:getMedia',
+                    array(
+                        'repository' => $this->lizmap_project->getData('repository'),
+                        'project' => $this->lizmap_project->getData('id'),
+                        'path' => $media_path
+                    )
+                );
+                break;
+            }
+        }
+
+        return $media_url;
     }
 
     // Get indicator deleted observations
