@@ -42,11 +42,15 @@ class Project
         // Get simpleXmlElement representation
         $this->setProjectXml();
 
-        // Create Gobs projet expected data
-        $this->buildGobsProject();
-
-        // Get indicators
+        // Get indicators: do it before building Gobs project
+        // to check if the project contains indicators
         $this->setIndicators();
+
+        // Create Gobs projet expected data
+        if (!empty($this->indicators)) {
+            $this->buildGobsProject();
+        }
+
     }
 
     // Create G-Obs project object from Lizmap project
@@ -56,11 +60,16 @@ class Project
         $key = $this->lizmap_project->getData('repository').'~'.$this->lizmap_project->getData('id');
 
         // Compute bbox
-        $extent = null;
+        $extent = array(
+            'xmin' => -180,
+            'ymin' => -90,
+            'xmax' => 180,
+            'ymax' => 90,
+        );
         $bbox = $this->lizmap_project->getData('bbox');
         $bbox_exp = explode(', ', $bbox);
         $proj = $this->lizmap_project->getData('proj');
-        $srid = (integer)explode(':', $proj)[1];
+        $srid = explode(':', $proj)[1];
         $sql = "
             WITH a AS (
                 SELECT ST_Transform(
@@ -78,15 +87,19 @@ class Project
         ";
         $gobs_profile = 'gobsapi';
         $cnx = jDb::getConnection($gobs_profile);
-        $resultset = $cnx->query($sql);
-        $data = [];
-        foreach ($resultset->fetchAll() as $record) {
-            $extent = array(
-                'xmin' => $record->xmin,
-                'ymin' => $record->ymin,
-                'xmax' => $record->xmax,
-                'ymax' => $record->ymax,
-            );
+        try {
+            $resultset = $cnx->query($sql);
+            $data = [];
+            foreach ($resultset->fetchAll() as $record) {
+                $extent = array(
+                    'xmin' => $record->xmin,
+                    'ymin' => $record->ymin,
+                    'xmax' => $record->xmax,
+                    'ymax' => $record->ymax,
+                );
+            }
+        } catch(Exception $e) {
+            $msg = $e->getMessage();
         }
 
         // Add geopackage url if a file is present
