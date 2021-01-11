@@ -11,9 +11,9 @@ info:
   version: 1.0.0
 externalDocs:
   description: Find out more about G-Obs
-  url: https://3liz.github.io/qgis-gobs-plugin/
+  url: https://docs.3liz.org/lizmap-gobsapi-module/
 servers:
-- url: http://lizmap.localhost/gobsapi.php
+- url: https://base.url/gobsapi.php
 security:
   - bearerAuth: []
 components:
@@ -235,10 +235,9 @@ components:
         preview:
           type: string
           description: Url of the image illustrating the indicator
-        color:
+        icon:
           type: string
-          description: Main color of the indicator
-          example: #99cc00
+          description: Url of the indicator icon image
         created_at:
           type: string
           format: date-time
@@ -468,6 +467,35 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Indicator'
+        400:
+          description: Invalid indicator value
+          content: {}
+        401:
+           $ref: '#/components/responses/UnauthorizedError'
+           
+  /project/{projectKey}/geopackage:
+    get:
+      tags:
+      - project
+      summary: Get the project GeoPackage file if available
+      description: Project key must be given in the path.
+      operationId: getProjectGeopackage
+      parameters:
+      - name: projectKey
+        in: path
+        description: Project key to filter by.
+        example: environment~weather
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/geopackage+vnd.sqlite3:      
+              schema:
+                type: string
+                format: binary
         400:
           description: Invalid indicator value
           content: {}
@@ -746,63 +774,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
       x-codegen-request-body-name: body
-      
-  /project/{projectKey}/indicator/{indicatorCode}/observation/observations:
-    post:
-      tags:
-      - observation
-      summary: Create new observations by sending a list of objects
-      operationId: createObservations
-      parameters:
-      - name: projectKey
-        in: path
-        description: Project key to filter by.
-        example: environment~weather
-        required: true
-        schema:
-          type: string
-      - name: indicatorCode
-        in: path
-        description: Code of indicator to return
-        required: true
-        schema:
-          type: string
-        example: weather_status
-      - name: requestSyncDate
-        in: header
-        description: Request synchronisation date
-        example: "2020-02-15 10:40:30"
-        required: true
-        schema:
-          type: string
-          format: date-type
-      requestBody:
-        description: List of observation objects that needs to be added
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/Observation'
-        required: true
-      responses:
-        200:
-          description: List of created observations
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Observation'
-        401:
-           $ref: '#/components/responses/UnauthorizedError'
-        405:
-          description: Invalid input
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponse'
-      x-codegen-request-body-name: body  
       
   /project/{projectKey}/indicator/{indicatorCode}/observation/{observationId}:
     get:
