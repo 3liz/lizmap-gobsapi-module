@@ -316,6 +316,9 @@ echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOK
 
 # getProjectIndicators
 echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" $BASEURL/project/lizmapdemo~lampadaires/indicators)
+
+# getProjectGeopackage
+curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" $BASEURL/project/lizmapdemo~lampadaires/geopackage --output /tmp/test.gpkg
 ```
 
 * Indicator:
@@ -332,6 +335,9 @@ echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOK
 
 # getDeletedObservationsByIndicator
 echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "lastSyncDate: $(date '+%Y-%m-%d %H:%M:%S' -d '13 days ago')" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" $BASEURL/project/lizmapdemo~lampadaires/indicator/pluviometry/deletedObservations)
+
+# getIndicatorDocument
+curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" $BASEURL/project/lizmapdemo~lampadaires/indicator/pluviometry/document/946fee64-e86c-40fa-a55e-8d9ad3579734 --output /tmp/test.jpeg
 ```
 
 * Observation:
@@ -365,6 +371,8 @@ echo $(curl -X POST -H  "Accept: application/json" -H  "Authorization: Bearer ${
 # deleteObservationMedia
 echo $(curl -X DELETE -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" $BASEURL/project/lizmapdemo~lampadaires/indicator/pluviometry/observation/e8f0a46c-1d24-456a-925a-387740ade1c6/deleteMedia)
 
+# getObservationMedia
+curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" $BASEURL/project/lizmapdemo~lampadaires/indicator/pluviometry/observation/e8f0a46c-1d24-456a-925a-387740ade1c6/media --output /tmp/test.jpeg
 ```
 
 
