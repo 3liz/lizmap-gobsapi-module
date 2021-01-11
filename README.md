@@ -205,92 +205,6 @@ on_error_action="jelix~error:badright"
 
 ```
 
-## Test the API
-
-Then you are ready to test. For example with curl (you need curl to pass JWT token in Authorization header). Full API Documentation is available: https://docs.3liz.org/lizmap-gobsapi-module/api/
-
-* User
-
-```bash
-# USER
-###
-
-# login
-TOKEN=$(curl -s -X GET -H 'Content-Type: application/json' "http://lizmap.localhost/gobsapi.php/user/login?username=admin&password=admin" | jq -r '.token') && echo $TOKEN
-
-# User Projects
-echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" http://lizmap.localhost/gobsapi.php/user/projects)
-
-# logUserOut
-echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" http://lizmap.localhost/gobsapi.php/user/logout)
-
-```
-
-* Project
-
-```bash
-# PROJECT
-###
-
-# getProjectByKey
-echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" http://lizmap.localhost/gobsapi.php/project/lizmapdemo~lampadaires)
-
-# getProjectIndicators
-echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" http://lizmap.localhost/gobsapi.php/project/lizmapdemo~lampadaires/indicators)
-```
-
-* Indicator
-
-```bash
-# INDICATOR
-###
-
-# getIndicatorByCode
-echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" http://lizmap.localhost/gobsapi.php/project/lizmapdemo~lampadaires/indicator/pluviometry)
-
-# getObservationsByIndicator
-echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "lastSyncDate: $(date '+%Y-%m-%d %H:%M:%S' -d '7 days ago')" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" http://lizmap.localhost/gobsapi.php/project/lizmapdemo~lampadaires/indicator/pluviometry/observations)
-
-# getDeletedObservationsByIndicator
-echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "lastSyncDate: $(date '+%Y-%m-%d %H:%M:%S' -d '13 days ago')" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" http://lizmap.localhost/gobsapi.php/project/lizmapdemo~lampadaires/indicator/pluviometry/deletedObservations)
-```
-
-* Observation
-
-```bash
-# OBSERVATION
-###
-
-
-# createObservation
-echo $(curl -X POST -H "Accept: application/json" -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" -H "Content-Type: application/json" -d "{\"id\":null,\"indicator\":\"pluviometry\",\"uuid\":null,\"start_timestamp\":\"2019-07-19 03:30:00\",\"end_timestamp\":null,\"coordinates\":{\"x\":-3.785956510771293,\"y\":48.4744332531894},\"wkt\":\"POINT(-3.78595651077129 48.4744332531894)\",\"values\":[0.8],\"photo\":null,\"created_at\":null,\"updated_at\":null}" "http://lizmap.localhost/gobsapi.php/project/lizmapdemo~lampadaires/indicator/pluviometry/observation")
-
-{"id":3595,"indicator":"pluviometry","uuid":"e8f0a46c-1d24-456a-925a-387740ade1c6","start_timestamp":"2019-07-19T03:30:00","end_timestamp":null,"coordinates":{"x":-3.78595651077129,"y":48.4744332531894},"wkt":"POINT(-3.78595651077129 48.4744332531894)","values":[0.8],"photo":null,"created_at":"2020-12-24T15:17:43","updated_at":"2020-12-24T15:17:43"}
-
-# updateObservation
-echo $(curl -X PUT -H "Accept: application/json" -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" -H "Content-Type: application/json" -d "{\"id\":1,\"indicator\":\"pluviometry\",\"uuid\":\"e8f0a46c-1d24-456a-925a-387740ade1c6\",\"start_timestamp\":\"2019-07-16 03:35:00\",\"end_timestamp\":null,\"coordinates\":{\"x\":-3.785956510771293,\"y\":48.4744332531894},\"wkt\":\"POINT(-3.78595651077999 48.4744332531999)\",\"values\":[1.2],\"photo\":null,\"created_at\":\"2020-12-03 15:04:40\",\"updated_at\":\"2020-12-03 17:55:59\"}" "http://lizmap.localhost/gobsapi.php/project/lizmapdemo~lampadaires/indicator/pluviometry/observation")
-
-# createObservations
-todo
-
-# getObservationById
-echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" http://lizmap.localhost/gobsapi.php/project/lizmapdemo~lampadaires/indicator/pluviometry/observation/e8f0a46c-1d24-456a-925a-387740ade1c6)
-
-# deleteObservationById
-echo $(curl -X DELETE -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" http://lizmap.localhost/gobsapi.php/project/lizmapdemo~lampadaires/indicator/pluviometry/observation/e8f0a46c-1d24-456a-925a-387740ade1c6)
-```
-
-* Observation media
-
-```bash
-# uploadObservationMedia
-echo $(curl -X POST -H  "Accept: application/json" -H  "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" -H  "Content-Type: multipart/form-data" -F "mediaFile=@/home/mdouchin/Documents/3liz/mdouchin_carre.jpeg;type=image/jpeg" http://lizmap.localhost/gobsapi.php/project/lizmapdemo~lampadaires/indicator/pluviometry/observation/e8f0a46c-1d24-456a-925a-387740ade1c6/uploadMedia)
-
-# deleteObservationMedia
-echo $(curl -X DELETE -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" http://lizmap.localhost/gobsapi.php/project/lizmapdemo~lampadaires/indicator/pluviometry/observation/e8f0a46c-1d24-456a-925a-387740ade1c6/deleteMedia)
-
-```
-
 ## Usage
 
 The G-Obs API module is tightly linked to the G-Obs QGIS plugin, and to the use of Lizmap Web Client as the web map publication tool.
@@ -321,9 +235,14 @@ An indicator can have different types of documents:
 * `video`: a video file.
 * `url`: an URL pointing to an external ressource
 
-All the document files must be stored in the API server. The document files must stored inside a `media/gobsapi/documents/` folder, withe the `media` folder located in Lizmap repository root folder.
+All the document files must be stored in the API server. The document files must stored inside a `media/gobsapi/documents/` folder, with the `media` folder located in Lizmap repository root folder. This `media` folder must be writable. Do it for example with
 
-For example, if Lizmap Web Client repository root folder is `/srv/data/`, the documents must be stored in `/srv/data/media/gobsapi/documents/INDICATOR_CODE/DOCUMENT_TYPE/DOCUMENT_FILE_NAME.EXT`, where
+```bash
+chown -R :www-data /srv/data/media
+chmod 775 -R /srv/data/media
+```
+
+For example, if Lizmap Web Client repository root folder is `/srv/data/`, the root gobsapi media folder will be `/srv/data/media/` and the documents must be stored in `/srv/data/media/gobsapi/documents/INDICATOR_CODE/DOCUMENT_TYPE/DOCUMENT_FILE_NAME.EXT`, where
 
 * `INDICATOR_CODE` is the code of the indicator, for example `pluviometry`
 * `DOCUMENT_TYPE` is the type of the document, for example `image`
@@ -352,6 +271,104 @@ Each observation can have a photo, called media. When uploading this media file 
 * `EXT` is the extension of the original file sent, for example `jpeg`
 
 which can build the example path: `/srv/data/media/gobsapi/observations/e8f0a46c-1d24-456a-925a-387740ade1c6.jpeg`
+
+
+
+## Test the API
+
+Then you are ready to test. For example with curl (you need curl to pass JWT token in Authorization header). Full API Documentation is available: https://docs.3liz.org/lizmap-gobsapi-module/api/
+
+In the following examples, we use `http://lizmap.localhost/` as the base URL:
+
+* Define the API base URL:
+
+```bash
+BASEURL="http://lizmap.localhost/gobsapi.php"
+```
+
+* User:
+
+```bash
+# USER
+###
+
+# login
+# we get the authentication TOKEN variable by first log the user in
+TOKEN=$(curl -s -X GET -H 'Content-Type: application/json' "$BASEURL/user/login?username=admin&password=admin" | jq -r '.token') && echo $TOKEN
+
+# User Projects
+# we use the $TOKEN variable in the Authorization header
+echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" $BASEURL/user/projects)
+
+# logUserOut
+echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" $BASEURL/user/logout)
+
+```
+
+* Project:
+
+```bash
+# PROJECT
+###
+
+# getProjectByKey
+echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" $BASEURL/project/lizmapdemo~lampadaires)
+
+# getProjectIndicators
+echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" $BASEURL/project/lizmapdemo~lampadaires/indicators)
+```
+
+* Indicator:
+
+```bash
+# INDICATOR
+###
+
+# getIndicatorByCode
+echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" $BASEURL/project/lizmapdemo~lampadaires/indicator/pluviometry)
+
+# getObservationsByIndicator
+echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "lastSyncDate: $(date '+%Y-%m-%d %H:%M:%S' -d '7 days ago')" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" $BASEURL/project/lizmapdemo~lampadaires/indicator/pluviometry/observations)
+
+# getDeletedObservationsByIndicator
+echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "lastSyncDate: $(date '+%Y-%m-%d %H:%M:%S' -d '13 days ago')" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" $BASEURL/project/lizmapdemo~lampadaires/indicator/pluviometry/deletedObservations)
+```
+
+* Observation:
+
+```bash
+# OBSERVATION
+###
+
+
+# createObservation
+echo $(curl -X POST -H "Accept: application/json" -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" -H "Content-Type: application/json" -d "{\"id\":null,\"indicator\":\"pluviometry\",\"uuid\":null,\"start_timestamp\":\"2019-07-19 03:30:00\",\"end_timestamp\":null,\"coordinates\":{\"x\":-3.785956510771293,\"y\":48.4744332531894},\"wkt\":\"POINT(-3.78595651077129 48.4744332531894)\",\"values\":[0.8],\"photo\":null,\"created_at\":null,\"updated_at\":null}" "$BASEURL/project/lizmapdemo~lampadaires/indicator/pluviometry/observation")
+
+{"id":3595,"indicator":"pluviometry","uuid":"e8f0a46c-1d24-456a-925a-387740ade1c6","start_timestamp":"2019-07-19T03:30:00","end_timestamp":null,"coordinates":{"x":-3.78595651077129,"y":48.4744332531894},"wkt":"POINT(-3.78595651077129 48.4744332531894)","values":[0.8],"photo":null,"created_at":"2020-12-24T15:17:43","updated_at":"2020-12-24T15:17:43"}
+
+# updateObservation
+echo $(curl -X PUT -H "Accept: application/json" -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" -H "Content-Type: application/json" -d "{\"id\":1,\"indicator\":\"pluviometry\",\"uuid\":\"e8f0a46c-1d24-456a-925a-387740ade1c6\",\"start_timestamp\":\"2019-07-16 03:35:00\",\"end_timestamp\":null,\"coordinates\":{\"x\":-3.785956510771293,\"y\":48.4744332531894},\"wkt\":\"POINT(-3.78595651077999 48.4744332531999)\",\"values\":[1.2],\"photo\":null,\"created_at\":\"2020-12-03 15:04:40\",\"updated_at\":\"2020-12-03 17:55:59\"}" "$BASEURL/project/lizmapdemo~lampadaires/indicator/pluviometry/observation")
+
+# createObservations
+todo
+
+# getObservationById
+echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" $BASEURL/project/lizmapdemo~lampadaires/indicator/pluviometry/observation/e8f0a46c-1d24-456a-925a-387740ade1c6)
+
+# deleteObservationById
+echo $(curl -X DELETE -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" $BASEURL/project/lizmapdemo~lampadaires/indicator/pluviometry/observation/e8f0a46c-1d24-456a-925a-387740ade1c6)
+```
+
+* Observation media:
+
+```bash
+# uploadObservationMedia
+echo $(curl -X POST -H  "Accept: application/json" -H  "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" -H  "Content-Type: multipart/form-data" -F "mediaFile=@/home/mdouchin/Documents/3liz/mdouchin_carre.jpeg;type=image/jpeg" $BASEURL/project/lizmapdemo~lampadaires/indicator/pluviometry/observation/e8f0a46c-1d24-456a-925a-387740ade1c6/uploadMedia)
+
+# deleteObservationMedia
+echo $(curl -X DELETE -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" $BASEURL/project/lizmapdemo~lampadaires/indicator/pluviometry/observation/e8f0a46c-1d24-456a-925a-387740ade1c6/deleteMedia)
+
+```
 
 
 
