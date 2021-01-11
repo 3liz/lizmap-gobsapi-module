@@ -69,6 +69,144 @@ persistent=off
 
 ```
 
+## Authentication driver
+
+If your Lizmap Web Client uses **SAMLv2** to authenticate the users, you need to force the gobsapi module to use another driver. The SAML protocol is based on URL redirections, which are not suitable for the G-Obs API end point.
+
+You can override the configuration to force the `gobsapi.php` entry point to use another driver. To do so, you must first edit the file `localconfig.ini.php` and change the `[module]` section into:
+
+```ini
+[modules]
+;; uncomment it if you want to use ldap for authentication
+;; see documentation to complete the ldap configuration
+ldapdao.access=0
+lizmap.installparam=
+multiauth.access=0
+
+;; we deactivate gobs & saml which must be activated
+;; only for the entry points index and admin
+;; by editing their configuration files lizmap/var/config/index/config.ini.php
+;; and lizmap/var/config/admin/config.ini.php
+gobs.access=0
+saml.access=0
+;; we then activate the gobsapi module
+gobsapi.access=2
+```
+
+We have deactivated gobs & saml in the main config (localconfig): they must now be activated only for the entry points index and admin by editing their configuration files `lizmap/var/config/index/config.ini.php` and `lizmap/var/config/admin/config.ini.php`. Example contents
+
+* for the index entrypoint:
+
+
+```ini
+;<?php die(''); ?>
+;for security reasons , don't remove or modify the first line
+
+startModule=view
+startAction="default:index"
+
+[coordplugins]
+jacl2=1
+
+saml="saml/saml.coord.ini.php"
+saml.name=auth
+
+[modules]
+dataviz.access=2
+dynamicLayers.access=2
+jelix.access=2
+lizmap.access=2
+view.access=2
+filter.access=2
+action.access=2
+
+jacl2db_admin.access=1
+jauthdb_admin.access=1
+master_admin.access=1
+
+saml.access=2
+saml.installparam="localconfig;useradmin=mdouchin;emailadmin=mdouchin@3liz.com"
+saml.path="app:my-packages/vendor/jelix/saml-module/saml"
+gobs.access=2
+
+[coordplugin_auth]
+;; uncomment it if you want to use ldap for authentication
+;; see documentation to complete the ldap configuration
+driver=saml
+```
+
+* for the admin entrypoint:
+
+```ini
+;<?php die(''); ?>
+;for security reasons , don't remove or modify the first line
+
+startModule=master_admin
+startAction="default:index"
+
+[responses]
+html=adminHtmlResponse
+htmlauth=adminLoginHtmlResponse
+
+[modules]
+admin.access=2
+jauthdb_admin.access=2
+jacl2db_admin.access=2
+master_admin.access=2
+jcommunity.access=2
+
+saml.access=2
+saml.installparam="localconfig;useradmin=mdouchin;emailadmin=mdouchin@3liz.com"
+saml.path="app:my-packages/vendor/jelix/saml-module/saml"
+gobs.access=2
+
+[coordplugins]
+jacl2=1
+
+saml="saml/saml.coord.ini.php"
+saml.name=auth
+
+[coordplugin_auth]
+;; uncomment it if you want to use ldap for authentication
+;; see documentation to complete the ldap configuration
+driver=saml
+
+```
+
+* for the gobsapi entrypoint:
+
+```ini
+[modules]
+jelix.access=1
+lizmap.access=1
+view.access=1
+
+jacl2db_admin.access=1
+jauthdb_admin.access=1
+master_admin.access=1
+
+;; on active le module gobsapi
+gobsapi.access=2
+
+;; et ldapdao
+ldapdao.access=1
+jacl2.access=1
+jauth.access=1
+jauthdb.access=1
+
+[coordplugins]
+jacl2=1
+auth="gobsapi/auth.coord.ini.php"
+
+[coordplugin_jacl2]
+on_error=2
+error_message="jacl2~errors.action.right.needed"
+on_error_action="jelix~error:badright"
+
+```
+
+## Test the API
+
 Then you are ready to test. For example with curl (you need curl to pass JWT token in Authorization header
 
 ```bash
