@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module xmlns="http://jelix.org/ns/module/1.0">
     <info id="gobsapi" name="gobsapi" createdate="2020-10-02">
-        <version date="2020-11-04">0.2.0</version>
+        <version date="2021-01-11">0.3.0</version>
         <label lang="en_US">gobsapi</label>
         <description lang="en_US" />
         <license URL="">Mozilla Public Licence (MPL)</license>
@@ -10,7 +10,7 @@
         <homepageURL>http://3liz.com</homepageURL>
     </info>
     <dependencies>
-        <jelix minversion="1.6.27-pre" maxversion="1.6.*"/>
+        <jelix minversion="1.6.27-pre" maxversion="1.7.*"/>
         <module name="lizmap" />
     </dependencies>
     <autoload>
