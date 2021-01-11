@@ -22,6 +22,7 @@ $mapping = array(
 
     '/project/:projectKey' => '/gobsapi/project/getProjectByKey',
     '/project/:projectKey/indicators' => '/gobsapi/project/getProjectIndicators',
+    '/project/:projectKey/geopackage' => '/gobsapi/project/getProjectGeopackage',
 
     '/project/:projectKey/indicator/:indicatorCode' => '/gobsapi/indicator/getIndicatorByCode',
     '/project/:projectKey/indicator/:indicatorCode/observations' => '/gobsapi/indicator/getObservationsByIndicator',

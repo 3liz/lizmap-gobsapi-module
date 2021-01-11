@@ -39,6 +39,8 @@ class Indicator
      */
     protected $media_mimes = array('jpg', 'jpeg', 'png', 'gif');
 
+    // Todo: Indicator - Ajouter nouvelle catégorie de document = icon
+
     /**
      * constructor.
      *
@@ -257,7 +259,7 @@ class Indicator
         $repository_dir = $this->lizmap_project->getRepository()->getPath();
         $root_dir = realpath($repository_dir.'../media/');
         if (is_dir($root_dir) && is_writable($root_dir)) {
-            $document_dir = '/../media/gobsapi/indicator/documents/';
+            $document_dir = '/../media/gobsapi/documents/';
             $dest_dir = $repository_dir.$document_dir;
             $create_dir = jFile::createDir($dest_dir);
             if (is_dir($dest_dir)) {
@@ -272,7 +274,7 @@ class Indicator
         $repository_dir = $this->lizmap_project->getRepository()->getPath();
         $root_dir = realpath($repository_dir.'../media/');
         if (is_dir($root_dir) && is_writable($root_dir)) {
-            $observation_dir = '/../media/gobsapi/indicator/observations/';
+            $observation_dir = '/../media/gobsapi/observations/';
             $dest_dir = $repository_dir.$observation_dir;
             $create_dir = jFile::createDir($dest_dir);
             if (is_dir($dest_dir)) {
@@ -388,7 +390,7 @@ class Indicator
 
         // Indicator code and document type are already contained in the dabase document URL
         $destination_basename = $path;
-        $document_dir = '/../media/gobsapi/indicator/documents/';
+        $document_dir = '/../media/gobsapi/documents/';
         $media_path = $document_dir.$destination_basename;
         $file_path = $this->document_root_directory.'/'.$destination_basename;
         if (file_exists($file_path)) {
@@ -410,7 +412,7 @@ class Indicator
         $media_url = null;
 
         $destination_basename = $uid;
-        $observation_dir = '/../media/gobsapi/indicator/observations/';
+        $observation_dir = '/../media/gobsapi/observations/';
         $relative_path = $observation_dir.$destination_basename;
         $full_path = $this->observation_media_directory.'/'.$destination_basename;
         foreach ($this->media_mimes as $mime) {

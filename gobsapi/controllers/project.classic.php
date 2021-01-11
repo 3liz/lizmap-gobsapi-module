@@ -97,4 +97,45 @@ class projectCtrl extends apiController
 
         return $this->objectResponse($indicators);
     }
+
+    /**
+     * Get project Geopackage file
+     *
+     */
+    public function getProjectGeopackage() {
+        // Check resource can be accessed and is valid
+        list($code, $status, $message) = $this->check();
+        if ($status == 'error') {
+            return $this->apiResponse(
+                $code,
+                $status,
+                $message
+            );
+        }
+
+        // Get gobs project object
+        $data = $this->gobs_project->get();
+
+        // Return binary geopackage file
+        $rep = $this->getResponse('binary');
+        $rep->doDownload = true;
+        $rep->mimeType = 'application/geopackage+vnd.sqlite3';
+        $rep->outputFileName = $data['key'].'.gpkg';
+
+        // check gpkg file and return it or an error
+        $gpkg_file_path = $this->lizmap_project->getQgisPath() . '.gpkg';
+        if (file_exists($gpkg_file_path)) {
+            $rep->fileName = $gpkg_file_path;
+            $rep->setExpires('+1 hours');
+        } else {
+            $rep->fileName = null;
+            $rep->mimeType = 'text/text';
+            $rep->doDownload = false;
+            $msg = 'No geopackage file has been found for this project';
+            $rep->content = $msg;
+            $rep->setHttpStatus(404, 'Not found');
+        }
+
+        return $rep;
+    }
 }

@@ -52,35 +52,85 @@ class Project
     // Create G-Obs project object from Lizmap project
     private function buildGobsProject()
     {
-        // Compute bbox
-        $bbox = $this->lizmap_project->getData('bbox');
-        $extent = explode(', ', $bbox);
+        // Project key
+        $key = $this->lizmap_project->getData('repository').'~'.$this->lizmap_project->getData('id');
 
+        // Compute bbox
+        $extent = null;
+        $bbox = $this->lizmap_project->getData('bbox');
+        $bbox_exp = explode(', ', $bbox);
+        $proj = $this->lizmap_project->getData('proj');
+        $srid = (integer)explode(':', $proj)[1];
+        $sql = "
+            WITH a AS (
+                SELECT ST_Transform(
+                    ST_SetSRID('Box(
+                        ".$bbox_exp[0]." ".$bbox_exp[1].",
+                        ".$bbox_exp[2]." ".$bbox_exp[3]."
+                    )'::box2d, ".$srid."), 4326) AS b
+            )
+            SELECT
+            ST_xmin(b) xmin,
+            ST_ymin(b) ymin,
+            ST_xmax(b) xmax,
+            ST_ymax(b) ymax
+            FROM a;
+        ";
+        $gobs_profile = 'gobsapi';
+        $cnx = jDb::getConnection($gobs_profile);
+        $resultset = $cnx->query($sql);
+        $data = [];
+        foreach ($resultset->fetchAll() as $record) {
+            $extent = array(
+                'xmin' => $record->xmin,
+                'ymin' => $record->ymin,
+                'xmax' => $record->xmax,
+                'ymax' => $record->ymax,
+            );
+        }
+
+        // Add geopackage url if a file is present
+        $gpkg_url = null;
+        $gpkg_file_path = $this->lizmap_project->getQgisPath() . '.gpkg';
+        if (file_exists($gpkg_file_path)) {
+            $gpkg_url = jUrl::getFull(
+                'gobsapi~project:getProjectGeopackage',
+                //array(
+                    //'projectKey' => $key,
+                //)
+            );
+            $gpkg_url = str_replace(
+                'index.php/gobsapi/project/getProjectGeopackage',
+                'gobsapi.php/project/'.$key.'/geopackage',
+                $gpkg_url
+            );
+        }
+
+        // Media URL
+        $media_url = jUrl::getFull(
+            'view~media:illustration',
+            array(
+                'repository' => $this->lizmap_project->getData('repository'),
+                'project' => $this->lizmap_project->getData('id'),
+            )
+        );
+
+        // Build data
         $this->data = array(
-            'key' => $this->lizmap_project->getData('repository').'~'.$this->lizmap_project->getData('id'),
+            'key' => $key,
             'label' => $this->lizmap_project->getData('title'),
             'description' => $this->lizmap_project->getData('abstract'),
-            'media_url' => jUrl::getFull(
-                'view~media:illustration',
-                array(
-                    'repository' => $this->lizmap_project->getData('repository'),
-                    'project' => $this->lizmap_project->getData('id'),
-                )
-            ),
-            'geopackage_url' => null,
-            'extent' => array(
-                'xmin' => $extent[0],
-                'ymin' => $extent[1],
-                'xmax' => $extent[2],
-                'ymax' => $extent[3],
-            ),
+            'media_url' => $media_url,
+            'geopackage_url' => $gpkg_url,
+            'extent' => $extent,
         );
+
+        // Todo: Project - Reproject extent into 4326
     }
 
     // Get Gobs representation of a project object
     public function get()
     {
-        // Todo: Project - Add geopackage url if file present
 
         return $this->data;
     }
@@ -110,11 +160,12 @@ class Project
     private function setIndicators()
     {
         // Get Gobs special project variable gobs_indicators
-        $xpath = '//properties/Variables/variableNames/value[.="gobs_indicators"]/parent::variableNames/following-sibling::variableValues/value';
+        // The QGIS project needs to have a project variable, like
+        // gobs_indicators -> gobs_indicators:indicator_a,indicator_b
+        $xpath = '//properties/Variables/variableValues/value[contains(text(),"gobs_indicators:")]';
         $data = $this->xml->xpath($xpath);
-
         if ($data) {
-            $indicators = trim((string) $data[0]);
+            $indicators = str_replace('gobs_indicators:', '', trim((string) $data[0]));
             $indicators = array_map('trim', explode(',', $indicators));
             //jLog::log(json_encode($indicators), 'error');
             if (!empty($indicators)) {
@@ -128,5 +179,7 @@ class Project
     {
         return $this->indicators;
     }
+
+    // Get Gobs
 
 }
