@@ -633,6 +633,7 @@ class Observation
             FROM del
             ";
         }
+        //jLog::log($sql, 'error');
         return $sql;
     }
 

@@ -224,31 +224,34 @@ class Indicator
         // Get observation instance data
         $data = $this->raw_data;
 
-        // Transform document paths into lizmap media URL
-        $docs = array();
-        if (count($data->documents) == 1 && !$data->documents[0]) {
+        if (!empty($data)) {
+            // Transform document paths into lizmap media URL
             $docs = array();
-        } else {
-            foreach ($data->documents AS $document) {
-                // Check if document is preview
-                if ($document->type == 'preview') {
-                    // We move the doc from documents to preview property
-                    $media_url = $this->setDocumentUrl($document->type, $document->url);
-                    if ($media_url) {
-                        $data->preview = $media_url;
+            if (count($data->documents) == 1 && !$data->documents[0]) {
+                $docs = array();
+            } else {
+                foreach ($data->documents AS $document) {
+                    // Check if document is preview
+                    if ($document->type == 'preview') {
+                        // We move the doc from documents to preview property
+                        $media_url = $this->setDocumentUrl($document->type, $document->url);
+                        if ($media_url) {
+                            $data->preview = $media_url;
+                        }
+                    } elseif ($document->type == 'url') {
+                        $docs[] = $document;
+                    } else {
+                        $media_url = $this->setDocumentUrl($document->type, $document->url);
+                        if ($media_url) {
+                            $document->url = $media_url;
+                        }
+                        $docs[] = $document;
                     }
-                } elseif ($document->type == 'url') {
-                    $docs[] = $document;
-                } else {
-                    $media_url = $this->setDocumentUrl($document->type, $document->url);
-                    if ($media_url) {
-                        $document->url = $media_url;
-                    }
-                    $docs[] = $document;
                 }
             }
+            $data->documents = $docs;
         }
-        $data->documents = $docs;
+
         return $data;
     }
 

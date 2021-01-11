@@ -125,7 +125,6 @@ class Project
             'extent' => $extent,
         );
 
-        // Todo: Project - Reproject extent into 4326
     }
 
     // Get Gobs representation of a project object
