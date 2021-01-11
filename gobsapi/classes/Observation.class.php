@@ -47,7 +47,7 @@ class Observation
     /**
      * @var media destination directory
      */
-    protected $observation_media_directory = '';
+    protected $observation_media_directory = null;
 
     /**
      * @var media allowed mime types
@@ -795,6 +795,13 @@ class Observation
 
     // Process upload
     public function processMediaForm() {
+        if (empty($this->observation_media_directory)) {
+            return array(
+                'error',
+                'The observation media folder does not exist or is not writable',
+                null
+            );
+        }
         // Create and initialize form
         $form = jForms::create('gobsapi~media', $this->observation_uid);
         $form->initFromRequest();
@@ -839,8 +846,49 @@ class Observation
         );
     }
 
+    // Get observation media file full path
+    public function getMediaPath($uid=null) {
+        if (empty($this->observation_media_directory)) {
+            return array(
+                'error',
+                'The observation media folder does not exist or is not writable',
+                null
+            );
+        }
+        $destination_basename = $this->observation_uid;
+        if ($this->isValidUuid($uid)) {
+            $destination_basename = $uid;
+        }
+        $destination_basepath = $this->observation_media_directory.'/'.$destination_basename;
+        $media_path = null;
+        foreach ($this->media_mimes as $mime) {
+            $path = $destination_basepath.'.'.$mime;
+            if (file_exists($path)) {
+                $media_path = $path;
+                return array(
+                    'success',
+                    'Observation media file exists',
+                    $media_path
+                );
+            }
+        }
+
+        return array(
+            'error',
+            'The observation media file does not exist',
+            null
+        );
+    }
+
     // Delete observation media from destination directory
     public function deleteMedia($uid=null) {
+        if (empty($this->observation_media_directory)) {
+            return array(
+                'error',
+                'The observation media folder does not exist or is not writable',
+                null
+            );
+        }
         // Delete existing file
         $destination_basename = $this->observation_uid;
         if ($this->isValidUuid($uid)) {

@@ -25,6 +25,7 @@ $mapping = array(
     '/project/:projectKey/geopackage' => '/gobsapi/project/getProjectGeopackage',
 
     '/project/:projectKey/indicator/:indicatorCode' => '/gobsapi/indicator/getIndicatorByCode',
+    '/project/:projectKey/indicator/:indicatorCode/document/:documentId' => '/gobsapi/indicator/getIndicatorDocument',
     '/project/:projectKey/indicator/:indicatorCode/observations' => '/gobsapi/indicator/getObservationsByIndicator',
     '/project/:projectKey/indicator/:indicatorCode/deletedObservations' => '/gobsapi/indicator/getDeletedObservationsByIndicator',
 
@@ -32,11 +33,11 @@ $mapping = array(
         'POST' => '/gobsapi/observation/createObservation',
         'PUT' => '/gobsapi/observation/updateObservation',
     ),
-    '/project/:projectKey/indicator/:indicatorCode/observation/observations' => '/gobsapi/observation/createObservations',
     '/project/:projectKey/indicator/:indicatorCode/observation/:observationId' => array(
         'GET' => '/gobsapi/observation/getObservationById',
         'DELETE' => '/gobsapi/observation/deleteObservationById',
     ),
+    '/project/:projectKey/indicator/:indicatorCode/observation/:observationId/media' => '/gobsapi/observation/getObservationMedia',
     '/project/:projectKey/indicator/:indicatorCode/observation/:observationId/uploadMedia' => array(
         'POST' => '/gobsapi/observation/uploadObservationMedia',
     ),

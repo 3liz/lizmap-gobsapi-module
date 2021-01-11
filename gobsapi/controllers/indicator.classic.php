@@ -136,4 +136,52 @@ class indicatorCtrl extends apiController
 
         return $this->objectResponse($data);
     }
+
+    /**
+     * Get indicator document file by uid
+     *
+     */
+    public function getIndicatorDocument() {
+        // Check resource can be accessed and is a valid G-Obs indicator
+        list($code, $status, $message) = $this->check();
+        if ($status == 'error') {
+            return $this->apiResponse(
+                $code,
+                $status,
+                $message
+            );
+        }
+
+        // Document uid
+        $uid = $this->param('documentId');
+        if (!$this->indicator->isValidUuid($uid)) {
+            return $this->apiResponse(
+                '400',
+                'error',
+                'Invalid document UID'
+            );
+        }
+
+        $document = $this->indicator->getDocumentByUid($uid);
+        if (empty($document)) {
+            return $this->apiResponse(
+                '404',
+                'error',
+                'The given document uid does not exist for this indicator'
+            );
+        }
+
+        $filePath = $this->indicator->getDocumentPath($document);
+        if (empty($filePath)) {
+            return $this->apiResponse(
+                '404',
+                'error',
+                'The document file does not exist'
+            );
+        }
+        $outputFileName = $document->label;
+
+        // Return binary geopackage file
+        return $this->getMedia($filePath, $outputFileName);
+    }
 }

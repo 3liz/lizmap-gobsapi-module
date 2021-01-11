@@ -116,26 +116,12 @@ class projectCtrl extends apiController
         // Get gobs project object
         $data = $this->gobs_project->get();
 
+        $filePath = $this->lizmap_project->getQgisPath() . '.gpkg';
+        $outputFileName = $data['key'].'.gpkg';
+        $mimeType = 'application/geopackage+vnd.sqlite3';
+        $doDownload = true;
+
         // Return binary geopackage file
-        $rep = $this->getResponse('binary');
-        $rep->doDownload = true;
-        $rep->mimeType = 'application/geopackage+vnd.sqlite3';
-        $rep->outputFileName = $data['key'].'.gpkg';
-
-        // check gpkg file and return it or an error
-        $gpkg_file_path = $this->lizmap_project->getQgisPath() . '.gpkg';
-        if (file_exists($gpkg_file_path)) {
-            $rep->fileName = $gpkg_file_path;
-            $rep->setExpires('+1 hours');
-        } else {
-            $rep->fileName = null;
-            $rep->mimeType = 'text/text';
-            $rep->doDownload = false;
-            $msg = 'No geopackage file has been found for this project';
-            $rep->content = $msg;
-            $rep->setHttpStatus(404, 'Not found');
-        }
-
-        return $rep;
+        return $this->getMedia($filePath, $outputFileName, $mimeType, $doDownload);
     }
 }

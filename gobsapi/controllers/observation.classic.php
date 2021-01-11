@@ -62,7 +62,8 @@ class observationCtrl extends apiController
         // Check parameters given for /observation/ path
         $uid_actions = array(
             'getObservationById', 'deleteObservationById',
-            'uploadObservationMedia', 'deleteObservationMedia'
+            'uploadObservationMedia', 'deleteObservationMedia',
+            'getObservationMedia'
         );
         $body_actions = array(
             'createObservation', 'updateObservation'
@@ -120,10 +121,10 @@ class observationCtrl extends apiController
             return array(
                 '401',
                 'error',
-                'The authenticated user hasnot right to access this observation',
+                'The authenticated user has not right to access this observation',
             );
         }
-        if ($from != 'getObservationById' && !$capabilities['edit']) {
+        if (!in_array($from, array('getObservationById', 'getObservationMedia')) && !$capabilities['edit']) {
             return array(
                 '401',
                 'error',
@@ -270,33 +271,6 @@ class observationCtrl extends apiController
     }
 
     /**
-     * Create new observations by sending a list of objects
-     * /observation/observations.
-     *
-     * @httpparam string Observation data in JSON (array of objects)
-     * @httpresponse JSON with the list of created observations
-     *
-     * @return jResponseJson List of created observations
-     */
-    public function createObservations()
-    {
-        // Check resource can be accessed and is valid
-        $from = 'createObservations';
-        list($code, $status, $message) = $this->check($from);
-        if ($status == 'error') {
-            return $this->apiResponse(
-                $code,
-                $status,
-                $message
-            );
-        }
-
-        $data = array();
-
-        return $this->objectResponse($data);
-    }
-
-    /**
      * Get an observation by UID
      * /observation/{observationId}.
      *
@@ -437,4 +411,48 @@ class observationCtrl extends apiController
             $message
         );
     }
+
+    /**
+     * Get observation media file
+     *
+     */
+    public function getObservationMedia() {
+        $from = 'getObservationMedia';
+        list($code, $status, $message) = $this->check($from);
+        if ($status == 'error') {
+            return $this->apiResponse(
+                $code,
+                $status,
+                $message
+            );
+        }
+
+        // Get observation
+        list($status, $message, $data) = $this->observation->get();
+        $code = '200';
+        if ($status == 'error') {
+            return $this->apiResponse(
+                '400',
+                $status,
+                $message
+            );
+        }
+
+        // Get media path
+        list($status, $message, $filePath) = $this->observation->getMediaPath();
+        if ($status == 'error') {
+            return $this->apiResponse(
+                '404',
+                $status,
+                $message
+            );
+        }
+
+        $outputFileName = $data->uuid;
+        $doDownload = true;
+
+        // Return binary geopackage file
+        return $this->getMedia($filePath, $outputFileName);
+    }
+
 }

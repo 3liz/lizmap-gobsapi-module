@@ -27,12 +27,12 @@ class Indicator
     /**
      * @var document root directory
      */
-    public $document_root_directory = '';
+    public $document_root_directory = null;
 
     /**
      * @var media destination directory
      */
-    public $observation_media_directory = '';
+    public $observation_media_directory = null;
 
     /**
      * @var media allowed mime types
@@ -155,6 +155,7 @@ class Indicator
             CASE
                 WHEN d.id IS NOT NULL THEN json_build_object(
                     'id', d.id,
+                    'uid', d.do_uid,
                     'indicator', ind.code,
                     'label', d.do_label,
                     'description', d.do_description,
@@ -185,7 +186,7 @@ class Indicator
                 id, code, label, description, category, date_format,
                 values, documents,
                 NULL AS preview,
-                'blue' AS color,
+                NULL AS icon,
                 created_at,
                 updated_at
             FROM consolidated
@@ -231,17 +232,18 @@ class Indicator
                 $docs = array();
             } else {
                 foreach ($data->documents AS $document) {
-                    // Check if document is preview
-                    if ($document->type == 'preview') {
-                        // We move the doc from documents to preview property
-                        $media_url = $this->setDocumentUrl($document->type, $document->url);
+                    // Check if document is preview or icon
+                    if (in_array($document->type, array('preview', 'icon'))) {
+                        // We move the doc from documents to preview/icon property
+                        $media_url = $this->setDocumentUrl($document);
                         if ($media_url) {
-                            $data->preview = $media_url;
+                            $dtype = $document->type;
+                            $data->$dtype = $media_url;
                         }
                     } elseif ($document->type == 'url') {
                         $docs[] = $document;
                     } else {
-                        $media_url = $this->setDocumentUrl($document->type, $document->url);
+                        $media_url = $this->setDocumentUrl($document);
                         if ($media_url) {
                             $document->url = $media_url;
                         }
@@ -258,10 +260,10 @@ class Indicator
 
     // Set the root folder for the indicator document files
     public function setDocumentDirectory() {
-        $this->document_root_directory = jApp::varPath('uploads/gobsapi~media');
+        $this->document_root_directory = null;
         $repository_dir = $this->lizmap_project->getRepository()->getPath();
         $root_dir = realpath($repository_dir.'../media/');
-        if (is_dir($root_dir) && is_writable($root_dir)) {
+        if (is_dir($root_dir)) {
             $document_dir = '/../media/gobsapi/documents/';
             $dest_dir = $repository_dir.$document_dir;
             $create_dir = jFile::createDir($dest_dir);
@@ -273,7 +275,7 @@ class Indicator
 
     // Set the root folder for the observation media files
     public function setMediaDirectory() {
-        $this->observation_media_directory = jApp::varPath('uploads/gobsapi~media');
+        $this->observation_media_directory = null;
         $repository_dir = $this->lizmap_project->getRepository()->getPath();
         $root_dir = realpath($repository_dir.'../media/');
         if (is_dir($root_dir) && is_writable($root_dir)) {
@@ -387,23 +389,55 @@ class Indicator
         return $data;
     }
 
-    // Transform the indicator document file path into a public lizMap media URL
-    public function setDocumentUrl($type, $path) {
-        $document_url = null;
+    // Get indicator document by uid
+    public function getDocumentByUid($uid) {
+        $document = null;
+        if (!$this->isValidUuid($uid)) {
+            return null;
+        }
+
+        $documents = $this->raw_data->documents;
+        foreach ($documents as $doc) {
+            if ($doc->uid == $uid) {
+                return $doc;
+            }
+        }
+
+        return null;
+    }
+
+    // Get document full file path
+    public function getDocumentPath($document) {
+        if (empty($this->document_root_directory)) {
+            return null;
+        }
 
         // Indicator code and document type are already contained in the dabase document URL
-        $destination_basename = $path;
+        $destination_basename = $document->url;
         $document_dir = '/../media/gobsapi/documents/';
         $media_path = $document_dir.$destination_basename;
         $file_path = $this->document_root_directory.'/'.$destination_basename;
-        if (file_exists($file_path)) {
+        if (!file_exists($file_path)) {
+            return null;
+        }
+
+        return $file_path;
+    }
+
+    // Transform the indicator document file path into a public lizMap media URL
+    public function setDocumentUrl($document) {
+        $document_url = null;
+        $file_path = $this->getDocumentPath($document);
+
+        if ($file_path) {
             $document_url = jUrl::getFull(
-                'view~media:getMedia',
-                array(
-                    'repository' => $this->lizmap_project->getData('repository'),
-                    'project' => $this->lizmap_project->getData('id'),
-                    'path' => $media_path
-                )
+                'gobsapi~indicator:getIndicatorDocument'
+            );
+            $pkey = $this->lizmap_project->getData('repository').'~'.$this->lizmap_project->getData('id');
+            $document_url = str_replace(
+                'index.php/gobsapi/indicator/getIndicatorDocument',
+                'gobsapi.php/project/'.$pkey.'/indicator/'.$this->code.'/document/'.$document->uid,
+                $document_url
             );
         }
 
@@ -413,6 +447,9 @@ class Indicator
     // Transform the observation media file path into a public lizMap media URL
     public function setObservationMediaUrl($uid) {
         $media_url = null;
+        if (empty($this->observation_media_directory)) {
+            return null;
+        }
 
         $destination_basename = $uid;
         $observation_dir = '/../media/gobsapi/observations/';
@@ -421,16 +458,17 @@ class Indicator
         foreach ($this->media_mimes as $mime) {
             $file_path = $full_path.'.'.$mime;
             $media_path = $relative_path.'.'.$mime;
-
             if (file_exists($file_path)) {
                 $media_url = jUrl::getFull(
-                    'view~media:getMedia',
-                    array(
-                        'repository' => $this->lizmap_project->getData('repository'),
-                        'project' => $this->lizmap_project->getData('id'),
-                        'path' => $media_path
-                    )
+                    'gobsapi~observation:getObservationMedia'
                 );
+                $pkey = $this->lizmap_project->getData('repository').'~'.$this->lizmap_project->getData('id');
+                $media_url = str_replace(
+                    'index.php/gobsapi/observation/getObservationMedia',
+                    'gobsapi.php/project/'.$pkey.'/indicator/'.$this->code.'/observation/'.$uid.'/media',
+                    $media_url
+                );
+
                 break;
             }
         }

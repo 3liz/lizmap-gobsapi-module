@@ -246,4 +246,38 @@ class apiController extends jController
 
         return $rep;
     }
+
+
+
+    /**
+     * Get media file: indicator document, observation media, project geopackage
+     *
+     */
+    protected function getMedia($filePath, $outputFileName, $mimeType=null, $doDownload=true) {
+        // Return binary geopackage file
+        $rep = $this->getResponse('binary');
+        $rep->doDownload = $doDownload;
+
+        // Detect mime type if not given
+        if (!$mimeType) {
+            $mimeType = jFile::getMimeType($filePath);
+        }
+        $rep->mimeType = $mimeType;
+        $rep->outputFileName = $outputFileName;
+
+        // check file exists and return it or an error
+        if (file_exists($filePath)) {
+            $rep->fileName = $filePath;
+            $rep->setExpires('+1 hours');
+        } else {
+            $rep->fileName = null;
+            $rep->mimeType = 'text/text';
+            $rep->doDownload = false;
+            $msg = 'No file has been found in the specified path';
+            $rep->content = $msg;
+            $rep->setHttpStatus(404, 'Not found');
+        }
+
+        return $rep;
+    }
 }
