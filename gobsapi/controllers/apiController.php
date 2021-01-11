@@ -61,7 +61,11 @@ class apiController extends jController
             'Lastsyncdate'=>'lastSyncDate'
         );
 
-        // Todo API - Si lastSyncDate n'est pas donné, mettre 0
+        // Default values
+        $this->lastSyncDate = '1970-01-01 00:00:00';
+        $this->requestSyncDate = date("Y-m-d H:i:s");
+
+        // Get lastSyncDate and requestSyncDate from headers
         foreach($sync_dates as $key=>$prop) {
             if (array_key_exists($key, $headers)) {
                 $sync_date = $headers[$key];
