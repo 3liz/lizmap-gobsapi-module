@@ -1,3 +1,6 @@
+eslint:
+	npx eslint gobsapi/
+
 php-cs-fixer-test:
 	php-cs-fixer fix --config=.php_cs.dist --allow-risky=yes --dry-run --diff
 
