@@ -11,6 +11,3 @@
 .php_cs
 .php_cs.cache
 .vscode/
-
-# Node, NPM
-node_modules
