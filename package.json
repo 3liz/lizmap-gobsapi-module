@@ -1,0 +1,26 @@
+{
+  "name": "lizmap-gobs-module",
+  "version": "1.0.0",
+  "description": "## Introduction",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "pretest": "eslint gopsapi",
+    "pretest-fix": "eslint --fix gopsapi"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/3liz/lizmap-gobs-module.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/3liz/lizmap-gobs-module/issues"
+  },
+  "homepage": "https://github.com/3liz/lizmap-gobs-module#readme",
+  "dependencies": {
+    "eslint": "^7.18.0"
+  }
+}

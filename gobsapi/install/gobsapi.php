@@ -10,6 +10,7 @@
  * @license   GPL 3
  */
 require '../application.init.php';
+
 require JELIX_LIB_CORE_PATH.'request/jClassicRequest.class.php';
 
 checkAppOpened();

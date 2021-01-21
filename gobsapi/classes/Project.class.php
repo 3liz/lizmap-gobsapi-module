@@ -153,8 +153,8 @@ class Project
     private function setProjectXml()
     {
         $qgs_path = $this->lizmap_project->getQgisPath();
-        if (!file_exists($qgs_path) ||
-            !file_exists($qgs_path.'.cfg')) {
+        if (!file_exists($qgs_path)
+            || !file_exists($qgs_path.'.cfg')) {
             throw new Error('Files of project '.$this->key.' does not exists');
         }
         $xml = simplexml_load_file($qgs_path);
