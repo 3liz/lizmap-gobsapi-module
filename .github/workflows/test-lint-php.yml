@@ -19,4 +19,3 @@ jobs:
     - uses: docker://oskarstark/php-cs-fixer-ga
       with:
         args: --config=.php_cs.dist --allow-risky=yes --dry-run --diff
-        

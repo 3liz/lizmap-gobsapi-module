@@ -11,3 +11,5 @@
 .php_cs
 .php_cs.cache
 .vscode/
+
+node_modules
