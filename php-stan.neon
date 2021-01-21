@@ -1,0 +1,7 @@
+parameters:
+  scanDirectories:
+    - gobsapi/
+  level: 0
+  ignoreErrors:
+  paths:
+    - gobsapi/
