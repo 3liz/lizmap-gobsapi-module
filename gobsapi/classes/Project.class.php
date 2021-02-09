@@ -17,7 +17,7 @@ class Project
     /**
      * @var SimpleXMLElement QGIS project XML
      */
-    protected $xml = null;
+    protected $xml;
 
     /**
      * @var data: G-Obs Representation of a project
@@ -32,7 +32,7 @@ class Project
     /**
      * constructor.
      *
-     * @param string $username: the user login
+     * @param string $username:      the user login
      * @param mixed  $lizmap_project
      */
     public function __construct($lizmap_project)
@@ -50,7 +50,6 @@ class Project
         if (!empty($this->indicators)) {
             $this->buildGobsProject();
         }
-
     }
 
     // Create G-Obs project object from Lizmap project
@@ -74,9 +73,9 @@ class Project
             WITH a AS (
                 SELECT ST_Transform(
                     ST_SetSRID('Box(
-                        ".$bbox_exp[0]." ".$bbox_exp[1].",
-                        ".$bbox_exp[2]." ".$bbox_exp[3]."
-                    )'::box2d, ".$srid."), 4326) AS b
+                        ".$bbox_exp[0].' '.$bbox_exp[1].',
+                        '.$bbox_exp[2].' '.$bbox_exp[3]."
+                    )'::box2d, ".$srid.'), 4326) AS b
             )
             SELECT
             ST_xmin(b) xmin,
@@ -84,12 +83,13 @@ class Project
             ST_xmax(b) xmax,
             ST_ymax(b) ymax
             FROM a;
-        ";
+        ';
         $gobs_profile = 'gobsapi';
         $cnx = jDb::getConnection($gobs_profile);
+
         try {
             $resultset = $cnx->query($sql);
-            $data = [];
+            $data = array();
             foreach ($resultset->fetchAll() as $record) {
                 $extent = array(
                     'xmin' => $record->xmin,
@@ -98,13 +98,13 @@ class Project
                     'ymax' => $record->ymax,
                 );
             }
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             $msg = $e->getMessage();
         }
 
         // Add geopackage url if a file is present
         $gpkg_url = null;
-        $gpkg_file_path = $this->lizmap_project->getQgisPath() . '.gpkg';
+        $gpkg_file_path = $this->lizmap_project->getQgisPath().'.gpkg';
         if (file_exists($gpkg_file_path)) {
             $gpkg_url = jUrl::getFull(
                 'gobsapi~project:getProjectGeopackage',
@@ -137,13 +137,11 @@ class Project
             'geopackage_url' => $gpkg_url,
             'extent' => $extent,
         );
-
     }
 
     // Get Gobs representation of a project object
     public function get()
     {
-
         return $this->data;
     }
 
@@ -193,5 +191,4 @@ class Project
     }
 
     // Get Gobs
-
 }

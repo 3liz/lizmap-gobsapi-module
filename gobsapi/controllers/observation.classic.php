@@ -21,7 +21,9 @@ class observationCtrl extends apiController
 
     /**
      * Check access by the user
-     * and given parameters
+     * and given parameters.
+     *
+     * @param mixed $from
      */
     private function check($from)
     {
@@ -63,10 +65,10 @@ class observationCtrl extends apiController
         $uid_actions = array(
             'getObservationById', 'deleteObservationById',
             'uploadObservationMedia', 'deleteObservationMedia',
-            'getObservationMedia'
+            'getObservationMedia',
         );
         $body_actions = array(
-            'createObservation', 'updateObservation'
+            'createObservation', 'updateObservation',
         );
         if (in_array($from, $uid_actions)) {
             // Observation uid is passed
@@ -77,17 +79,18 @@ class observationCtrl extends apiController
         }
 
         // Run the check
-        list($code, $status, $message) = $this->$check_method($from);
+        list($code, $status, $message) = $this->{$check_method}($from);
+
         return array(
             $code,
             $status,
             $message,
         );
-
     }
 
     // Check parameters for action having an observation id parameter
-    private function checkUidActions($from) {
+    private function checkUidActions($from)
+    {
         // Parameters
         $observation_uid = $this->param('observationId');
 
@@ -131,23 +134,23 @@ class observationCtrl extends apiController
                 'The authenticated user has not right to modify this observation',
             );
         }
-        else {
-            // Set observation property
-            $this->observation = $gobs_observation;
 
-            return array(
-                '200',
-                'success',
-                'Observation is a G-Obs observation'
-            );
-        }
+        // Set observation property
+        $this->observation = $gobs_observation;
+
+        return array(
+            '200',
+            'success',
+            'Observation is a G-Obs observation',
+        );
 
         // Unknown error
         return array('500', 'error', 'An unknown error has occured');
     }
 
     // Check parameters for actions having the body of an observation as parameter
-    private function checkBodyActions($from) {
+    private function checkBodyActions($from)
+    {
         // Parameters
         $body = $this->request->readHttpBody();
         $gobs_observation = new Observation($this->user, $this->indicator, null, $body);
@@ -188,20 +191,18 @@ class observationCtrl extends apiController
                 'error',
                 'The authenticated user has not right to '.$context.' this observation',
             );
-        } else {
-            // Set observation property
-            $this->observation = $gobs_observation;
-
-            return array(
-                '200',
-                'success',
-                'Observation is a G-Obs observation'
-            );
         }
+        // Set observation property
+        $this->observation = $gobs_observation;
+
+        return array(
+            '200',
+            'success',
+            'Observation is a G-Obs observation',
+        );
 
         // Unknown error
         return array('500', 'error', 'An unknown error has occured');
-
     }
 
     /**
@@ -220,7 +221,10 @@ class observationCtrl extends apiController
             return $this->apiResponse(
                 $code,
                 $status,
-                $message
+                $message,
+                'createObservation',
+                null,
+                null
             );
         }
 
@@ -230,11 +234,14 @@ class observationCtrl extends apiController
             return $this->apiResponse(
                 '400',
                 $status,
-                $message
+                $message,
+                'createObservation',
+                null,
+                null
             );
         }
 
-        return $this->objectResponse($data);
+        return $this->objectResponse($data, 'createObservation', null);
     }
 
     /**
@@ -253,7 +260,10 @@ class observationCtrl extends apiController
             return $this->apiResponse(
                 $code,
                 $status,
-                $message
+                $message,
+                'updateObservation',
+                null,
+                null
             );
         }
 
@@ -263,11 +273,14 @@ class observationCtrl extends apiController
             return $this->apiResponse(
                 '400',
                 $status,
-                $message
+                $message,
+                'updateObservation',
+                null,
+                null
             );
         }
 
-        return $this->objectResponse($data);
+        return $this->objectResponse($data, 'updateObservation', null);
     }
 
     /**
@@ -288,7 +301,10 @@ class observationCtrl extends apiController
             return $this->apiResponse(
                 $code,
                 $status,
-                $message
+                $message,
+                'getObservationById',
+                null,
+                null
             );
         }
 
@@ -297,11 +313,14 @@ class observationCtrl extends apiController
             return $this->apiResponse(
                 '400',
                 $status,
-                $message
+                $message,
+                'getObservationById',
+                null,
+                null
             );
         }
 
-        return $this->objectResponse($data);
+        return $this->objectResponse($data, 'getObservationById', null);
     }
 
     /**
@@ -322,7 +341,10 @@ class observationCtrl extends apiController
             return $this->apiResponse(
                 $code,
                 $status,
-                $message
+                $message,
+                'deleteObservationById',
+                null,
+                null
             );
         }
 
@@ -336,7 +358,10 @@ class observationCtrl extends apiController
         return $this->apiResponse(
             $code,
             $status,
-            $message
+            $message,
+            'deleteObservationById',
+            null,
+            null
         );
     }
 
@@ -357,7 +382,10 @@ class observationCtrl extends apiController
             return $this->apiResponse(
                 $code,
                 $status,
-                $message
+                $message,
+                'uploadObservationMedia',
+                null,
+                null
             );
         }
 
@@ -372,7 +400,10 @@ class observationCtrl extends apiController
         return $this->apiResponse(
             $code,
             $status,
-            $message
+            $message,
+            'uploadObservationMedia',
+            null,
+            null
         );
     }
 
@@ -393,7 +424,10 @@ class observationCtrl extends apiController
             return $this->apiResponse(
                 $code,
                 $status,
-                $message
+                $message,
+                'deleteObservationMedia',
+                null,
+                null
             );
         }
 
@@ -408,22 +442,28 @@ class observationCtrl extends apiController
         return $this->apiResponse(
             $code,
             $status,
-            $message
+            $message,
+            'deleteObservationMedia',
+            null,
+            null
         );
     }
 
     /**
-     * Get observation media file
-     *
+     * Get observation media file.
      */
-    public function getObservationMedia() {
+    public function getObservationMedia()
+    {
         $from = 'getObservationMedia';
         list($code, $status, $message) = $this->check($from);
         if ($status == 'error') {
             return $this->apiResponse(
                 $code,
                 $status,
-                $message
+                $message,
+                'getObservationMedia',
+                null,
+                null
             );
         }
 
@@ -434,7 +474,10 @@ class observationCtrl extends apiController
             return $this->apiResponse(
                 '400',
                 $status,
-                $message
+                $message,
+                'getObservationMedia',
+                null,
+                null
             );
         }
 
@@ -444,7 +487,10 @@ class observationCtrl extends apiController
             return $this->apiResponse(
                 '404',
                 $status,
-                $message
+                $message,
+                'getObservationMedia',
+                null,
+                null
             );
         }
 
@@ -454,5 +500,4 @@ class observationCtrl extends apiController
         // Return binary geopackage file
         return $this->getMedia($filePath, $outputFileName);
     }
-
 }

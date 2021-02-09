@@ -6,7 +6,7 @@ class indicatorCtrl extends apiController
 {
     /**
      * Check access by the user
-     * and given parameters
+     * and given parameters.
      */
     private function check()
     {
@@ -42,7 +42,6 @@ class indicatorCtrl extends apiController
         }
 
         return array('200', 'success', 'Indicator is a G-Obs indicator');
-
     }
 
     /**
@@ -63,13 +62,16 @@ class indicatorCtrl extends apiController
             return $this->apiResponse(
                 $code,
                 $status,
-                $message
+                $message,
+                'getIndicatorByCode',
+                null,
+                null
             );
         }
 
         $indicator = $this->indicator->get('publication');
 
-        return $this->objectResponse($indicator);
+        return $this->objectResponse($indicator, 'getIndicatorByCode', null);
     }
 
     /**
@@ -93,7 +95,10 @@ class indicatorCtrl extends apiController
             return $this->apiResponse(
                 $code,
                 $status,
-                $message
+                $message,
+                'getObservationsByIndicator',
+                null,
+                null
             );
         }
 
@@ -102,7 +107,7 @@ class indicatorCtrl extends apiController
             $this->lastSyncDate
         );
 
-        return $this->objectResponse($data);
+        return $this->objectResponse($data, 'getObservationsByIndicator', null);
     }
 
     /**
@@ -125,7 +130,10 @@ class indicatorCtrl extends apiController
             return $this->apiResponse(
                 $code,
                 $status,
-                $message
+                $message,
+                'getDeletedObservationsByIndicator',
+                null,
+                null
             );
         }
 
@@ -134,21 +142,24 @@ class indicatorCtrl extends apiController
             $this->lastSyncDate
         );
 
-        return $this->objectResponse($data);
+        return $this->objectResponse($data, 'getDeletedObservationsByIndicator', null);
     }
 
     /**
-     * Get indicator document file by uid
-     *
+     * Get indicator document file by uid.
      */
-    public function getIndicatorDocument() {
+    public function getIndicatorDocument()
+    {
         // Check resource can be accessed and is a valid G-Obs indicator
         list($code, $status, $message) = $this->check();
         if ($status == 'error') {
             return $this->apiResponse(
                 $code,
                 $status,
-                $message
+                $message,
+                'getIndicatorDocument',
+                null,
+                null
             );
         }
 
@@ -158,7 +169,10 @@ class indicatorCtrl extends apiController
             return $this->apiResponse(
                 '400',
                 'error',
-                'Invalid document UID'
+                'Invalid document UID',
+                'getIndicatorDocument',
+                null,
+                null
             );
         }
 
@@ -167,7 +181,10 @@ class indicatorCtrl extends apiController
             return $this->apiResponse(
                 '404',
                 'error',
-                'The given document uid does not exist for this indicator'
+                'The given document uid does not exist for this indicator',
+                'getIndicatorDocument',
+                null,
+                null
             );
         }
 
@@ -176,7 +193,10 @@ class indicatorCtrl extends apiController
             return $this->apiResponse(
                 '404',
                 'error',
-                'The document file does not exist'
+                'The document file does not exist',
+                'getIndicatorDocument',
+                null,
+                null
             );
         }
         $outputFileName = $document->label;

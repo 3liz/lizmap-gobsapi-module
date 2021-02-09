@@ -27,12 +27,12 @@ class Indicator
     /**
      * @var document root directory
      */
-    public $document_root_directory = null;
+    public $document_root_directory;
 
     /**
      * @var media destination directory
      */
-    public $observation_media_directory = null;
+    public $observation_media_directory;
 
     /**
      * @var media allowed mime types
@@ -44,7 +44,7 @@ class Indicator
     /**
      * constructor.
      *
-     * @param string $code: the code of the indicator
+     * @param string        $code:           the code of the indicator
      * @param lizmapProject $lizmap_project: the lizMap project of the indicator
      */
     public function __construct($code, $lizmap_project)
@@ -79,20 +79,21 @@ class Indicator
     {
         $i = $this->code;
 
-        return (
+        return
             preg_match('/^[a-zA-Z0-9_\-]+$/', $i)
             and strlen($i) > 2
-        );
+        ;
     }
 
     /**
-     * Check if a given string is a valid UUID
+     * Check if a given string is a valid UUID.
      *
-     * @param   string  $uuid   The string to check
-     * @return  boolean
+     * @param string $uuid The string to check
+     *
+     * @return bool
      */
-    public function isValidUuid($uuid) {
-
+    public function isValidUuid($uuid)
+    {
         if (!is_string($uuid) || (preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/', $uuid) !== 1)) {
             return false;
         }
@@ -208,7 +209,7 @@ class Indicator
     }
 
     // Get Gobs representation of a indicator object
-    public function get($context='internal')
+    public function get($context = 'internal')
     {
         $data = $this->raw_data;
 
@@ -221,7 +222,8 @@ class Indicator
     }
 
     // Modify and return data for publication purpose
-    private function getForPublication() {
+    private function getForPublication()
+    {
         // Get observation instance data
         $data = $this->raw_data;
 
@@ -231,14 +233,14 @@ class Indicator
             if (count($data->documents) == 1 && !$data->documents[0]) {
                 $docs = array();
             } else {
-                foreach ($data->documents AS $document) {
+                foreach ($data->documents as $document) {
                     // Check if document is preview or icon
                     if (in_array($document->type, array('preview', 'icon'))) {
                         // We move the doc from documents to preview/icon property
                         $media_url = $this->setDocumentUrl($document);
                         if ($media_url) {
                             $dtype = $document->type;
-                            $data->$dtype = $media_url;
+                            $data->{$dtype} = $media_url;
                         }
                     } elseif ($document->type == 'url') {
                         $docs[] = $document;
@@ -257,9 +259,9 @@ class Indicator
         return $data;
     }
 
-
     // Set the root folder for the indicator document files
-    public function setDocumentDirectory() {
+    public function setDocumentDirectory()
+    {
         $this->document_root_directory = null;
         $repository_dir = $this->lizmap_project->getRepository()->getPath();
         $root_dir = realpath($repository_dir.'../media/');
@@ -274,7 +276,8 @@ class Indicator
     }
 
     // Set the root folder for the observation media files
-    public function setMediaDirectory() {
+    public function setMediaDirectory()
+    {
         $this->observation_media_directory = null;
         $repository_dir = $this->lizmap_project->getRepository()->getPath();
         $root_dir = realpath($repository_dir.'../media/');
@@ -289,7 +292,7 @@ class Indicator
     }
 
     // Get indicator observations
-    public function getObservations($requestSyncDate=null, $lastSyncDate=null, $uids=null)
+    public function getObservations($requestSyncDate = null, $lastSyncDate = null, $uids = null)
     {
         $sql = "
         WITH ind AS (
@@ -328,11 +331,11 @@ class Indicator
         // Filter between last sync date & request sync date
         if ($requestSyncDate && $lastSyncDate) {
             // updated_at is always set (=created_at or last time object has been modified)
-            $sql.= "
+            $sql .= '
             AND (
                 o.updated_at > $2 AND o.updated_at <= $3
             )
-            ";
+            ';
         }
 
         // Filter for given observation uids
@@ -345,21 +348,21 @@ class Indicator
             }
             if (!empty($keep)) {
                 $sql_uids = implode("', '", $keep);
-                $sql.= "
+                $sql .= "
                 AND (
-                    o.ob_uid IN ('" . $sql_uids. "')
+                    o.ob_uid IN ('".$sql_uids."')
                 )
                 ";
             }
         }
 
         // Transform result into JSON for each row
-        $sql.= "
+        $sql .= '
         )
         SELECT
             row_to_json(obs.*) AS object_json
         FROM obs
-        ";
+        ';
         //jLog::log($sql, 'error');
 
         $gobs_profile = 'gobsapi';
@@ -371,7 +374,7 @@ class Indicator
             $params[] = $requestSyncDate;
         }
         $resultset->execute($params);
-        $data = [];
+        $data = array();
 
         // Process data
         foreach ($resultset->fetchAll() as $record) {
@@ -390,7 +393,8 @@ class Indicator
     }
 
     // Get indicator document by uid
-    public function getDocumentByUid($uid) {
+    public function getDocumentByUid($uid)
+    {
         $document = null;
         if (!$this->isValidUuid($uid)) {
             return null;
@@ -407,7 +411,8 @@ class Indicator
     }
 
     // Get document full file path
-    public function getDocumentPath($document) {
+    public function getDocumentPath($document)
+    {
         if (empty($this->document_root_directory)) {
             return null;
         }
@@ -425,7 +430,8 @@ class Indicator
     }
 
     // Transform the indicator document file path into a public lizMap media URL
-    public function setDocumentUrl($document) {
+    public function setDocumentUrl($document)
+    {
         $document_url = null;
         $file_path = $this->getDocumentPath($document);
 
@@ -445,7 +451,8 @@ class Indicator
     }
 
     // Transform the observation media file path into a public lizMap media URL
-    public function setObservationMediaUrl($uid) {
+    public function setObservationMediaUrl($uid)
+    {
         $media_url = null;
         if (empty($this->observation_media_directory)) {
             return null;
@@ -477,7 +484,7 @@ class Indicator
     }
 
     // Get indicator deleted observations
-    public function getDeletedObservations($requestSyncDate=null, $lastSyncDate=null)
+    public function getDeletedObservations($requestSyncDate = null, $lastSyncDate = null)
     {
         $sql = "
         WITH
@@ -489,18 +496,18 @@ class Indicator
             AND de_table = 'observation'
         ";
         if ($requestSyncDate && $lastSyncDate) {
-            $sql.= "
+            $sql .= '
             AND (
                 de_timestamp BETWEEN $1 AND $2
             )
-            ";
+            ';
         }
-        $sql.= "
+        $sql .= '
         )
         SELECT
             uid
         FROM del
-        ";
+        ';
         //jLog::log($sql, 'error');
 
         $gobs_profile = 'gobsapi';
@@ -512,12 +519,11 @@ class Indicator
             $params[] = $requestSyncDate;
         }
         $resultset->execute($params);
-        $data = [];
+        $data = array();
         foreach ($resultset->fetchAll() as $record) {
             $data[] = $record->uid;
         }
 
         return $data;
     }
-
 }

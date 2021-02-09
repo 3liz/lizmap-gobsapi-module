@@ -375,8 +375,33 @@ echo $(curl -X DELETE -H 'Accept: application/json' -H "Authorization: Bearer ${
 curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" $BASEURL/project/lizmapdemo~lampadaires/indicator/pluviometry/observation/e8f0a46c-1d24-456a-925a-387740ade1c6/media --output /tmp/test.jpeg
 ```
 
+## Debug
 
+You can activate the **debug mode** by manually editing the configuration file `lizmap/var/config/gobsapi.ini.php` and modify the variable `log_api_calls' with the `debug` value:
 
+```ini
+[gobsapi]
+log_api_calls=debug
+```
+
+You will then be able to see the API calls log written in the file `lizmap/var/log/messages.log`
+
+```bash
+tail -f lizmap/var/log/messages.log
+```
+
+Messages will be like
+
+```
+2021-02-09 17:18:52	127.0.0.1	default	GOBSAPI - ################
+2021-02-09 17:19:05	127.0.0.1	default	GOBSAPI - path: getProjectByKey
+2021-02-09 17:19:05	127.0.0.1	default	GOBSAPI - input_data: {"projectKey":"lizmapdemo~a_fake_project","module":"gobsapi","action":"project:getProjectByKey"}
+2021-02-09 17:19:05	127.0.0.1	default	GOBSAPI - http_code: 404
+2021-02-09 17:19:05	127.0.0.1	default	GOBSAPI - status: error
+2021-02-09 17:19:05	127.0.0.1	default	GOBSAPI - message: The given project key does not refer to a known project
+2021-02-09 17:19:05	127.0.0.1	default	GOBSAPI - ################
+
+```
 ## License
 
 Mozilla Public License 2: https://www.mozilla.org/en-US/MPL/2.0/

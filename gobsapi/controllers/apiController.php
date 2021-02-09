@@ -25,9 +25,9 @@ class apiController extends jController
 
     protected $indicator;
 
-    protected $requestSyncDate = null;
+    protected $requestSyncDate;
 
-    protected $lastSyncDate = null;
+    protected $lastSyncDate;
 
     /**
      * Authenticate the user via JWC token
@@ -57,20 +57,20 @@ class apiController extends jController
         // Add requestSyncDate & lastSyncDate
         $headers = jApp::coord()->request->headers();
         $sync_dates = array(
-            'Requestsyncdate'=> 'requestSyncDate',
-            'Lastsyncdate'=>'lastSyncDate'
+            'Requestsyncdate' => 'requestSyncDate',
+            'Lastsyncdate' => 'lastSyncDate',
         );
 
         // Default values
         $this->lastSyncDate = '1970-01-01 00:00:00';
-        $this->requestSyncDate = date("Y-m-d H:i:s");
+        $this->requestSyncDate = date('Y-m-d H:i:s');
 
         // Get lastSyncDate and requestSyncDate from headers
-        foreach($sync_dates as $key=>$prop) {
+        foreach ($sync_dates as $key => $prop) {
             if (array_key_exists($key, $headers)) {
                 $sync_date = $headers[$key];
                 if ($this->isValidDate($sync_date)) {
-                    $this->$prop = $sync_date;
+                    $this->{$prop} = $sync_date;
                 }
             }
         }
@@ -79,7 +79,8 @@ class apiController extends jController
     }
 
     // Check if the given project in parameter is valid and accessible
-    protected function checkProject() {
+    protected function checkProject()
+    {
         // Check projectKey parameter
         $project_key = $this->param('projectKey');
         if (!$project_key) {
@@ -138,11 +139,11 @@ class apiController extends jController
 
         // Ok
         return array('200', 'success', 'Project is a valid G-Obs project');
-
     }
 
     // Check if the given indicator in parameter is valid and accessible
-    protected function checkIndicator() {
+    protected function checkIndicator()
+    {
         // Check indicatorKey parameter
         $indicator_code = $this->param('indicatorCode');
         if (!$indicator_code) {
@@ -182,19 +183,22 @@ class apiController extends jController
 
         // Ok
         return array('200', 'success', 'Indicator is a valid G-Obs indicator');
-
     }
 
     /**
-     * Validate a string containing date
+     * Validate a string containing date.
+     *
      * @param string date String to validate. Ex: "2020-12-12 08:34:45"
      * @param string format Format of the date to validate against. Default "Y-m-d H:i:s"
+     * @param mixed $date
+     * @param mixed $format
      *
-     * @return boolean
+     * @return bool
      */
     private function isValidDate($date, $format = 'Y-m-d H:i:s')
     {
         $d = DateTime::createFromFormat($format, $date);
+
         return $d && $d->format($format) == $date;
     }
 
@@ -208,22 +212,36 @@ class apiController extends jController
      * @param mixed      $http_code
      * @param null|mixed $status
      * @param null|mixed $message
+     * @param null|mixed $path
+     * @param null|mixed $input_data
+     * @param null|mixed $output_data
      * @httpresponse JSON with code, status and message
      *
      * @return jResponseJson
      */
-    protected function apiResponse($http_code = '200', $status = null, $message = null)
+    protected function apiResponse($http_code = '200', $status = null, $message = null, $path = null, $input_data = null, $output_data = null)
     {
         $rep = $this->getResponse('json');
         $rep->setHttpStatus($http_code, $this->http_codes[$http_code]);
 
         if ($status) {
-            $rep->data = array(
+            $data = array(
                 'code' => $this->error_codes[$status],
                 'status' => $status,
                 'message' => $message,
             );
+            $rep->data = $data;
         }
+
+        // Log
+        $this->logQuery(
+            $path,
+            $input_data,
+            $status,
+            $http_code,
+            $message,
+            $output_data
+        );
 
         return $rep;
     }
@@ -232,28 +250,45 @@ class apiController extends jController
      * Return object(s) in JSON format.
      *
      * @param array data Array containing the  projects
-     * @param mixed $data
+     * @param mixed      $data
+     * @param null|mixed $path
+     * @param null|mixed $input_data
      * @httpresponse JSON with project data
      *
      * @return jResponseJson
      */
-    protected function objectResponse($data)
+    protected function objectResponse($data, $path = null, $input_data = null)
     {
         $rep = $this->getResponse('json');
         $http_code = '200';
         $rep->setHttpStatus($http_code, $this->http_codes[$http_code]);
         $rep->data = $data;
 
+        // Log
+        $message = null;
+        $status = 'success';
+        $this->logQuery(
+            $path,
+            $input_data,
+            $status,
+            $http_code,
+            $message,
+            $data
+        );
+
         return $rep;
     }
 
-
-
     /**
-     * Get media file: indicator document, observation media, project geopackage
+     * Get media file: indicator document, observation media, project geopackage.
      *
+     * @param mixed      $filePath
+     * @param mixed      $outputFileName
+     * @param null|mixed $mimeType
+     * @param mixed      $doDownload
      */
-    protected function getMedia($filePath, $outputFileName, $mimeType=null, $doDownload=true) {
+    protected function getMedia($filePath, $outputFileName, $mimeType = null, $doDownload = true)
+    {
         // Return binary geopackage file
         $rep = $this->getResponse('binary');
         $rep->doDownload = $doDownload;
@@ -269,15 +304,94 @@ class apiController extends jController
         if (file_exists($filePath)) {
             $rep->fileName = $filePath;
             $rep->setExpires('+1 hours');
+            $status = 'success';
+            $message = null;
         } else {
+            $status = 'error';
+            $http_code = '404';
             $rep->fileName = null;
             $rep->mimeType = 'text/text';
             $rep->doDownload = false;
-            $msg = 'No file has been found in the specified path';
-            $rep->content = $msg;
-            $rep->setHttpStatus(404, 'Not found');
+            $message = 'No file has been found in the specified path';
+            $rep->content = $message;
+            $rep->setHttpStatus($http_code, 'Not found');
         }
 
+        // Log
+        $this->logQuery(
+            'getMedia',
+            array('filePath' => $filePath),
+            $status,
+            $http_code,
+            $message,
+            null
+        );
+
         return $rep;
+    }
+
+    /**
+     * Log request query and status.
+     *
+     * @param mixed      $path
+     * @param mixed      $input_data
+     * @param mixed      $status
+     * @param mixed      $http_code
+     * @param mixed      $message
+     * @param null|mixed $data
+     */
+    protected function logQuery($path, $input_data, $status, $http_code = null, $message = null, $data = null)
+    {
+        // Check if we must log or not
+        $ini_file = jApp::varPath('config/gobsapi.ini.php');
+        if (!is_file($ini_file)) {
+            return;
+        }
+        $ini = parse_ini_file($ini_file, true);
+        if (!array_key_exists('gobsapi', $ini)) {
+            return;
+        }
+        if (!array_key_exists('log_api_calls', $ini['gobsapi'])) {
+            return;
+        }
+        if ($ini['gobsapi']['log_api_calls'] != 'debug') {
+            return;
+        }
+        $prefix = 'GOBSAPI - ';
+        $level = 'default';
+
+        $log = $prefix.'path: '.$path;
+        jLog::log($log, $level);
+
+        if (empty($input_data)) {
+            $input_data = jApp::coord()->request->params;
+        }
+        if (!empty($input_data)) {
+            $log = $prefix.'input_data: '.json_encode($input_data);
+            jLog::log($log, $level);
+        }
+
+        if (!empty($http_code)) {
+            $log = $prefix.'http_code: '.$http_code;
+            jLog::log($log, $level);
+        }
+
+        if (!empty($status)) {
+            $log = $prefix.'status: '.$status;
+            jLog::log($log, $level);
+        }
+
+        if (!empty($message)) {
+            $log = $prefix.'message: '.$message;
+            jLog::log($log, $level);
+        }
+
+        if (!empty($data)) {
+            $log = $prefix.'data: '.json_encode($data);
+            jLog::log($log, $level);
+        }
+
+        $log = $prefix.'################';
+        jLog::log($log, $level);
     }
 }

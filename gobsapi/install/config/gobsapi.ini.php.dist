@@ -1,2 +1,2 @@
 [gobsapi]
-foo=bar
+log_api_calls=false

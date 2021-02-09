@@ -31,7 +31,10 @@ class userCtrl extends apiController
             return $this->apiResponse(
                 '400',
                 'error',
-                'Invalid username/password supplied'
+                'Invalid username/password supplied',
+                'logUserIn',
+                array('login' => $username),
+                null
             );
         }
 
@@ -50,6 +53,18 @@ class userCtrl extends apiController
             'token' => $token,
         );
         $rep->data = $data;
+
+        // Log
+        $message = null;
+        $status = 'success';
+        $this->logQuery(
+            'logUserIn',
+            array('login' => $login),
+            $status,
+            '200',
+            $message,
+            $data
+        );
 
         return $rep;
     }
@@ -75,7 +90,10 @@ class userCtrl extends apiController
             return $this->apiResponse(
                 '401',
                 'error',
-                'Access token is missing or invalid'
+                'Access token is missing or invalid',
+                'logUserOut',
+                array('token' => $token),
+                null
             );
         }
 
@@ -85,7 +103,10 @@ class userCtrl extends apiController
             return $this->apiResponse(
                 '401',
                 'error',
-                'Access token is missing or invalid'
+                'Access token is missing or invalid',
+                'logUserOut',
+                array('token' => $token),
+                null
             );
         }
 
@@ -100,7 +121,10 @@ class userCtrl extends apiController
         return $this->apiResponse(
             '200',
             'success',
-            'The user has been successfully logged out'
+            'The user has been successfully logged out',
+            'logUserOut',
+            array('login' => $login),
+            null
         );
     }
 
@@ -120,7 +144,10 @@ class userCtrl extends apiController
             return $this->apiResponse(
                 '401',
                 'error',
-                'Access token is missing or invalid'
+                'Access token is missing or invalid',
+                'getUserProjects',
+                null,
+                null
             );
         }
         $user = $this->user;
@@ -133,7 +160,7 @@ class userCtrl extends apiController
         // Get projects
         $projects = $user_instance->getProjects();
 
-        return $this->objectResponse($projects);
+        return $this->objectResponse($projects, 'getUserProjects', array('login' => $login));
     }
 }
 ?>

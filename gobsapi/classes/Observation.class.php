@@ -47,24 +47,24 @@ class Observation
     /**
      * @var media destination directory
      */
-    protected $observation_media_directory = null;
+    protected $observation_media_directory;
 
     /**
      * @var media allowed mime types
      */
     protected $media_mimes = array('jpg', 'jpeg', 'png', 'gif');
 
-
     /**
      * constructor.
      *
-     * @param string $indicator_code: the code of the indicator
-     * @param mixed  $user Authenticated user
-     * @param mixed  $indicator Instance of G-Obs Indicator
-     * @param mixed  $observation_uid Uid of the observation
-     * @param mixed  $data JSON data of the observation given as request body
+     * @param string     $indicator_code: the code of the indicator
+     * @param mixed      $user            Authenticated user
+     * @param mixed      $indicator       Instance of G-Obs Indicator
+     * @param mixed      $observation_uid Uid of the observation
+     * @param mixed      $data            JSON data of the observation given as request body
+     * @param null|mixed $body_data
      */
-    public function __construct($user, $indicator, $observation_uid=null, $body_data=null)
+    public function __construct($user, $indicator, $observation_uid = null, $body_data = null)
     {
         $this->observation_uid = $observation_uid;
         $this->json_data = $body_data;
@@ -97,17 +97,17 @@ class Observation
 
         // Set observation media directory
         $this->observation_media_directory = $indicator->observation_media_directory;
-
     }
 
     /**
-     * Check if a given string is a valid UUID
+     * Check if a given string is a valid UUID.
      *
-     * @param   string  $uuid   The string to check
-     * @return  boolean
+     * @param string $uuid The string to check
+     *
+     * @return bool
      */
-    public function isValidUuid($uuid) {
-
+    public function isValidUuid($uuid)
+    {
         if (!is_string($uuid) || (preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/', $uuid) !== 1)) {
             return false;
         }
@@ -116,11 +116,13 @@ class Observation
     }
 
     /**
-     * Validate a string containing date
+     * Validate a string containing date.
+     *
      * @param string date String to validate. Ex: "2020-12-12 08:34:45"
      * @param string format Format of the date to validate against. Default "Y-m-d H:i:s"
+     * @param mixed $date
      *
-     * @return boolean
+     * @return bool
      */
     private function isValidDate($date)
     {
@@ -132,6 +134,7 @@ class Observation
             $test = $d && $d->format($format) == $date;
             if ($test) {
                 $valid = true;
+
                 break;
             }
         }
@@ -140,10 +143,12 @@ class Observation
     }
 
     /**
-     * Validate a string containing a WKT
-     * @param string wkt String to validate. Ex: "POLYGON((1 1,5 1,5 5,1 5,1 1))"
+     * Validate a string containing a WKT.
      *
-     * @return boolean
+     * @param string wkt String to validate. Ex: "POLYGON((1 1,5 1,5 5,1 5,1 1))"
+     * @param mixed $wkt
+     *
+     * @return bool
      */
     private function isValidWkt($wkt)
     {
@@ -151,24 +156,26 @@ class Observation
         $replacements = array('', '', '', '');
         $wkt = preg_replace($patterns, $replacements, trim(strtolower($wkt)));
         $regex = '#^[0-9 \.,\-\(\)]+$#';
-        $valid = preg_match($regex, trim($wkt));
 
-        return $valid;
+        return preg_match($regex, trim($wkt));
     }
 
     /**
-     * Check observation JSON data
+     * Check observation JSON data.
      *
-     * @param   string  $action   create or update
-     * @return  boolean
+     * @param string $action create or update
+     *
+     * @return bool
      */
-    public function checkObservationBodyJSONFormat($action='create') {
+    public function checkObservationBodyJSONFormat($action = 'create')
+    {
         $data = $this->json_data;
         if (empty($data)) {
             $this->observation_valid = false;
+
             return array(
                 'error',
-                'Observation JSON data is empty'
+                'Observation JSON data is empty',
             );
         }
         $body_data = json_decode($data);
@@ -176,9 +183,10 @@ class Observation
         // Check indicator given in body corresponds to the observation indicator instance
         if (!property_exists($body_data, 'indicator') || $body_data->indicator != $this->indicator->getCode()) {
             $this->observation_valid = false;
+
             return array(
                 'error',
-                'Observation JSON data must have a valid indicator'
+                'Observation JSON data must have a valid indicator',
             );
         }
 
@@ -186,27 +194,30 @@ class Observation
         // start_timestamp
         if (!property_exists($body_data, 'start_timestamp') || !$this->isValidDate($body_data->start_timestamp)) {
             $this->observation_valid = false;
+
             return array(
                 'error',
-                'Observation JSON data must have a valid start_timestamp'
+                'Observation JSON data must have a valid start_timestamp',
             );
         }
 
         // end_timestamp
         if (property_exists($body_data, 'end_timestamp') && $body_data->end_timestamp && !$this->isValidDate($body_data->end_timestamp)) {
             $this->observation_valid = false;
+
             return array(
                 'error',
-                'Observation JSON data must have a valid end_timestamp'
+                'Observation JSON data must have a valid end_timestamp',
             );
         }
 
         // wkt
         if (!property_exists($body_data, 'wkt') || !$this->isValidWkt($body_data->wkt)) {
             $this->observation_valid = false;
+
             return array(
                 'error',
-                'Observation JSON data must have a valid wkt'
+                'Observation JSON data must have a valid wkt',
             );
         }
 
@@ -218,7 +229,7 @@ class Observation
             if (!$this->observation_valid) {
                 return array(
                     'error',
-                    'Observation JSON data does not correspond to an existing observation'
+                    'Observation JSON data does not correspond to an existing observation',
                 );
             }
             $db_obs = $this->raw_data;
@@ -226,18 +237,19 @@ class Observation
             // Check database observation indicator is valid
             if ($db_obs->indicator != $this->indicator->getCode()) {
                 $this->observation_valid = false;
+
                 return array(
                     'error',
-                    'Observation JSON data must have a valid indicator'
+                    'Observation JSON data must have a valid indicator',
                 );
             }
 
             // Do not allow to modify some fields
             $keys = array(
-                'id', 'indicator', 'uuid', 'created_at', 'updated_at', 'actor_email'
+                'id', 'indicator', 'uuid', 'created_at', 'updated_at', 'actor_email',
             );
             foreach ($keys as $key) {
-                $body_data->$key = $db_obs->$key;
+                $body_data->{$key} = $db_obs->{$key};
             }
 
             // Set uid from data
@@ -260,24 +272,24 @@ class Observation
 
         return array(
             'success',
-            'Observation JSON data is valid'
+            'Observation JSON data is valid',
         );
     }
 
-    //
-
     /**
-     * Check observation access capabilities for the authenticated user
+     * Check observation access capabilities for the authenticated user.
      *
-     * @param   string  $context Context of the check: read, create or modify
-     * @return  boolean
+     * @param string $context Context of the check: read, create or modify
+     *
+     * @return bool
      */
-    public function getCapabilities($context='read') {
+    public function getCapabilities($context = 'read')
+    {
 
         // Set default capabilities
         $capabilities = array(
-            'get'=>false,
-            'edit'=>false
+            'get' => false,
+            'edit' => false,
         );
 
         // Get: only for valid observations
@@ -293,7 +305,7 @@ class Observation
         // For creation, check that the authenticated user is author
         // of at least one series for this indicator
         if ($context == 'create') {
-            $sql = "
+            $sql = '
                 WITH
                 ind AS (
                     SELECT
@@ -317,11 +329,12 @@ class Observation
                 )
                 SELECT row_to_json(ser.*) AS object_json
                 FROM ser
-            ";
+            ';
             $params = array(
                 $this->indicator->getCode(),
-                $this->user['usr_email']
+                $this->user['usr_email'],
             );
+
             try {
                 $json = $this->query($sql, $params);
             } catch (Exception $e) {
@@ -346,11 +359,13 @@ class Observation
     }
 
     // Query database and return json data
-    private function query($sql, $params) {
+    private function query($sql, $params)
+    {
         $gobs_profile = 'gobsapi';
         $cnx = jDb::getConnection($gobs_profile);
         $json = null;
         $cnx->beginTransaction();
+
         try {
             $resultset = $cnx->prepare($sql);
             $resultset->execute($params);
@@ -360,6 +375,7 @@ class Observation
             $cnx->commit();
         } catch (Exception $e) {
             $cnx->rollback();
+
             throw $e;
         }
 
@@ -367,10 +383,12 @@ class Observation
     }
 
     // Get JSON object of a observation stored in the database
-    public function getObservationFromDatabase($uid) {
+    public function getObservationFromDatabase($uid)
+    {
         // Check uid
         if (!$this->isValidUuid($uid)) {
             $this->observation_valid = false;
+
             return null;
         }
 
@@ -399,7 +417,8 @@ class Observation
     }
 
     // Return the SQL for the creation of an observation
-    private function getSql($action='select') {
+    private function getSql($action = 'select')
+    {
         if (!in_array($action, array('select', 'insert', 'update', 'delete'))) {
             return null;
         }
@@ -583,7 +602,7 @@ class Observation
             ";
         } else {
             // DELETE
-            $sql = "
+            $sql = '
             WITH del AS (
                 DELETE
                 FROM gobs.observation
@@ -631,21 +650,21 @@ class Observation
             SELECT
                 row_to_json(del.*) AS object_json
             FROM del
-            ";
+            ';
         }
         //jLog::log($sql, 'error');
         return $sql;
     }
 
     // Create a new observation
-    private function runDatabaseAction($action='insert')
+    private function runDatabaseAction($action = 'insert')
     {
         // Check observation
         if (!($this->observation_valid)) {
             return array(
                 'error',
                 'The given observation is not valid',
-                null
+                null,
             );
         }
 
@@ -690,22 +709,23 @@ class Observation
         } catch (Exception $e) {
             $msg = $e->getMessage();
             $json = null;
+
             return array(
                 'error',
                 $messages[$action][0],
-                null
+                null,
             );
         }
         if (empty($json)) {
             return array(
                 'error',
                 $messages[$action][1],
-                null
+                null,
             );
         }
 
         // For insert or update, get this observation as G-Obs format
-        if (in_array($action, array('insert','update'))) {
+        if (in_array($action, array('insert', 'update'))) {
             // Get data for publication
             $observation = json_decode($json);
             $uid = $observation->ob_uid;
@@ -715,8 +735,8 @@ class Observation
             // Return response
             return array(
                 'success',
-                'The observation has been sucessfully ' . $messages[$action][2],
-                $data
+                'The observation has been sucessfully '.$messages[$action][2],
+                $data,
             );
         }
 
@@ -731,14 +751,15 @@ class Observation
             // Return response
             return array(
                 'success',
-                'The observation has been sucessfully ' . $messages[$action][2],
-                json_decode($json)
+                'The observation has been sucessfully '.$messages[$action][2],
+                json_decode($json),
             );
         }
     }
 
     // Modify and return data for publication purpose
-    private function getForPublication() {
+    private function getForPublication()
+    {
         // Get observation instance data
         $data = $this->raw_data;
 
@@ -761,7 +782,7 @@ class Observation
             return array(
                 'error',
                 'The given observation is not valid',
-                null
+                null,
             );
         }
 
@@ -771,7 +792,7 @@ class Observation
         return array(
             'success',
             'Observation has been fetched',
-            $data
+            $data,
         );
     }
 
@@ -794,12 +815,13 @@ class Observation
     }
 
     // Process upload
-    public function processMediaForm() {
+    public function processMediaForm()
+    {
         if (empty($this->observation_media_directory)) {
             return array(
                 'error',
                 'The observation media folder does not exist or is not writable',
-                null
+                null,
             );
         }
         // Create and initialize form
@@ -809,10 +831,11 @@ class Observation
         // Check data
         if (!$form->check()) {
             jForms::destroy('gobsapi~media', $this->observation_uid);
+
             return array(
                 'error',
                 'An error occured while initializing the form: media mime type must be jpg, jpeg, png or gif and the media size must be under 10Mo',
-                null
+                null,
             );
         }
 
@@ -832,27 +855,29 @@ class Observation
         $save = $form->saveFile('mediaFile', $this->observation_media_directory, $destination_basename.'.'.$extension);
         if (!$save) {
             jForms::destroy('gobsapi~media', $this->observation_uid);
+
             return array(
                 'error',
                 'An error occured while saving the media file',
-                null
+                null,
             );
         }
 
         return array(
             'success',
             'Observation media has been sucessfully uploaded',
-            null
+            null,
         );
     }
 
     // Get observation media file full path
-    public function getMediaPath($uid=null) {
+    public function getMediaPath($uid = null)
+    {
         if (empty($this->observation_media_directory)) {
             return array(
                 'error',
                 'The observation media folder does not exist or is not writable',
-                null
+                null,
             );
         }
         $destination_basename = $this->observation_uid;
@@ -865,10 +890,11 @@ class Observation
             $path = $destination_basepath.'.'.$mime;
             if (file_exists($path)) {
                 $media_path = $path;
+
                 return array(
                     'success',
                     'Observation media file exists',
-                    $media_path
+                    $media_path,
                 );
             }
         }
@@ -876,17 +902,18 @@ class Observation
         return array(
             'error',
             'The observation media file does not exist',
-            null
+            null,
         );
     }
 
     // Delete observation media from destination directory
-    public function deleteMedia($uid=null) {
+    public function deleteMedia($uid = null)
+    {
         if (empty($this->observation_media_directory)) {
             return array(
                 'error',
                 'The observation media folder does not exist or is not writable',
-                null
+                null,
             );
         }
         // Delete existing file
@@ -901,10 +928,11 @@ class Observation
             if (file_exists($path)) {
                 try {
                     unlink($path);
-                    $deleted++;
-                } catch(Exception $e) {
+                    ++$deleted;
+                } catch (Exception $e) {
                     $msg = $e->getMessage();
                     $deleted = -1;
+
                     break;
                 }
             }
@@ -915,23 +943,23 @@ class Observation
             return array(
                 'error',
                 'An error occured while deleting the observation media file',
-                null
+                null,
             );
-        } elseif ($deleted == 0) {
+        }
+        if ($deleted == 0) {
             return array(
                 'success',
                 'No media file to delete has been found for this observation',
-                null
-            );
-        } else {
-            return array(
-                'success',
-                'The observation media file has been successfully deleted',
-                null
+                null,
             );
         }
-    }
 
+        return array(
+            'success',
+            'The observation media file has been successfully deleted',
+            null,
+        );
+    }
 }
 // todo: Observation - Remove coordinates and keep wkt
 // todo: Observation - Check given values are valid: is array and check content agains indicator metadata

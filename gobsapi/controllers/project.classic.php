@@ -6,7 +6,7 @@ class projectCtrl extends apiController
 {
     /**
      * Check access by the user
-     * and given parameters
+     * and given parameters.
      */
     private function check()
     {
@@ -52,14 +52,17 @@ class projectCtrl extends apiController
             return $this->apiResponse(
                 $code,
                 $status,
-                $message
+                $message,
+                'getProjectByKey',
+                null,
+                null
             );
         }
 
         // Get gobs project object
         $data = $this->gobs_project->get();
 
-        return $this->objectResponse($data);
+        return $this->objectResponse($data, 'getProjectByKey', null);
     }
 
     /**
@@ -79,7 +82,10 @@ class projectCtrl extends apiController
             return $this->apiResponse(
                 $code,
                 $status,
-                $message
+                $message,
+                'getProjectIndicators',
+                null,
+                null
             );
         }
 
@@ -95,28 +101,31 @@ class projectCtrl extends apiController
             $indicators[] = $indicator;
         }
 
-        return $this->objectResponse($indicators);
+        return $this->objectResponse($indicators, 'getProjectIndicators', null);
     }
 
     /**
-     * Get project Geopackage file
-     *
+     * Get project Geopackage file.
      */
-    public function getProjectGeopackage() {
+    public function getProjectGeopackage()
+    {
         // Check resource can be accessed and is valid
         list($code, $status, $message) = $this->check();
         if ($status == 'error') {
             return $this->apiResponse(
                 $code,
                 $status,
-                $message
+                $message,
+                'getProjectGeopackage',
+                null,
+                null
             );
         }
 
         // Get gobs project object
         $data = $this->gobs_project->get();
 
-        $filePath = $this->lizmap_project->getQgisPath() . '.gpkg';
+        $filePath = $this->lizmap_project->getQgisPath().'.gpkg';
         $outputFileName = $data['key'].'.gpkg';
         $mimeType = 'application/geopackage+vnd.sqlite3';
         $doDownload = true;
