@@ -1,5 +1,9 @@
 # CHANGELOG
 
+### 0.3.3 - 02/03/2021
+
+* Observation - Add editable field to let API consumer knows wether the observation can be edited
+
 ### 0.3.2 - 10/02/2021
 
 * Config - Add option to log every API call in Lizmap Web Client default log file
