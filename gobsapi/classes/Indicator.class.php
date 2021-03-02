@@ -44,12 +44,14 @@ class Indicator
     /**
      * constructor.
      *
+     * @param mixed         $user            Authenticated user
      * @param string        $code:           the code of the indicator
      * @param lizmapProject $lizmap_project: the lizMap project of the indicator
      */
-    public function __construct($code, $lizmap_project)
+    public function __construct($user, $code, $lizmap_project)
     {
         $this->code = $code;
+        $this->user = $user;
         $this->lizmap_project = $lizmap_project;
 
         // Create Gobs projet expected data
@@ -311,6 +313,7 @@ class Indicator
                 o.id, ind.id_code AS indicator, o.ob_uid AS uuid,
                 o.ob_start_timestamp AS start_timestamp,
                 o.ob_end_timestamp AS end_timestamp,
+                a.a_email AS actor_email,
                 json_build_object(
                     'x', ST_X(ST_Centroid(so.geom)),
                     'y', ST_Y(ST_Centroid(so.geom))
@@ -320,6 +323,10 @@ class Indicator
                 NULL AS media_url,
                 o.created_at::timestamp(0), o.updated_at::timestamp(0)
             FROM gobs.observation AS o
+            JOIN gobs.series AS s
+                ON s.id = o.fk_id_series
+            JOIN gobs.actor AS a
+                ON a.id = s.fk_id_actor
             JOIN gobs.spatial_object AS so
                 ON so.id = o.fk_id_spatial_object,
             ind
@@ -379,6 +386,16 @@ class Indicator
         // Process data
         foreach ($resultset->fetchAll() as $record) {
             $item = json_decode($record->object_json);
+
+            // Add editable property to help clients know
+            // if the observation can be modified or deleted
+            $item->editable = false;
+            if ($this->user['usr_email'] == $item->actor_email) {
+                $item->editable = true;
+            }
+
+            // Remove login before sending back data
+            unset($item->actor_email);
 
             // Check media exists
             $media_url = $this->setObservationMediaUrl($item->uuid);

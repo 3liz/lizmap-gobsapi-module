@@ -157,7 +157,7 @@ class apiController extends jController
         // Get indicator
         jClasses::inc('gobsapi~Indicator');
 
-        $gobs_indicator = new Indicator($indicator_code, $this->lizmap_project);
+        $gobs_indicator = new Indicator($this->user, $indicator_code, $this->lizmap_project);
 
         // Check indicatorKey is valid
         if (!$gobs_indicator->checkCode()) {

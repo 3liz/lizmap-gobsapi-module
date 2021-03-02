@@ -763,6 +763,13 @@ class Observation
         // Get observation instance data
         $data = $this->raw_data;
 
+        // Add editable property to help clients know
+        // if the observation can be modified or deleted
+        $data->editable = false;
+        if ($this->user['usr_email'] == $data->actor_email) {
+            $data->editable = true;
+        }
+
         // Remove login before sending back data
         unset($data->actor_email);
 
