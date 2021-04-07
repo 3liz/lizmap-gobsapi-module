@@ -1,4 +1,17 @@
+---
+Title: G-Obs API Changelog
+Favicon: icon.png
+...
+
+[TOC]
+
 # CHANGELOG
+
+### 0.4.0 - 07/04/2021
+
+* User - Automatically create an actor in the G-Obs database for the authenticated user
+* Indicator - Automatically create a series for the authenticated user and the given indicator, allowing the user to directly create observations for this indicator
+* Docs - Add installation, configuration & changelog chapters in https://docs.3liz.org/lizmap-gobsapi-module/
 
 ### 0.3.3 - 02/03/2021
 
