@@ -12,17 +12,38 @@ class User
     /**
      * @var User login
      */
-    protected $login;
+    public $login;
+
+    /**
+     * @var User email
+     */
+    public $email;
+
+    /**
+     * @var User firstname
+     */
+    public $firstname;
+
+    /**
+     * @var User lastname
+     */
+    public $lastname;
 
     /**
      * constructor.
      *
-     * @param string $username: the user login
-     * @param mixed  $login
+     * @param mixed $user       Jelix authenticated user
+     * @param mixed $jelix_user
      */
-    public function __construct($login)
+    public function __construct($jelix_user)
     {
-        $this->login = $login;
+        $this->login = $jelix_user->login;
+        foreach (array('email', 'firstname', 'lastname') as $item) {
+            $this->{$item} = '';
+            if ($jelix_user->{$item}) {
+                $this->{$item} = $jelix_user->{$item};
+            }
+        }
     }
 
     /**
@@ -62,5 +83,56 @@ class User
         }
 
         return $projects;
+    }
+
+    // Create actor and actor_category if needed
+    public function createGobsActor()
+    {
+
+        // Check cache
+        $cache_key = 'gobs_actor_'.$this->login;
+        $cache = jCache::get($cache_key);
+        if ($cache) {
+            return $cache;
+        }
+
+        // Utils
+        jClasses::inc('gobsapi~Utils');
+        $utils = new Utils();
+
+        // actor_category
+        $category_id = $utils->getOrAddObject(
+            'actor_category',
+            array('G-Events'),
+            array(
+                'G-Events',
+                'Automatically created category of actors for G-Events',
+            )
+        );
+        if (!$category_id) {
+            return null;
+        }
+
+        // actor
+        $actor_id = $utils->getOrAddObject(
+            'actor',
+            array($this->login),
+            array(
+                $this->login,
+                $this->firstname,
+                $this->lastname,
+                $this->email,
+                $category_id,
+                'Automatically created actor for G-Events: ',
+            )
+        );
+        if (!$actor_id) {
+            return null;
+        }
+
+        // Set cache
+        jCache::set($cache_key, $actor_id, 300);
+
+        return $actor_id;
     }
 }

@@ -46,13 +46,21 @@ class apiController extends jController
         }
 
         // Validate token
-        $user = $token_manager->getUserFromToken($token);
-        if (!$user) {
+        $gobs_user = $token_manager->getUserFromToken($token);
+        if (!$gobs_user) {
+            return false;
+        }
+
+        // Create corresponding actor in G-Obs database
+        $gobs_actor = $gobs_user->createGobsActor();
+        if (!$gobs_actor) {
+            jLog::log('ERROR - G-Obs Actor in database cannot be found nor created !');
+
             return false;
         }
 
         // Add user in property
-        $this->user = $user;
+        $this->user = $gobs_user;
 
         // Add requestSyncDate & lastSyncDate
         $headers = jApp::coord()->request->headers();
@@ -109,7 +117,7 @@ class apiController extends jController
         }
 
         // Check the authenticated user can access to the project
-        if (!$lizmap_project->checkAcl($this->user['usr_login'])) {
+        if (!$lizmap_project->checkAcl($this->user->login)) {
             return array(
                 '403',
                 'error',
@@ -175,6 +183,16 @@ class apiController extends jController
                 '404',
                 'error',
                 'The given indicator code does not refer to a known indicator',
+            );
+        }
+
+        // Add series of observation for the authenticated user
+        $series_id = $gobs_indicator->getOrAddGobsSeries();
+        if (!$series_id) {
+            return array(
+                '400',
+                'error',
+                'An error occured while creating the needed series for this indicator and this user',
             );
         }
 

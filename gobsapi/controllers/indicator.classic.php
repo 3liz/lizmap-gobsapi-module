@@ -19,7 +19,6 @@ class indicatorCtrl extends apiController
                 'Access token is missing or invalid',
             );
         }
-        $user = $this->user;
 
         // Check project
         list($code, $status, $message) = $this->checkProject();

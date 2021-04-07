@@ -32,8 +32,7 @@ class Project
     /**
      * constructor.
      *
-     * @param string $username:      the user login
-     * @param mixed  $lizmap_project
+     * @param mixed $lizmap_project
      */
     public function __construct($lizmap_project)
     {

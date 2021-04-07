@@ -15,6 +15,11 @@ class Indicator
     protected $code;
 
     /**
+     * @var user: Gobs authenticated user instance
+     */
+    protected $user;
+
+    /**
      * @var lizmap_project: Indicator lizMap project
      */
     protected $lizmap_project;
@@ -44,7 +49,7 @@ class Indicator
     /**
      * constructor.
      *
-     * @param mixed         $user            Authenticated user
+     * @param mixed         $user            Gobs user instance
      * @param string        $code:           the code of the indicator
      * @param lizmapProject $lizmap_project: the lizMap project of the indicator
      */
@@ -261,6 +266,136 @@ class Indicator
         return $data;
     }
 
+    // Query database and return json data
+    private function query($sql, $params)
+    {
+        $gobs_profile = 'gobsapi';
+        $cnx = jDb::getConnection($gobs_profile);
+
+        try {
+            $resultset = $cnx->prepare($sql);
+            $resultset->execute($params);
+            $data = $resultset->fetchAll();
+            $cnx->commit();
+        } catch (Exception $e) {
+            $cnx->rollback();
+            $data = null;
+        }
+
+        return $data;
+    }
+
+    // Create the needed G-Obs series
+    public function getOrAddGobsSeries()
+    {
+
+        // Check cache
+        $cache_key = 'gobs_series_'.$this->code.'_'.$this->user->login;
+        $series_id = jCache::get($cache_key);
+        if ($series_id) {
+            return $series_id;
+        }
+
+        // Utils
+        jClasses::inc('gobsapi~Utils');
+        $utils = new Utils();
+
+        // protocol
+        $protocol_id = $utils->getOrAddObject(
+            'protocol',
+            array('g_events'),
+            array(
+                'g_events',
+                'G-Events',
+                'Automatically created protocol for G-Events',
+            )
+        );
+        if (!$protocol_id) {
+            return null;
+        }
+
+        // actor_category for spatial layer
+        $category_id = $utils->getOrAddObject(
+            'actor_category',
+            array('G-Events'),
+            array(
+                'G-Events',
+                'Automatically created category of actors for G-Events',
+            )
+        );
+        if (!$category_id) {
+            return null;
+        }
+
+        // actor for spatial layer
+        $sl_actor_id = $utils->getOrAddObject(
+            'actor',
+            array('g_events'),
+            array(
+                'g_events',
+                'G-Events',
+                'Application',
+                'g_events@g_events.evt',
+                $category_id,
+                'Automatically created actor for G-Events: ',
+            )
+        );
+        if (!$sl_actor_id) {
+            return null;
+        }
+
+        // spatial_layer
+        $spatial_layer_id = $utils->getOrAddObject(
+            'spatial_layer',
+            array('g_events_'.$this->code),
+            array(
+                'g_events_'.$this->code,
+                'Observation points for the indicator '.$this->code,
+                'Automatically created spatial layer for G-Events indicator '.$this->code,
+                $sl_actor_id,
+                'point',
+            )
+        );
+        if (!$spatial_layer_id) {
+            return null;
+        }
+
+        // indicator
+        $indicator_id = $this->raw_data->id;
+
+        // authenticated actor
+        // it has already been created before hand (see User class)
+        $actor_id = $utils->getOrAddObject(
+            'actor',
+            array($this->user->login),
+            null
+        );
+        if (!$actor_id) {
+            return null;
+        }
+
+        // series
+        $series_properties = array(
+            $protocol_id,
+            $actor_id,
+            $indicator_id,
+            $spatial_layer_id,
+        );
+        $series_id = $utils->getOrAddObject(
+            'series',
+            $series_properties,
+            $series_properties
+        );
+        if (!$series_id) {
+            return null;
+        }
+
+        // Set cache
+        jCache::set($cache_key, $series_id, 300);
+
+        return $series_id;
+    }
+
     // Set the root folder for the indicator document files
     public function setDocumentDirectory()
     {
@@ -314,6 +449,7 @@ class Indicator
                 o.ob_start_timestamp AS start_timestamp,
                 o.ob_end_timestamp AS end_timestamp,
                 a.a_email AS actor_email,
+                a.a_login AS actor_login,
                 json_build_object(
                     'x', ST_X(ST_Centroid(so.geom)),
                     'y', ST_Y(ST_Centroid(so.geom))
@@ -389,13 +525,14 @@ class Indicator
 
             // Add editable property to help clients know
             // if the observation can be modified or deleted
+            // todo: replace test with login
             $item->editable = false;
-            if ($this->user['usr_email'] == $item->actor_email) {
+            if ($this->user->email == $item->actor_email) {
                 $item->editable = true;
             }
 
-            // Remove login before sending back data
-            unset($item->actor_email);
+            // Remove email before sending back data
+            unset($item->actor_login, $item->actor_email);
 
             // Check media exists
             $media_url = $this->setObservationMediaUrl($item->uuid);

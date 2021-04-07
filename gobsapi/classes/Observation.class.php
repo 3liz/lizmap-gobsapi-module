@@ -15,7 +15,7 @@ class Observation
     protected $observation_uid;
 
     /**
-     * @var user: Authenticated user
+     * @var user: Gobs authenticated user instance
      */
     protected $user;
 
@@ -57,8 +57,7 @@ class Observation
     /**
      * constructor.
      *
-     * @param string     $indicator_code: the code of the indicator
-     * @param mixed      $user            Authenticated user
+     * @param mixed      $user            Gobs Authenticated user instance
      * @param mixed      $indicator       Instance of G-Obs Indicator
      * @param mixed      $observation_uid Uid of the observation
      * @param mixed      $data            JSON data of the observation given as request body
@@ -263,7 +262,7 @@ class Observation
             $body_data->media_url = null;
             $body_data->created_at = null;
             $body_data->updated_at = null;
-            $body_data->actor_email = $this->user['usr_email'];
+            $body_data->actor_email = $this->user->email;
         }
 
         $this->json_data = json_encode($body_data);
@@ -332,7 +331,7 @@ class Observation
             ';
             $params = array(
                 $this->indicator->getCode(),
-                $this->user['usr_email'],
+                $this->user->email,
             );
 
             try {
@@ -350,7 +349,8 @@ class Observation
             // NB: the previously called method checkObservationBodyJSONFormat
             // has replaced the actor_email property by the database value
             // We can check if it corresponds to the authenticated user
-            if ($this->raw_data->actor_email == $this->user['usr_email']) {
+            // TODO: replace with test by login
+            if ($this->raw_data->actor_email == $this->user->email) {
                 $capabilities['edit'] = true;
             }
         }
@@ -494,6 +494,7 @@ class Observation
                     so_valid_from, so_valid_to
                 )
                 SELECT
+                -- le code de l'objet spatial est défini pour être unique mais dépendant
                     md5(concat(
                         ser.id, ser.fk_id_spatial_layer, ind.id_code,
                         o->>'wkt',
@@ -675,10 +676,10 @@ class Observation
         $params = array();
         if ($action == 'insert') {
             $params[] = $this->json_data;
-            $params[] = $this->user['usr_email'];
+            $params[] = $this->user->email;
         } elseif ($action == 'update') {
             $params[] = $this->json_data;
-            $params[] = $this->user['usr_email'];
+            $params[] = $this->user->email;
             $params[] = $this->observation_uid;
         } elseif ($action == 'delete') {
             $params[] = $this->observation_uid;
@@ -766,7 +767,7 @@ class Observation
         // Add editable property to help clients know
         // if the observation can be modified or deleted
         $data->editable = false;
-        if ($this->user['usr_email'] == $data->actor_email) {
+        if ($this->user->email == $data->actor_email) {
             $data->editable = true;
         }
 

@@ -54,19 +54,18 @@ class Token
         $cache_login = jCache::get($cache_key);
         if ($cache_login) {
             // Check that the user exists
-            $user_jelix = jAuth::getUser($cache_login);
-            if ($user_jelix) {
-                $login = $user_jelix->login;
+            $jelix_user = jAuth::getUser($cache_login);
+            if ($jelix_user) {
+                $login = $jelix_user->login;
 
                 // Set jelix user session
                 // This allow to use jAuth and jAcl2 methods
                 // within the API
                 jAuth::setUserSession($login);
 
-                return array(
-                    'usr_login' => $login,
-                    'usr_email' => $user_jelix->email,
-                );
+                jClasses::inc('gobsapi~User');
+
+                return new User($jelix_user);
             }
         }
 

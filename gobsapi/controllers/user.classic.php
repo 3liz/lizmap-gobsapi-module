@@ -39,8 +39,8 @@ class userCtrl extends apiController
         }
 
         // Get logged user
-        $user = jAuth::getUserSession();
-        $login = $user->login;
+        $jelix_user = jAuth::getUserSession();
+        $login = $jelix_user->login;
 
         // Generate token
         jClasses::inc('gobsapi~Token');
@@ -98,8 +98,8 @@ class userCtrl extends apiController
         }
 
         // Validate token
-        $user = $token_manager->getUserFromToken($token);
-        if (!$user) {
+        $gobs_user = $token_manager->getUserFromToken($token);
+        if (!$gobs_user->login) {
             return $this->apiResponse(
                 '401',
                 'error',
@@ -111,7 +111,7 @@ class userCtrl extends apiController
         }
 
         // Log the user out. Can be useless because no session, but usefull for sending events
-        $login = $user['usr_login'];
+        $login = $gobs_user->login;
         $log_user_out = jAuth::logout($login);
 
         // Destroy token
@@ -150,17 +150,11 @@ class userCtrl extends apiController
                 null
             );
         }
-        $user = $this->user;
-        $login = $user['usr_login'];
-
-        // Get gobsapi user instance
-        jClasses::inc('gobsapi~User');
-        $user_instance = new User($login);
 
         // Get projects
-        $projects = $user_instance->getProjects();
+        $projects = $this->user->getProjects();
 
-        return $this->objectResponse($projects, 'getUserProjects', array('login' => $login));
+        return $this->objectResponse($projects, 'getUserProjects', array('login' => $this->user->login));
     }
 }
 ?>
