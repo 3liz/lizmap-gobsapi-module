@@ -1,0 +1,353 @@
+
+<!DOCTYPE HTML>
+<html>
+ <head>
+  <meta charset="utf-8"/>
+  <title>G-Obs API installation</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.1/styles/github.min.css" rel="stylesheet"/>
+  <link href="https://docs.3liz.org/remarkable.css" rel="stylesheet"/>
+  <link href="icon.png" rel="icon" type="image/png" >
+ </head>
+ <body>
+ <header class="header-container" style="">
+    <h1>G-Obs API installation</h1>
+ </header>
+ <article>
+
+<div class="toc"><span class="toctitle">Table of content</span><ul>
+<li><a href="#installation">Installation</a><ul>
+<li><a href="#lizmap-web-client-gobsapi-module">Lizmap Web Client gobsapi module</a></li>
+<li><a href="#authentication-driver">Authentication driver</a></li>
+<li><a href="#test-the-api">Test the API</a></li>
+<li><a href="#debug">Debug</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h1 id="installation">Installation</h1>
+<h2 id="lizmap-web-client-gobsapi-module">Lizmap Web Client gobsapi module</h2>
+<p>NB: all the path given are relative to your Lizmap Web Client instance folder.</p>
+<ul>
+<li>
+<p>Copy the <code>gobsapi</code> directory inside the <code>lizmap/lizmap-modules/</code> of a working Lizmap Web Client instance to have a new <code>lizmap/lizmap-modules/gobsapi/</code> folder containing the files <code>module.xml</code>, <code>events.xml</code>, and folders.</p>
+</li>
+<li>
+<p>Then modify the file <code>lizmap/var/config/localconfig.ini.php</code> to add <code>gobsapi.access=2</code> in the <code>[modules]</code> section, such as</p>
+</li>
+</ul>
+<pre><code class="ini">[modules]
+gobsapi.access=2
+
+</code></pre>
+
+<ul>
+<li>You need to manually edit the file <code>lizmap/projects.xml</code> and add the following content inside the <code>&lt;entrypoints&gt;</code> section</li>
+</ul>
+<pre><code class="xml">    &lt;entry file=&quot;gobsapi.php&quot; config=&quot;gobsapi/config.ini.php&quot; type=&quot;classic&quot;/&gt;
+</code></pre>
+
+<p>Afterwards, you should have a content like this in the <code>entrypoints</code> section</p>
+<pre><code class="xml">    &lt;entrypoints&gt;
+        &lt;entry file=&quot;index.php&quot; config=&quot;index/config.ini.php&quot;/&gt;
+        &lt;entry file=&quot;admin.php&quot; config=&quot;admin/config.ini.php&quot; type=&quot;classic&quot;/&gt;
+        &lt;entry file=&quot;script.php&quot; config=&quot;cmdline/script.ini.php&quot; type=&quot;cmdline&quot;/&gt;
+        &lt;entry file=&quot;gobsapi.php&quot; config=&quot;gobsapi/config.ini.php&quot; type=&quot;classic&quot;/&gt;
+    &lt;/entrypoints&gt;
+</code></pre>
+
+<ul>
+<li>Copy the folder <code>gobsapi/install/gobsapi</code> inside the Lizmap folder <code>lizmap/var/config/</code> to have a new folder <code>lizmap/var/config/gobsapi</code> with a file <code>config.ini.php</code> inside</li>
+</ul>
+<pre><code class="bash">cp -R lizmap/lizmap-modules/gobsapi/install/gobsapi lizmap/var/config/gobsapi
+</code></pre>
+
+<ul>
+<li>Copy the file <code>gobsapi/install/gobsapi.php</code> inside the <code>lizmap/www/</code> folder</li>
+</ul>
+<pre><code class="bash">cp -R lizmap/lizmap-modules/gobsapi/install/gobsapi.php lizmap/www/
+</code></pre>
+
+<ul>
+<li>Then you need to run the Lizmap installer</li>
+</ul>
+<pre><code class="bash">lizmap/install/set_rights.sh
+lizmap/install/clean_vartmp.sh
+php lizmap/install/installer.php
+</code></pre>
+
+<ul>
+<li>You need to add a new database profile in the <code>lizmap/var/config/profiles.ini.php</code> like the following example (change the required fields)</li>
+</ul>
+<pre><code class="ini">[jdb:gobsapi]
+driver=pgsql
+database=gobs
+host=localhost
+port=5433
+user=gobs_user
+password=gobs
+persistent=off
+
+</code></pre>
+
+<h2 id="authentication-driver">Authentication driver</h2>
+<p>If your Lizmap Web Client uses <strong>SAMLv2</strong> to authenticate the users, you need to force the gobsapi module to use another driver. The SAML protocol is based on URL redirections, which are not suitable for the G-Obs API end point.</p>
+<p>You can override the configuration to force the <code>gobsapi.php</code> entry point to use another driver. To do so, you must first edit the file <code>localconfig.ini.php</code> and change the <code>[module]</code> section into:</p>
+<pre><code class="ini">[modules]
+;; uncomment it if you want to use ldap for authentication
+;; see documentation to complete the ldap configuration
+ldapdao.access=0
+lizmap.installparam=
+multiauth.access=0
+
+;; we deactivate gobs &amp; saml which must be activated
+;; only for the entry points index and admin
+;; by editing their configuration files lizmap/var/config/index/config.ini.php
+;; and lizmap/var/config/admin/config.ini.php
+gobs.access=0
+saml.access=0
+;; we then activate the gobsapi module
+gobsapi.access=2
+</code></pre>
+
+<p>We have deactivated gobs &amp; saml in the main config (localconfig): they must now be activated only for the entry points index and admin by editing their configuration files <code>lizmap/var/config/index/config.ini.php</code> and <code>lizmap/var/config/admin/config.ini.php</code>. Example contents</p>
+<ul>
+<li>for the index entrypoint:</li>
+</ul>
+<pre><code class="ini">;&lt;?php die(''); ?&gt;
+;for security reasons , don't remove or modify the first line
+
+startModule=view
+startAction=&quot;default:index&quot;
+
+[coordplugins]
+jacl2=1
+
+saml=&quot;saml/saml.coord.ini.php&quot;
+saml.name=auth
+
+[modules]
+dataviz.access=2
+dynamicLayers.access=2
+jelix.access=2
+lizmap.access=2
+view.access=2
+filter.access=2
+action.access=2
+
+jacl2db_admin.access=1
+jauthdb_admin.access=1
+master_admin.access=1
+
+saml.access=2
+saml.installparam=&quot;localconfig;useradmin=mdouchin;emailadmin=mdouchin@3liz.com&quot;
+saml.path=&quot;app:my-packages/vendor/jelix/saml-module/saml&quot;
+gobs.access=2
+
+[coordplugin_auth]
+;; uncomment it if you want to use ldap for authentication
+;; see documentation to complete the ldap configuration
+driver=saml
+</code></pre>
+
+<ul>
+<li>for the admin entrypoint:</li>
+</ul>
+<pre><code class="ini">;&lt;?php die(''); ?&gt;
+;for security reasons , don't remove or modify the first line
+
+startModule=master_admin
+startAction=&quot;default:index&quot;
+
+[responses]
+html=adminHtmlResponse
+htmlauth=adminLoginHtmlResponse
+
+[modules]
+admin.access=2
+jauthdb_admin.access=2
+jacl2db_admin.access=2
+master_admin.access=2
+jcommunity.access=2
+
+saml.access=2
+saml.installparam=&quot;localconfig;useradmin=mdouchin;emailadmin=mdouchin@3liz.com&quot;
+saml.path=&quot;app:my-packages/vendor/jelix/saml-module/saml&quot;
+gobs.access=2
+
+[coordplugins]
+jacl2=1
+
+saml=&quot;saml/saml.coord.ini.php&quot;
+saml.name=auth
+
+[coordplugin_auth]
+;; uncomment it if you want to use ldap for authentication
+;; see documentation to complete the ldap configuration
+driver=saml
+
+</code></pre>
+
+<ul>
+<li>for the gobsapi entrypoint:</li>
+</ul>
+<pre><code class="ini">[modules]
+jelix.access=1
+lizmap.access=1
+view.access=1
+
+jacl2db_admin.access=1
+jauthdb_admin.access=1
+master_admin.access=1
+
+;; on active le module gobsapi
+gobsapi.access=2
+
+;; et ldapdao
+ldapdao.access=1
+jacl2.access=1
+jauth.access=1
+jauthdb.access=1
+
+[coordplugins]
+jacl2=1
+auth=&quot;gobsapi/auth.coord.ini.php&quot;
+
+[coordplugin_jacl2]
+on_error=2
+error_message=&quot;jacl2~errors.action.right.needed&quot;
+on_error_action=&quot;jelix~error:badright&quot;
+
+</code></pre>
+
+<h2 id="test-the-api">Test the API</h2>
+<p>Then you are ready to test. For example with curl (you need curl to pass JWT token in Authorization header). Full API Documentation is available: <a href="https://docs.3liz.org/lizmap-gobsapi-module/api/">https://docs.3liz.org/lizmap-gobsapi-module/api/</a></p>
+<p>In the following examples, we use <code>http://lizmap.localhost/</code> as the base URL:</p>
+<ul>
+<li>Define the API base URL:</li>
+</ul>
+<pre><code class="bash">BASEURL=&quot;http://lizmap.localhost/gobsapi.php&quot;
+</code></pre>
+
+<ul>
+<li>User:</li>
+</ul>
+<pre><code class="bash"># USER
+###
+
+# login
+# we get the authentication TOKEN variable by first log the user in
+TOKEN=$(curl -s -X GET -H 'Content-Type: application/json' &quot;$BASEURL/user/login?username=admin&amp;password=admin&quot; | jq -r '.token') &amp;&amp; echo $TOKEN
+
+# User Projects
+# we use the $TOKEN variable in the Authorization header
+echo $(curl -X GET -H 'Accept: application/json' -H &quot;Authorization: Bearer ${TOKEN}&quot; $BASEURL/user/projects)
+
+# logUserOut
+echo $(curl -X GET -H 'Accept: application/json' -H &quot;Authorization: Bearer ${TOKEN}&quot; $BASEURL/user/logout)
+
+</code></pre>
+
+<ul>
+<li>Project:</li>
+</ul>
+<pre><code class="bash"># PROJECT
+###
+
+# getProjectByKey
+echo $(curl -X GET -H 'Accept: application/json' -H &quot;Authorization: Bearer ${TOKEN}&quot; $BASEURL/project/lizmapdemo~lampadaires)
+
+# getProjectIndicators
+echo $(curl -X GET -H 'Accept: application/json' -H &quot;Authorization: Bearer ${TOKEN}&quot; $BASEURL/project/lizmapdemo~lampadaires/indicators)
+
+# getProjectGeopackage
+curl -H 'Accept: application/json' -H &quot;Authorization: Bearer ${TOKEN}&quot; -H &quot;requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')&quot; $BASEURL/project/lizmapdemo~lampadaires/geopackage --output /tmp/test.gpkg
+</code></pre>
+
+<ul>
+<li>Indicator:</li>
+</ul>
+<pre><code class="bash"># INDICATOR
+###
+
+# getIndicatorByCode
+echo $(curl -X GET -H 'Accept: application/json' -H &quot;Authorization: Bearer ${TOKEN}&quot; $BASEURL/project/lizmapdemo~lampadaires/indicator/pluviometry)
+
+# getObservationsByIndicator
+echo $(curl -X GET -H 'Accept: application/json' -H &quot;Authorization: Bearer ${TOKEN}&quot; -H &quot;lastSyncDate: $(date '+%Y-%m-%d %H:%M:%S' -d '7 days ago')&quot; -H &quot;requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')&quot; $BASEURL/project/lizmapdemo~lampadaires/indicator/pluviometry/observations)
+
+# getDeletedObservationsByIndicator
+echo $(curl -X GET -H 'Accept: application/json' -H &quot;Authorization: Bearer ${TOKEN}&quot; -H &quot;lastSyncDate: $(date '+%Y-%m-%d %H:%M:%S' -d '13 days ago')&quot; -H &quot;requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')&quot; $BASEURL/project/lizmapdemo~lampadaires/indicator/pluviometry/deletedObservations)
+
+# getIndicatorDocument
+curl -H 'Accept: application/json' -H &quot;Authorization: Bearer ${TOKEN}&quot; -H &quot;requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')&quot; $BASEURL/project/lizmapdemo~lampadaires/indicator/pluviometry/document/946fee64-e86c-40fa-a55e-8d9ad3579734 --output /tmp/test.jpeg
+</code></pre>
+
+<ul>
+<li>Observation:</li>
+</ul>
+<pre><code class="bash"># OBSERVATION
+###
+
+
+# createObservation
+echo $(curl -X POST -H &quot;Accept: application/json&quot; -H &quot;Authorization: Bearer ${TOKEN}&quot; -H &quot;requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')&quot; -H &quot;Content-Type: application/json&quot; -d &quot;{\&quot;id\&quot;:null,\&quot;indicator\&quot;:\&quot;pluviometry\&quot;,\&quot;uuid\&quot;:null,\&quot;start_timestamp\&quot;:\&quot;2019-07-19 03:30:00\&quot;,\&quot;end_timestamp\&quot;:null,\&quot;coordinates\&quot;:{\&quot;x\&quot;:-3.785956510771293,\&quot;y\&quot;:48.4744332531894},\&quot;wkt\&quot;:\&quot;POINT(-3.78595651077129 48.4744332531894)\&quot;,\&quot;values\&quot;:[0.8],\&quot;photo\&quot;:null,\&quot;created_at\&quot;:null,\&quot;updated_at\&quot;:null}&quot; &quot;$BASEURL/project/lizmapdemo~lampadaires/indicator/pluviometry/observation&quot;)
+
+{&quot;id&quot;:3595,&quot;indicator&quot;:&quot;pluviometry&quot;,&quot;uuid&quot;:&quot;e8f0a46c-1d24-456a-925a-387740ade1c6&quot;,&quot;start_timestamp&quot;:&quot;2019-07-19T03:30:00&quot;,&quot;end_timestamp&quot;:null,&quot;coordinates&quot;:{&quot;x&quot;:-3.78595651077129,&quot;y&quot;:48.4744332531894},&quot;wkt&quot;:&quot;POINT(-3.78595651077129 48.4744332531894)&quot;,&quot;values&quot;:[0.8],&quot;photo&quot;:null,&quot;created_at&quot;:&quot;2020-12-24T15:17:43&quot;,&quot;updated_at&quot;:&quot;2020-12-24T15:17:43&quot;}
+
+# updateObservation
+echo $(curl -X PUT -H &quot;Accept: application/json&quot; -H &quot;Authorization: Bearer ${TOKEN}&quot; -H &quot;requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')&quot; -H &quot;Content-Type: application/json&quot; -d &quot;{\&quot;id\&quot;:1,\&quot;indicator\&quot;:\&quot;pluviometry\&quot;,\&quot;uuid\&quot;:\&quot;e8f0a46c-1d24-456a-925a-387740ade1c6\&quot;,\&quot;start_timestamp\&quot;:\&quot;2019-07-16 03:35:00\&quot;,\&quot;end_timestamp\&quot;:null,\&quot;coordinates\&quot;:{\&quot;x\&quot;:-3.785956510771293,\&quot;y\&quot;:48.4744332531894},\&quot;wkt\&quot;:\&quot;POINT(-3.78595651077999 48.4744332531999)\&quot;,\&quot;values\&quot;:[1.2],\&quot;photo\&quot;:null,\&quot;created_at\&quot;:\&quot;2020-12-03 15:04:40\&quot;,\&quot;updated_at\&quot;:\&quot;2020-12-03 17:55:59\&quot;}&quot; &quot;$BASEURL/project/lizmapdemo~lampadaires/indicator/pluviometry/observation&quot;)
+
+# getObservationById
+echo $(curl -X GET -H 'Accept: application/json' -H &quot;Authorization: Bearer ${TOKEN}&quot; -H &quot;requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')&quot; $BASEURL/project/lizmapdemo~lampadaires/indicator/pluviometry/observation/e8f0a46c-1d24-456a-925a-387740ade1c6)
+
+# deleteObservationById
+echo $(curl -X DELETE -H 'Accept: application/json' -H &quot;Authorization: Bearer ${TOKEN}&quot; -H &quot;requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')&quot; $BASEURL/project/lizmapdemo~lampadaires/indicator/pluviometry/observation/e8f0a46c-1d24-456a-925a-387740ade1c6)
+</code></pre>
+
+<ul>
+<li>Observation media:</li>
+</ul>
+<pre><code class="bash"># uploadObservationMedia
+echo $(curl -X POST -H  &quot;Accept: application/json&quot; -H  &quot;Authorization: Bearer ${TOKEN}&quot; -H &quot;requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')&quot; -H  &quot;Content-Type: multipart/form-data&quot; -F &quot;mediaFile=@/home/mdouchin/Documents/3liz/mdouchin_carre.jpeg;type=image/jpeg&quot; $BASEURL/project/lizmapdemo~lampadaires/indicator/pluviometry/observation/e8f0a46c-1d24-456a-925a-387740ade1c6/uploadMedia)
+
+# deleteObservationMedia
+echo $(curl -X DELETE -H 'Accept: application/json' -H &quot;Authorization: Bearer ${TOKEN}&quot; -H &quot;requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')&quot; $BASEURL/project/lizmapdemo~lampadaires/indicator/pluviometry/observation/e8f0a46c-1d24-456a-925a-387740ade1c6/deleteMedia)
+
+# getObservationMedia
+curl -H 'Accept: application/json' -H &quot;Authorization: Bearer ${TOKEN}&quot; -H &quot;requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')&quot; $BASEURL/project/lizmapdemo~lampadaires/indicator/pluviometry/observation/e8f0a46c-1d24-456a-925a-387740ade1c6/media --output /tmp/test.jpeg
+</code></pre>
+
+<h2 id="debug">Debug</h2>
+<p>You can activate the <strong>debug mode</strong> by manually editing the configuration file <code>lizmap/var/config/gobsapi.ini.php</code> and modify the variable <code>log_api_calls' with the</code>debug` value:</p>
+<pre><code class="ini">[gobsapi]
+log_api_calls=debug
+</code></pre>
+
+<p>You will then be able to see the API calls log written in the file <code>lizmap/var/log/messages.log</code></p>
+<pre><code class="bash">tail -f lizmap/var/log/messages.log
+</code></pre>
+
+<p>Messages will be like</p>
+<pre><code>2021-02-09 17:18:52 127.0.0.1   default GOBSAPI - ################
+2021-02-09 17:19:05 127.0.0.1   default GOBSAPI - path: getProjectByKey
+2021-02-09 17:19:05 127.0.0.1   default GOBSAPI - input_data: {&quot;projectKey&quot;:&quot;lizmapdemo~a_fake_project&quot;,&quot;module&quot;:&quot;gobsapi&quot;,&quot;action&quot;:&quot;project:getProjectByKey&quot;}
+2021-02-09 17:19:05 127.0.0.1   default GOBSAPI - http_code: 404
+2021-02-09 17:19:05 127.0.0.1   default GOBSAPI - status: error
+2021-02-09 17:19:05 127.0.0.1   default GOBSAPI - message: The given project key does not refer to a known project
+2021-02-09 17:19:05 127.0.0.1   default GOBSAPI - ################
+
+</code></pre>
+
+  </article>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.1/highlight.min.js">
+  </script>
+  <script>
+   hljs.initHighlightingOnLoad();
+  </script>
+  <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript">
+  </script>
+  <script type="text/javascript">
+   MathJax.Hub.Config({"showProcessingMessages" : false,"messageStyle" : "none","tex2jax": { inlineMath: [ [ "$", "$" ] ] }});
+  </script>
+ </body>
+</html>
