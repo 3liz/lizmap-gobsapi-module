@@ -1,10 +1,3 @@
----
-Title: G-Obs API installation
-Favicon: icon.png
-...
-
-[TOC]
-
 # Installation
 
 ## Lizmap Web Client gobsapi module
