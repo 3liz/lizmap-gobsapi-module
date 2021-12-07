@@ -13,11 +13,11 @@ We write here some help regarding the specific configuration needed for G-Obs AP
 
 ## Project
 
-A project in G-Obs corresponds to a QGIS project published to Lizmap, with some specifities:
+A project in G-Obs corresponds to a QGIS project published to Lizmap, with some specificities:
 
-* **Indicators**: In the QGIS Project properties, you need to have a **project variable** `gobs_indicators` containing the list of indicators that you want to publish in the project. To do so, open the project properties (CTRL+MAJ+P), go to the `Variables` tab, and add a new variable: name `gobs_indicators` and value begining **exactly** with the term `gobs_indicators:`, and containing the list of indicator **codes** separated by comma. For example: `gobs_indicators:pluviometry,population` will "publish" these two indicators (pluviometry and population) with the QGIS project.
-
-* **Additionnal spatial data**: you can also publish a **Geopackage file** alongside the project, to be used by any software to display referential spatial layers on the map with the observation data. To do so, just create and save a Geopackage file containing vector layers (and raster layers if needed) named as the QGIS project. For example, if you project file is `my_gobs_project.qgs`, you must save the Geopackage file in the same folder with the name `my_gobs_project.qgs.gpkg`. You can create and populate this Geopackage with the QGIS processing tool `Package layers` accessible with the **Processing / Toolbox** menu.
+* **Indicators**: In the QGIS Project properties, you need to have a **project variable** `gobs_indicators` containing the list of indicators that you want to publish in the project. To do so, open the project properties (CTRL+MAJ+P), go to the `Variables` tab, and add a new variable: name `gobs_indicators` and value containing the list of indicator **codes** separated by comma. For example: `pluviometry,population` will "publish" these two indicators (pluviometry and population) with the QGIS project.
+* **Connection name**: You must also add another QGIS **project variable** `gobs_connection_name` containing the name of the PostgreSQL connection name (as written in the QGIS connection configuration dialog). This connection name must be **exactly the same** as the name of the **PostgreSQL service** which is used locally (your computer) and in the **GobsAPI server**.
+* **Additional spatial data**: you can also publish a **Geopackage file** alongside the project, to be used by any software to display referential spatial layers on the map with the observation data. To do so, just create and save a Geopackage file containing vector layers (and raster layers if needed) named as the QGIS project. For example, if you project file is `my_gobs_project.qgs`, you must save the Geopackage file in the same folder with the name `my_gobs_project.qgs.gpkg`. You can create and populate this Geopackage with the QGIS processing tool `Package layers` accessible with the **Processing / Toolbox** menu.
 
 ## Indicators
 
@@ -71,4 +71,3 @@ Each observation can have a photo, called media. When uploading this media file 
 * `EXT` is the extension of the original file sent, for example `jpeg`
 
 which can build the example path: `/srv/data/media/gobsapi/observations/e8f0a46c-1d24-456a-925a-387740ade1c6.jpeg`
-

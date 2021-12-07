@@ -20,9 +20,14 @@ class Indicator
     protected $user;
 
     /**
-     * @var lizmap_project: Indicator lizMap project
+     * @var lizmapProject $lizmap_project: Indicator lizMap project
      */
     protected $lizmap_project;
+
+    /**
+     * @var string: Indicator lizMap project
+     */
+    protected $connection_profile;
 
     /**
      * @var data G-Obs Representation of a indicator
@@ -52,12 +57,14 @@ class Indicator
      * @param mixed         $user            Gobs user instance
      * @param string        $code:           the code of the indicator
      * @param lizmapProject $lizmap_project: the lizMap project of the indicator
+     * @param string $connection_profile: the QGIS project corresponding jDb connection profile name
      */
-    public function __construct($user, $code, $lizmap_project)
+    public function __construct($user, $code, $lizmap_project, $connection_profile)
     {
         $this->code = $code;
         $this->user = $user;
         $this->lizmap_project = $lizmap_project;
+        $this->connection_profile = $connection_profile;
 
         // Create Gobs projet expected data
         if ($this->checkCode()) {
@@ -79,6 +86,12 @@ class Indicator
     public function getLizmapProject()
     {
         return $this->lizmap_project;
+    }
+
+    // Get the connection profile
+    public function getConnectionProfile()
+    {
+        return $this->connection_profile;
     }
 
     // Check indicator code is valid
@@ -203,8 +216,7 @@ class Indicator
             row_to_json(last.*) AS object_json
         FROM last
         ";
-        $gobs_profile = 'gobsapi';
-        $cnx = jDb::getConnection($gobs_profile);
+        $cnx = jDb::getConnection($this->connection_profile);
         $resultset = $cnx->prepare($sql);
         $resultset->execute(array($this->code));
         $json = null;
@@ -269,9 +281,7 @@ class Indicator
     // Query database and return json data
     private function query($sql, $params)
     {
-        $gobs_profile = 'gobsapi';
-        $cnx = jDb::getConnection($gobs_profile);
-
+        $cnx = jDb::getConnection($this->connection_profile);
         try {
             $resultset = $cnx->prepare($sql);
             $resultset->execute($params);
@@ -302,6 +312,7 @@ class Indicator
 
         // protocol
         $protocol_id = $utils->getOrAddObject(
+            $this->connection_profile,
             'protocol',
             array('g_events'),
             array(
@@ -316,6 +327,7 @@ class Indicator
 
         // actor_category for spatial layer
         $category_id = $utils->getOrAddObject(
+            $this->connection_profile,
             'actor_category',
             array('G-Events'),
             array(
@@ -329,6 +341,7 @@ class Indicator
 
         // actor for spatial layer
         $sl_actor_id = $utils->getOrAddObject(
+            $this->connection_profile,
             'actor',
             array('g_events'),
             array(
@@ -346,6 +359,7 @@ class Indicator
 
         // spatial_layer
         $spatial_layer_id = $utils->getOrAddObject(
+            $this->connection_profile,
             'spatial_layer',
             array('g_events_'.$this->code),
             array(
@@ -366,6 +380,7 @@ class Indicator
         // authenticated actor
         // it has already been created before hand (see User class)
         $actor_id = $utils->getOrAddObject(
+            $this->connection_profile,
             'actor',
             array($this->user->login),
             null
@@ -382,6 +397,7 @@ class Indicator
             $spatial_layer_id,
         );
         $series_id = $utils->getOrAddObject(
+            $this->connection_profile,
             'series',
             $series_properties,
             $series_properties
@@ -507,9 +523,7 @@ class Indicator
         FROM obs
         ';
         //jLog::log($sql, 'error');
-
-        $gobs_profile = 'gobsapi';
-        $cnx = jDb::getConnection($gobs_profile);
+        $cnx = jDb::getConnection($this->connection_profile);
         $resultset = $cnx->prepare($sql);
         $params = array($this->code);
         if ($requestSyncDate && $lastSyncDate) {
@@ -528,6 +542,9 @@ class Indicator
             // todo: replace test with login
             $item->editable = false;
             if ($this->user->email == $item->actor_email) {
+                $item->editable = true;
+            }
+            if ($this->user->login == $item->actor_login) {
                 $item->editable = true;
             }
 
@@ -664,8 +681,7 @@ class Indicator
         ';
         //jLog::log($sql, 'error');
 
-        $gobs_profile = 'gobsapi';
-        $cnx = jDb::getConnection($gobs_profile);
+        $cnx = jDb::getConnection($this->connection_profile);
         $resultset = $cnx->prepare($sql);
         $params = array();
         if ($requestSyncDate && $lastSyncDate) {

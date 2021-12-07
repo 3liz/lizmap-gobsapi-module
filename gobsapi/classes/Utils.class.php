@@ -28,7 +28,7 @@ class Utils
             'get' => '
                 SELECT id
                 FROM gobs.actor
-                WHERE a_login = $1
+                WHERE a_login = $1::text
             ',
             'add' => "
                 INSERT INTO gobs.actor (
@@ -92,11 +92,9 @@ class Utils
     );
 
     // Query database and return json data
-    private function query($sql, $params)
+    private function query($connection_profile, $sql, $params)
     {
-        $gobs_profile = 'gobsapi';
-        $cnx = jDb::getConnection($gobs_profile);
-
+        $cnx = jDb::getConnection($connection_profile);
         try {
             $resultset = $cnx->prepare($sql);
             $resultset->execute($params);
@@ -113,19 +111,20 @@ class Utils
     /**
      * Get or add a G-Obs object.
      *
+     * @param string     $connection_profile  The jDb connection profile name to connect to the database
      * @param string     $key        The object to create. It corresponds to the table name. Ex: actor_category
      * @param mixed      $get_params Parameters needed for the get SQL
      * @param null|mixed $add_params Parameters needed for the add SQL
      *
      * @return int Object id
      */
-    public function getOrAddObject($key, $get_params, $add_params = null)
+    public function getOrAddObject($connection_profile, $key, $get_params, $add_params = null)
     {
         $id = null;
 
         // Check if object already exists
         $sql = $this->sql[$key]['get'];
-        $data = $this->query($sql, $get_params);
+        $data = $this->query($connection_profile, $sql, $get_params);
         if (!is_array($data)) {
             return null;
         }
@@ -133,7 +132,7 @@ class Utils
         // If not, create object
         if ($add_params && count($data) == 0) {
             $sql = $this->sql[$key]['add'];
-            $data = $this->query($sql, $add_params);
+            $data = $this->query($connection_profile, $sql, $add_params);
             if (!is_array($data)) {
                 return null;
             }

@@ -20,7 +20,7 @@ class Observation
     protected $user;
 
     /**
-     * @var indicator: G-Obs indicator
+     * @var mixed $indicator: G-Obs indicator
      */
     protected $indicator;
 
@@ -361,8 +361,7 @@ class Observation
     // Query database and return json data
     private function query($sql, $params)
     {
-        $gobs_profile = 'gobsapi';
-        $cnx = jDb::getConnection($gobs_profile);
+        $cnx = jDb::getConnection($this->indicator->getConnectionProfile());
         $json = null;
         $cnx->beginTransaction();
 
