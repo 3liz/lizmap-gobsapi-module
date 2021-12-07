@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author    3liz
  * @copyright 2020 3liz
@@ -53,7 +54,6 @@ class User
     {
         $repositories = lizmap::getRepositoryList();
         $projects = array();
-
         foreach ($repositories as $repository) {
 
             // Check rights
@@ -62,8 +62,8 @@ class User
             }
 
             // Get repository and related projects
-            $lrep = lizmap::getRepository($repository);
-            $get_projects = $lrep->getProjects();
+            $lizmap_repository = lizmap::getRepository($repository);
+            $get_projects = $lizmap_repository->getProjects();
             foreach ($get_projects as $project) {
 
                 // Check rights
@@ -74,9 +74,8 @@ class User
                 // Get project instance from Lizmap project
                 jClasses::inc('gobsapi~Project');
                 $gobs_project = new Project($project);
-
-                // Add it only if project has gobs indicators
-                if (!empty($gobs_project->getIndicators())) {
+                // Add it only if project has a valid connection && contains gobs indicators
+                if (!empty($gobs_project->connectionName) && !empty($gobs_project->getIndicators())) {
                     $projects[] = $gobs_project->get();
                 }
             }
@@ -86,11 +85,11 @@ class User
     }
 
     // Create actor and actor_category if needed
-    public function createGobsActor()
+    public function createGobsActor($connection_profile)
     {
 
         // Check cache
-        $cache_key = 'gobs_actor_'.$this->login;
+        $cache_key = 'gobs_actor_' . $this->login;
         $cache = jCache::get($cache_key);
         if ($cache) {
             return $cache;
@@ -102,6 +101,7 @@ class User
 
         // actor_category
         $category_id = $utils->getOrAddObject(
+            $connection_profile,
             'actor_category',
             array('G-Events'),
             array(
@@ -115,6 +115,7 @@ class User
 
         // actor
         $actor_id = $utils->getOrAddObject(
+            $connection_profile,
             'actor',
             array($this->login),
             array(

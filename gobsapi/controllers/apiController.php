@@ -51,14 +51,6 @@ class apiController extends jController
             return false;
         }
 
-        // Create corresponding actor in G-Obs database
-        $gobs_actor = $gobs_user->createGobsActor();
-        if (!$gobs_actor) {
-            jLog::log('ERROR - G-Obs Actor in database cannot be found nor created !');
-
-            return false;
-        }
-
         // Add user in property
         $this->user = $gobs_user;
 
@@ -132,6 +124,17 @@ class apiController extends jController
         jClasses::inc('gobsapi~Project');
         $gobs_project = new Project($lizmap_project);
 
+        // Create the corresponding actor in G-Obs database if needed
+        $connection_profile = $gobs_project->getConnectionProfile();
+        $gobs_actor = $this->user->createGobsActor($connection_profile);
+        if (!$gobs_actor) {
+            return array(
+                '404',
+                'error',
+                'ERROR - G-Obs Actor in database cannot be found nor created !',
+            );
+        }
+
         // Test if project has and indicator
         $indicators = $gobs_project->getIndicators();
         if (empty($indicators)) {
@@ -164,8 +167,8 @@ class apiController extends jController
 
         // Get indicator
         jClasses::inc('gobsapi~Indicator');
-
-        $gobs_indicator = new Indicator($this->user, $indicator_code, $this->lizmap_project);
+        $connection_profile = $this->gobs_project->getConnectionProfile();
+        $gobs_indicator = new Indicator($this->user, $indicator_code, $this->lizmap_project, $connection_profile);
 
         // Check indicatorKey is valid
         if (!$gobs_indicator->checkCode()) {
@@ -378,9 +381,17 @@ class apiController extends jController
         $prefix = 'GOBSAPI - ';
         $level = 'default';
 
+        // path. Ex: getProjectByKey
         $log = $prefix.'path: '.$path;
         jLog::log($log, $level);
 
+        // connection_name. Ex: gobs_test
+        if (!empty($this->gobs_project->connectionName)) {
+            $log = $prefix.'connection_name: '.$this->gobs_project->connectionName;
+            jLog::log($log, $level);
+        }
+
+        // input_data. Ex: {"projectKey":"lizmapdemo~lampadairess","module":"gobsapi","action":"project:getProjectByKey"}
         if (empty($input_data)) {
             $input_data = jApp::coord()->request->params;
         }
@@ -389,26 +400,31 @@ class apiController extends jController
             jLog::log($log, $level);
         }
 
+        // http code. Ex: 404
         if (!empty($http_code)) {
             $log = $prefix.'http_code: '.$http_code;
             jLog::log($log, $level);
         }
 
+        // status. Ex:  success
         if (!empty($status)) {
             $log = $prefix.'status: '.$status;
             jLog::log($log, $level);
         }
 
+        // message. Ex: The given project key does not refer to a known project
         if (!empty($message)) {
             $log = $prefix.'message: '.$message;
             jLog::log($log, $level);
         }
 
+        // data. Ex: {"key":"lizmapdemo~lampadaires","label":"Paris by night","description":...}
         if (!empty($data)) {
             $log = $prefix.'data: '.json_encode($data);
             jLog::log($log, $level);
         }
 
+        // End of block
         $log = $prefix.'################';
         jLog::log($log, $level);
     }
