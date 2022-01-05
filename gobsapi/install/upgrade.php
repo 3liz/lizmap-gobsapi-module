@@ -14,7 +14,12 @@ class gobsapiModuleUpgrader extends jInstallerModule
         // Copy entry point
         // Needed in the upgrade process
         // if the variable $mapping has changed
-        $www_path = jApp::wwwPath('gobsapi.php');
-        $this->copyFile('gobsapi.php', $www_path);
+        if (method_exists($this, 'createEntryPoint')) {
+            $this->createEntryPoint('gobsapi.php', 'gobsapi/config.ini.php', 'gobsapi', 'classic');
+        }
+        else {
+            //deprecated and not safe
+            $this->copyFile('gobsapi.php', jApp::wwwPath('gobsapi.php'));
+        }
     }
 }
