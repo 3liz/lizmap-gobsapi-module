@@ -16,7 +16,7 @@
         <link rel="canonical" href="https://docs.3liz.org/lizmap-gobsapi-module/install/">
       
       <link rel="icon" href="../media/icon.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.3">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-7.1.11">
     
     
       
@@ -24,10 +24,10 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.e35208c4.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.3754935a.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.ef6f36e2.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.f1a3b89f.min.css">
         
           
           
@@ -45,6 +45,8 @@
     
     
       
+
+
     
     
   </head>
@@ -166,7 +168,7 @@
 
 
   <li class="md-tabs__item">
-    <a href="../../" class="md-tabs__link">
+    <a href="../" class="md-tabs__link">
       docs.3liz.org
     </a>
   </li>
@@ -285,7 +287,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../" class="md-nav__link">
+      <a href="../" class="md-nav__link">
         docs.3liz.org
       </a>
     </li>
@@ -510,8 +512,8 @@
 </li>
 </ul>
 <table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="k">[modules]</span>
-<span class="na">gobsapi.access</span><span class="o">=</span><span class="s">2</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="k">[modules]</span><span class="w"></span>
+<span class="na">gobsapi.access</span><span class="o">=</span><span class="s">2</span><span class="w"></span>
 </code></pre></div>
 </td></tr></table>
 <ul>
@@ -566,14 +568,14 @@ php lizmap/install/installer.php
 <span class="normal">5</span>
 <span class="normal">6</span>
 <span class="normal">7</span>
-<span class="normal">8</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="k">[jdb:gobsapi]</span>
-<span class="na">driver</span><span class="o">=</span><span class="s">pgsql</span>
-<span class="na">database</span><span class="o">=</span><span class="s">gobs</span>
-<span class="na">host</span><span class="o">=</span><span class="s">localhost</span>
-<span class="na">port</span><span class="o">=</span><span class="s">5433</span>
-<span class="na">user</span><span class="o">=</span><span class="s">gobs_user</span>
-<span class="na">password</span><span class="o">=</span><span class="s">gobs</span>
-<span class="na">persistent</span><span class="o">=</span><span class="s">off</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="k">[jdb:gobsapi]</span><span class="w"></span>
+<span class="na">driver</span><span class="o">=</span><span class="s">pgsql</span><span class="w"></span>
+<span class="na">database</span><span class="o">=</span><span class="s">gobs</span><span class="w"></span>
+<span class="na">host</span><span class="o">=</span><span class="s">localhost</span><span class="w"></span>
+<span class="na">port</span><span class="o">=</span><span class="s">5433</span><span class="w"></span>
+<span class="na">user</span><span class="o">=</span><span class="s">gobs_user</span><span class="w"></span>
+<span class="na">password</span><span class="o">=</span><span class="s">gobs</span><span class="w"></span>
+<span class="na">persistent</span><span class="o">=</span><span class="s">off</span><span class="w"></span>
 </code></pre></div>
 </td></tr></table>
 <h2 id="authentication-driver">Authentication driver<a class="headerlink" href="#authentication-driver" title="Permanent link">#</a></h2>
@@ -593,21 +595,21 @@ php lizmap/install/installer.php
 <span class="normal">12</span>
 <span class="normal">13</span>
 <span class="normal">14</span>
-<span class="normal">15</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="k">[modules]</span>
-<span class="c1">;; uncomment it if you want to use ldap for authentication</span>
-<span class="c1">;; see documentation to complete the ldap configuration</span>
-<span class="na">ldapdao.access</span><span class="o">=</span><span class="s">0</span>
-<span class="na">lizmap.installparam</span><span class="o">=</span>
-<span class="na">multiauth.access</span><span class="o">=</span><span class="s">0</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="k">[modules]</span><span class="w"></span>
+<span class="c1">;; uncomment it if you want to use ldap for authentication</span><span class="w"></span>
+<span class="c1">;; see documentation to complete the ldap configuration</span><span class="w"></span>
+<span class="na">ldapdao.access</span><span class="o">=</span><span class="s">0</span><span class="w"></span>
+<span class="na">lizmap.installparam</span><span class="o">=</span><span class="w"></span>
+<span class="na">multiauth.access</span><span class="o">=</span><span class="s">0</span><span class="w"></span>
 
-<span class="c1">;; we deactivate gobs &amp; saml which must be activated</span>
-<span class="c1">;; only for the entry points index and admin</span>
-<span class="c1">;; by editing their configuration files lizmap/var/config/index/config.ini.php</span>
-<span class="c1">;; and lizmap/var/config/admin/config.ini.php</span>
-<span class="na">gobs.access</span><span class="o">=</span><span class="s">0</span>
-<span class="na">saml.access</span><span class="o">=</span><span class="s">0</span>
-<span class="c1">;; we then activate the gobsapi module</span>
-<span class="na">gobsapi.access</span><span class="o">=</span><span class="s">2</span>
+<span class="c1">;; we deactivate gobs &amp; saml which must be activated</span><span class="w"></span>
+<span class="c1">;; only for the entry points index and admin</span><span class="w"></span>
+<span class="c1">;; by editing their configuration files lizmap/var/config/index/config.ini.php</span><span class="w"></span>
+<span class="c1">;; and lizmap/var/config/admin/config.ini.php</span><span class="w"></span>
+<span class="na">gobs.access</span><span class="o">=</span><span class="s">0</span><span class="w"></span>
+<span class="na">saml.access</span><span class="o">=</span><span class="s">0</span><span class="w"></span>
+<span class="c1">;; we then activate the gobsapi module</span><span class="w"></span>
+<span class="na">gobsapi.access</span><span class="o">=</span><span class="s">2</span><span class="w"></span>
 </code></pre></div>
 </td></tr></table>
 <p>We have deactivated gobs &amp; saml in the main config (localconfig): they must now be activated only for the entry points index and admin by editing their configuration files <code>lizmap/var/config/index/config.ini.php</code> and <code>lizmap/var/config/admin/config.ini.php</code>. Example contents</p>
@@ -647,40 +649,40 @@ php lizmap/install/installer.php
 <span class="normal">31</span>
 <span class="normal">32</span>
 <span class="normal">33</span>
-<span class="normal">34</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="c1">;&lt;?php die(&#39;&#39;); ?&gt;</span>
-<span class="c1">;for security reasons , don&#39;t remove or modify the first line</span>
+<span class="normal">34</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="c1">;&lt;?php die(&#39;&#39;); ?&gt;</span><span class="w"></span>
+<span class="c1">;for security reasons , don&#39;t remove or modify the first line</span><span class="w"></span>
 
-<span class="na">startModule</span><span class="o">=</span><span class="s">view</span>
-<span class="na">startAction</span><span class="o">=</span><span class="s">&quot;default:index&quot;</span>
+<span class="na">startModule</span><span class="o">=</span><span class="s">view</span><span class="w"></span>
+<span class="na">startAction</span><span class="o">=</span><span class="s">&quot;default:index&quot;</span><span class="w"></span>
 
-<span class="k">[coordplugins]</span>
-<span class="na">jacl2</span><span class="o">=</span><span class="s">1</span>
+<span class="k">[coordplugins]</span><span class="w"></span>
+<span class="na">jacl2</span><span class="o">=</span><span class="s">1</span><span class="w"></span>
 
-<span class="na">saml</span><span class="o">=</span><span class="s">&quot;saml/saml.coord.ini.php&quot;</span>
-<span class="na">saml.name</span><span class="o">=</span><span class="s">auth</span>
+<span class="na">saml</span><span class="o">=</span><span class="s">&quot;saml/saml.coord.ini.php&quot;</span><span class="w"></span>
+<span class="na">saml.name</span><span class="o">=</span><span class="s">auth</span><span class="w"></span>
 
-<span class="k">[modules]</span>
-<span class="na">dataviz.access</span><span class="o">=</span><span class="s">2</span>
-<span class="na">dynamicLayers.access</span><span class="o">=</span><span class="s">2</span>
-<span class="na">jelix.access</span><span class="o">=</span><span class="s">2</span>
-<span class="na">lizmap.access</span><span class="o">=</span><span class="s">2</span>
-<span class="na">view.access</span><span class="o">=</span><span class="s">2</span>
-<span class="na">filter.access</span><span class="o">=</span><span class="s">2</span>
-<span class="na">action.access</span><span class="o">=</span><span class="s">2</span>
+<span class="k">[modules]</span><span class="w"></span>
+<span class="na">dataviz.access</span><span class="o">=</span><span class="s">2</span><span class="w"></span>
+<span class="na">dynamicLayers.access</span><span class="o">=</span><span class="s">2</span><span class="w"></span>
+<span class="na">jelix.access</span><span class="o">=</span><span class="s">2</span><span class="w"></span>
+<span class="na">lizmap.access</span><span class="o">=</span><span class="s">2</span><span class="w"></span>
+<span class="na">view.access</span><span class="o">=</span><span class="s">2</span><span class="w"></span>
+<span class="na">filter.access</span><span class="o">=</span><span class="s">2</span><span class="w"></span>
+<span class="na">action.access</span><span class="o">=</span><span class="s">2</span><span class="w"></span>
 
-<span class="na">jacl2db_admin.access</span><span class="o">=</span><span class="s">1</span>
-<span class="na">jauthdb_admin.access</span><span class="o">=</span><span class="s">1</span>
-<span class="na">master_admin.access</span><span class="o">=</span><span class="s">1</span>
+<span class="na">jacl2db_admin.access</span><span class="o">=</span><span class="s">1</span><span class="w"></span>
+<span class="na">jauthdb_admin.access</span><span class="o">=</span><span class="s">1</span><span class="w"></span>
+<span class="na">master_admin.access</span><span class="o">=</span><span class="s">1</span><span class="w"></span>
 
-<span class="na">saml.access</span><span class="o">=</span><span class="s">2</span>
-<span class="na">saml.installparam</span><span class="o">=</span><span class="s">&quot;localconfig;useradmin=mdouchin;emailadmin=mdouchin@3liz.com&quot;</span>
-<span class="na">saml.path</span><span class="o">=</span><span class="s">&quot;app:my-packages/vendor/jelix/saml-module/saml&quot;</span>
-<span class="na">gobs.access</span><span class="o">=</span><span class="s">2</span>
+<span class="na">saml.access</span><span class="o">=</span><span class="s">2</span><span class="w"></span>
+<span class="na">saml.installparam</span><span class="o">=</span><span class="s">&quot;localconfig;useradmin=mdouchin;emailadmin=mdouchin@3liz.com&quot;</span><span class="w"></span>
+<span class="na">saml.path</span><span class="o">=</span><span class="s">&quot;app:my-packages/vendor/jelix/saml-module/saml&quot;</span><span class="w"></span>
+<span class="na">gobs.access</span><span class="o">=</span><span class="s">2</span><span class="w"></span>
 
-<span class="k">[coordplugin_auth]</span>
-<span class="c1">;; uncomment it if you want to use ldap for authentication</span>
-<span class="c1">;; see documentation to complete the ldap configuration</span>
-<span class="na">driver</span><span class="o">=</span><span class="s">saml</span>
+<span class="k">[coordplugin_auth]</span><span class="w"></span>
+<span class="c1">;; uncomment it if you want to use ldap for authentication</span><span class="w"></span>
+<span class="c1">;; see documentation to complete the ldap configuration</span><span class="w"></span>
+<span class="na">driver</span><span class="o">=</span><span class="s">saml</span><span class="w"></span>
 </code></pre></div>
 </td></tr></table>
 <ul>
@@ -717,38 +719,38 @@ php lizmap/install/installer.php
 <span class="normal">29</span>
 <span class="normal">30</span>
 <span class="normal">31</span>
-<span class="normal">32</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="c1">;&lt;?php die(&#39;&#39;); ?&gt;</span>
-<span class="c1">;for security reasons , don&#39;t remove or modify the first line</span>
+<span class="normal">32</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="c1">;&lt;?php die(&#39;&#39;); ?&gt;</span><span class="w"></span>
+<span class="c1">;for security reasons , don&#39;t remove or modify the first line</span><span class="w"></span>
 
-<span class="na">startModule</span><span class="o">=</span><span class="s">master_admin</span>
-<span class="na">startAction</span><span class="o">=</span><span class="s">&quot;default:index&quot;</span>
+<span class="na">startModule</span><span class="o">=</span><span class="s">master_admin</span><span class="w"></span>
+<span class="na">startAction</span><span class="o">=</span><span class="s">&quot;default:index&quot;</span><span class="w"></span>
 
-<span class="k">[responses]</span>
-<span class="na">html</span><span class="o">=</span><span class="s">adminHtmlResponse</span>
-<span class="na">htmlauth</span><span class="o">=</span><span class="s">adminLoginHtmlResponse</span>
+<span class="k">[responses]</span><span class="w"></span>
+<span class="na">html</span><span class="o">=</span><span class="s">adminHtmlResponse</span><span class="w"></span>
+<span class="na">htmlauth</span><span class="o">=</span><span class="s">adminLoginHtmlResponse</span><span class="w"></span>
 
-<span class="k">[modules]</span>
-<span class="na">admin.access</span><span class="o">=</span><span class="s">2</span>
-<span class="na">jauthdb_admin.access</span><span class="o">=</span><span class="s">2</span>
-<span class="na">jacl2db_admin.access</span><span class="o">=</span><span class="s">2</span>
-<span class="na">master_admin.access</span><span class="o">=</span><span class="s">2</span>
-<span class="na">jcommunity.access</span><span class="o">=</span><span class="s">2</span>
+<span class="k">[modules]</span><span class="w"></span>
+<span class="na">admin.access</span><span class="o">=</span><span class="s">2</span><span class="w"></span>
+<span class="na">jauthdb_admin.access</span><span class="o">=</span><span class="s">2</span><span class="w"></span>
+<span class="na">jacl2db_admin.access</span><span class="o">=</span><span class="s">2</span><span class="w"></span>
+<span class="na">master_admin.access</span><span class="o">=</span><span class="s">2</span><span class="w"></span>
+<span class="na">jcommunity.access</span><span class="o">=</span><span class="s">2</span><span class="w"></span>
 
-<span class="na">saml.access</span><span class="o">=</span><span class="s">2</span>
-<span class="na">saml.installparam</span><span class="o">=</span><span class="s">&quot;localconfig;useradmin=mdouchin;emailadmin=mdouchin@3liz.com&quot;</span>
-<span class="na">saml.path</span><span class="o">=</span><span class="s">&quot;app:my-packages/vendor/jelix/saml-module/saml&quot;</span>
-<span class="na">gobs.access</span><span class="o">=</span><span class="s">2</span>
+<span class="na">saml.access</span><span class="o">=</span><span class="s">2</span><span class="w"></span>
+<span class="na">saml.installparam</span><span class="o">=</span><span class="s">&quot;localconfig;useradmin=mdouchin;emailadmin=mdouchin@3liz.com&quot;</span><span class="w"></span>
+<span class="na">saml.path</span><span class="o">=</span><span class="s">&quot;app:my-packages/vendor/jelix/saml-module/saml&quot;</span><span class="w"></span>
+<span class="na">gobs.access</span><span class="o">=</span><span class="s">2</span><span class="w"></span>
 
-<span class="k">[coordplugins]</span>
-<span class="na">jacl2</span><span class="o">=</span><span class="s">1</span>
+<span class="k">[coordplugins]</span><span class="w"></span>
+<span class="na">jacl2</span><span class="o">=</span><span class="s">1</span><span class="w"></span>
 
-<span class="na">saml</span><span class="o">=</span><span class="s">&quot;saml/saml.coord.ini.php&quot;</span>
-<span class="na">saml.name</span><span class="o">=</span><span class="s">auth</span>
+<span class="na">saml</span><span class="o">=</span><span class="s">&quot;saml/saml.coord.ini.php&quot;</span><span class="w"></span>
+<span class="na">saml.name</span><span class="o">=</span><span class="s">auth</span><span class="w"></span>
 
-<span class="k">[coordplugin_auth]</span>
-<span class="c1">;; uncomment it if you want to use ldap for authentication</span>
-<span class="c1">;; see documentation to complete the ldap configuration</span>
-<span class="na">driver</span><span class="o">=</span><span class="s">saml</span>
+<span class="k">[coordplugin_auth]</span><span class="w"></span>
+<span class="c1">;; uncomment it if you want to use ldap for authentication</span><span class="w"></span>
+<span class="c1">;; see documentation to complete the ldap configuration</span><span class="w"></span>
+<span class="na">driver</span><span class="o">=</span><span class="s">saml</span><span class="w"></span>
 </code></pre></div>
 </td></tr></table>
 <ul>
@@ -779,32 +781,32 @@ php lizmap/install/installer.php
 <span class="normal">23</span>
 <span class="normal">24</span>
 <span class="normal">25</span>
-<span class="normal">26</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="k">[modules]</span>
-<span class="na">jelix.access</span><span class="o">=</span><span class="s">1</span>
-<span class="na">lizmap.access</span><span class="o">=</span><span class="s">1</span>
-<span class="na">view.access</span><span class="o">=</span><span class="s">1</span>
+<span class="normal">26</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="k">[modules]</span><span class="w"></span>
+<span class="na">jelix.access</span><span class="o">=</span><span class="s">1</span><span class="w"></span>
+<span class="na">lizmap.access</span><span class="o">=</span><span class="s">1</span><span class="w"></span>
+<span class="na">view.access</span><span class="o">=</span><span class="s">1</span><span class="w"></span>
 
-<span class="na">jacl2db_admin.access</span><span class="o">=</span><span class="s">1</span>
-<span class="na">jauthdb_admin.access</span><span class="o">=</span><span class="s">1</span>
-<span class="na">master_admin.access</span><span class="o">=</span><span class="s">1</span>
+<span class="na">jacl2db_admin.access</span><span class="o">=</span><span class="s">1</span><span class="w"></span>
+<span class="na">jauthdb_admin.access</span><span class="o">=</span><span class="s">1</span><span class="w"></span>
+<span class="na">master_admin.access</span><span class="o">=</span><span class="s">1</span><span class="w"></span>
 
-<span class="c1">;; on active le module gobsapi</span>
-<span class="na">gobsapi.access</span><span class="o">=</span><span class="s">2</span>
+<span class="c1">;; on active le module gobsapi</span><span class="w"></span>
+<span class="na">gobsapi.access</span><span class="o">=</span><span class="s">2</span><span class="w"></span>
 
-<span class="c1">;; et ldapdao</span>
-<span class="na">ldapdao.access</span><span class="o">=</span><span class="s">1</span>
-<span class="na">jacl2.access</span><span class="o">=</span><span class="s">1</span>
-<span class="na">jauth.access</span><span class="o">=</span><span class="s">1</span>
-<span class="na">jauthdb.access</span><span class="o">=</span><span class="s">1</span>
+<span class="c1">;; et ldapdao</span><span class="w"></span>
+<span class="na">ldapdao.access</span><span class="o">=</span><span class="s">1</span><span class="w"></span>
+<span class="na">jacl2.access</span><span class="o">=</span><span class="s">1</span><span class="w"></span>
+<span class="na">jauth.access</span><span class="o">=</span><span class="s">1</span><span class="w"></span>
+<span class="na">jauthdb.access</span><span class="o">=</span><span class="s">1</span><span class="w"></span>
 
-<span class="k">[coordplugins]</span>
-<span class="na">jacl2</span><span class="o">=</span><span class="s">1</span>
-<span class="na">auth</span><span class="o">=</span><span class="s">&quot;gobsapi/auth.coord.ini.php&quot;</span>
+<span class="k">[coordplugins]</span><span class="w"></span>
+<span class="na">jacl2</span><span class="o">=</span><span class="s">1</span><span class="w"></span>
+<span class="na">auth</span><span class="o">=</span><span class="s">&quot;gobsapi/auth.coord.ini.php&quot;</span><span class="w"></span>
 
-<span class="k">[coordplugin_jacl2]</span>
-<span class="na">on_error</span><span class="o">=</span><span class="s">2</span>
-<span class="na">error_message</span><span class="o">=</span><span class="s">&quot;jacl2~errors.action.right.needed&quot;</span>
-<span class="na">on_error_action</span><span class="o">=</span><span class="s">&quot;jelix~error:badright&quot;</span>
+<span class="k">[coordplugin_jacl2]</span><span class="w"></span>
+<span class="na">on_error</span><span class="o">=</span><span class="s">2</span><span class="w"></span>
+<span class="na">error_message</span><span class="o">=</span><span class="s">&quot;jacl2~errors.action.right.needed&quot;</span><span class="w"></span>
+<span class="na">on_error_action</span><span class="o">=</span><span class="s">&quot;jelix~error:badright&quot;</span><span class="w"></span>
 </code></pre></div>
 </td></tr></table>
 <h2 id="test-the-api">Test the API<a class="headerlink" href="#test-the-api" title="Permanent link">#</a></h2>
@@ -965,8 +967,8 @@ curl -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span clas
 <h2 id="debug">Debug<a class="headerlink" href="#debug" title="Permanent link">#</a></h2>
 <p>You can activate the <strong>debug mode</strong> by manually editing the configuration file <code>lizmap/var/config/gobsapi.ini.php</code> and modify the variable <code>log_api_calls' with the</code>debug` value:</p>
 <table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="k">[gobsapi]</span>
-<span class="na">log_api_calls</span><span class="o">=</span><span class="s">debug</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="k">[gobsapi]</span><span class="w"></span>
+<span class="na">log_api_calls</span><span class="o">=</span><span class="s">debug</span><span class="w"></span>
 </code></pre></div>
 </td></tr></table>
 <p>You will then be able to see the API calls log written in the file <code>lizmap/var/log/messages.log</code></p>
@@ -1002,6 +1004,7 @@ curl -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span clas
         
           <a href="#" class="md-top md-icon" data-md-component="top" data-md-state="hidden">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"/></svg>
+            Back to top
           </a>
         
       </main>
@@ -1011,7 +1014,8 @@ curl -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span clas
   
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
-        <a href=".." class="md-footer__link md-footer__link--prev" rel="prev">
+        
+        <a href=".." class="md-footer__link md-footer__link--prev" aria-label="Précédent: Accueil" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
@@ -1026,7 +1030,8 @@ curl -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span clas
         </a>
       
       
-        <a href="../configuration/" class="md-footer__link md-footer__link--next" rel="next">
+        
+        <a href="../configuration/" class="md-footer__link md-footer__link--next" aria-label="Suivant: Configuration" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
@@ -1105,10 +1110,10 @@ curl -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span clas
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.top"], "translations": {"clipboard.copy": "Copier dans le presse-papier", "clipboard.copied": "Copi\u00e9 dans le presse-papier", "search.config.lang": "fr", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Rechercher", "search.result.placeholder": "Taper pour d\u00e9marrer la recherche", "search.result.none": "Aucun document trouv\u00e9", "search.result.one": "1 document trouv\u00e9", "search.result.other": "# documents trouv\u00e9s", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "../assets/javascripts/workers/search.fe42c31b.min.js", "version": null}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.top"], "translations": {"clipboard.copy": "Copier dans le presse-papier", "clipboard.copied": "Copi\u00e9 dans le presse-papier", "search.config.lang": "fr", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Rechercher", "search.result.placeholder": "Taper pour d\u00e9marrer la recherche", "search.result.none": "Aucun document trouv\u00e9", "search.result.one": "1 document trouv\u00e9", "search.result.other": "# documents trouv\u00e9s", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.477d984a.min.js", "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.4ea5477f.min.js"></script>
+      <script src="../assets/javascripts/bundle.ddd52ceb.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js"></script>
       
