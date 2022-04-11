@@ -83,8 +83,8 @@ class Project
                 $this->buildGobsProject();
             }
         } else {
-            $key = $this->lizmap_project->getData('repository') . '~' . $this->lizmap_project->getData('id');
-            jLog::log('Project "' . $key . '" connection name is not valid: "' . $connectionName . '"');
+            $key = $this->lizmap_project->getData('repository').'~'.$this->lizmap_project->getData('id');
+            jLog::log('Project "'.$key.'" connection name is not valid: "'.$connectionName.'"');
         }
     }
 
@@ -92,7 +92,7 @@ class Project
     private function buildGobsProject()
     {
         // Project key
-        $key = $this->lizmap_project->getData('repository') . '~' . $this->lizmap_project->getData('id');
+        $key = $this->lizmap_project->getData('repository').'~'.$this->lizmap_project->getData('id');
 
         // Compute bbox
         $extent = array(
@@ -109,9 +109,9 @@ class Project
             WITH a AS (
                 SELECT ST_Transform(
                     ST_SetSRID('Box(
-                        " . $bbox_exp[0] . ' ' . $bbox_exp[1] . ',
-                        ' . $bbox_exp[2] . ' ' . $bbox_exp[3] . "
-                    )'::box2d, " . $srid . '), 4326) AS b
+                        ".$bbox_exp[0].' '.$bbox_exp[1].',
+                        '.$bbox_exp[2].' '.$bbox_exp[3]."
+                    )'::box2d, ".$srid.'), 4326) AS b
             )
             SELECT
             ST_xmin(b) xmin,
@@ -121,6 +121,7 @@ class Project
             FROM a;
         ';
         $cnx = jDb::getConnection($this->connectionProfile);
+
         try {
             $resultset = $cnx->query($sql);
             $data = array();
@@ -134,13 +135,13 @@ class Project
             }
         } catch (Exception $e) {
             $msg = $e->getMessage();
-            jLog::log('Erreur de récupération des données du projet "' . $key . '"', 'error');
+            jLog::log('Erreur de récupération des données du projet "'.$key.'"', 'error');
             jLog::log($msg, 'error');
         }
 
         // Add geopackage url if a file is present
         $gpkg_url = null;
-        $gpkg_file_path = $this->lizmap_project->getQgisPath() . '.gpkg';
+        $gpkg_file_path = $this->lizmap_project->getQgisPath().'.gpkg';
         if (file_exists($gpkg_file_path)) {
             $gpkg_url = jUrl::getFull(
                 'gobsapi~project:getProjectGeopackage',
@@ -150,7 +151,7 @@ class Project
             );
             $gpkg_url = str_replace(
                 'index.php/gobsapi/project/getProjectGeopackage',
-                'gobsapi.php/project/' . $key . '/geopackage',
+                'gobsapi.php/project/'.$key.'/geopackage',
                 $gpkg_url
             );
         }
@@ -192,13 +193,13 @@ class Project
         $qgs_path = $this->lizmap_project->getQgisPath();
         if (
             !file_exists($qgs_path) ||
-            !file_exists($qgs_path . '.cfg')
+            !file_exists($qgs_path.'.cfg')
         ) {
-            throw new Error('Files of project ' . $this->key . ' does not exists');
+            throw new Error('Files of project '.$this->key.' does not exists');
         }
         $xml = simplexml_load_file($qgs_path);
         if ($xml === false) {
-            throw new Exception('Qgs File of project ' . $this->key . ' has invalid content');
+            throw new Exception('Qgs File of project '.$this->key.' has invalid content');
         }
 
         $this->xml = $xml;
@@ -228,8 +229,7 @@ class Project
     }
 
     /**
-     * Set the connection name and profile
-     *
+     * Set the connection name and profile.
      */
     private function setConnection()
     {
@@ -247,7 +247,7 @@ class Project
     }
 
     /**
-     * Check the project database connection
+     * Check the project database connection.
      */
     public function checkConnection()
     {
@@ -256,6 +256,7 @@ class Project
         }
         $sql = 'SELECT 1 AS test;';
         $status = false;
+
         try {
             $cnx = jDb::getConnection($this->connectionProfile);
             $resultset = $cnx->query($sql);
@@ -264,7 +265,7 @@ class Project
             }
         } catch (Exception $e) {
             $msg = $e->getMessage();
-            jLog::log('Connection to the PostgreSQL service "' . $this->connectionName . '" failed', 'error');
+            jLog::log('Connection to the PostgreSQL service "'.$this->connectionName.'" failed', 'error');
             jLog::log($msg, 'error');
             $status = false;
         }
@@ -279,8 +280,7 @@ class Project
     }
 
     /**
-     * Get the connection virtual profile
-     *
+     * Get the connection virtual profile.
      */
     public function getConnectionProfile()
     {
@@ -293,7 +293,7 @@ class Project
             'driver' => 'pgsql',
             'service' => $this->connectionName,
         );
-        $dbProfile = 'gobs_api_profile_' . sha1(json_encode($jdbParams));
+        $dbProfile = 'gobs_api_profile_'.sha1(json_encode($jdbParams));
 
         try {
             // try to get the profile, it may be already created for an other layer
@@ -311,7 +311,7 @@ class Project
 
     /**
      * Set project gobs indicators from the QGIS project variable
-     * gobs_indicators
+     * gobs_indicators.
      */
     private function setIndicators()
     {

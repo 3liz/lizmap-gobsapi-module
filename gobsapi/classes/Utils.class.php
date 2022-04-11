@@ -95,6 +95,7 @@ class Utils
     private function query($connection_profile, $sql, $params)
     {
         $cnx = jDb::getConnection($connection_profile);
+
         try {
             $resultset = $cnx->prepare($sql);
             $resultset->execute($params);
@@ -111,10 +112,10 @@ class Utils
     /**
      * Get or add a G-Obs object.
      *
-     * @param string     $connection_profile  The jDb connection profile name to connect to the database
-     * @param string     $key        The object to create. It corresponds to the table name. Ex: actor_category
-     * @param mixed      $get_params Parameters needed for the get SQL
-     * @param null|mixed $add_params Parameters needed for the add SQL
+     * @param string     $connection_profile The jDb connection profile name to connect to the database
+     * @param string     $key                The object to create. It corresponds to the table name. Ex: actor_category
+     * @param mixed      $get_params         Parameters needed for the get SQL
+     * @param null|mixed $add_params         Parameters needed for the add SQL
      *
      * @return int Object id
      */

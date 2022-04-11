@@ -89,7 +89,7 @@ class User
     {
 
         // Check cache
-        $cache_key = 'gobs_actor_' . $this->login;
+        $cache_key = 'gobs_actor_'.$this->login;
         $cache = jCache::get($cache_key);
         if ($cache) {
             return $cache;

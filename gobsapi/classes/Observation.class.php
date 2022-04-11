@@ -20,7 +20,7 @@ class Observation
     protected $user;
 
     /**
-     * @var mixed $indicator: G-Obs indicator
+     * @var mixed: G-Obs indicator
      */
     protected $indicator;
 

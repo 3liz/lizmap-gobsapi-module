@@ -20,7 +20,7 @@ class Indicator
     protected $user;
 
     /**
-     * @var lizmapProject $lizmap_project: Indicator lizMap project
+     * @var lizmapProject: Indicator lizMap project
      */
     protected $lizmap_project;
 
@@ -54,10 +54,10 @@ class Indicator
     /**
      * constructor.
      *
-     * @param mixed         $user            Gobs user instance
-     * @param string        $code:           the code of the indicator
-     * @param lizmapProject $lizmap_project: the lizMap project of the indicator
-     * @param string $connection_profile: the QGIS project corresponding jDb connection profile name
+     * @param mixed         $user                Gobs user instance
+     * @param string        $code:               the code of the indicator
+     * @param lizmapProject $lizmap_project:     the lizMap project of the indicator
+     * @param string        $connection_profile: the QGIS project corresponding jDb connection profile name
      */
     public function __construct($user, $code, $lizmap_project, $connection_profile)
     {
@@ -282,6 +282,7 @@ class Indicator
     private function query($sql, $params)
     {
         $cnx = jDb::getConnection($this->connection_profile);
+
         try {
             $resultset = $cnx->prepare($sql);
             $resultset->execute($params);
