@@ -1,5 +1,7 @@
 # Changelog
 
+## Unreleased
+
 ## 0.4.1 - 2022-04-22
 
 * Observation - Return the full geometry (Point, Linestring or Polygon)
