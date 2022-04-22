@@ -6,31 +6,37 @@ on:
       - '*'
 
 jobs:
-  deploy:
+  release:
+    name: Create Release
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
 
-    - name: Set up Python 3.8
-      uses: actions/setup-python@v1
-      with:
-        python-version: 3.8
+      - name: Set env
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
 
-#    - name: Install qgis-plugin-ci
-#      run: pip3 install qgis-plugin-ci==1.8.4
-#
-#    - name : Fetch current changelog
-#      run: |
-#        qgis-plugin-ci changelog ${GITHUB_REF/refs\/tags\//} >> release.md
-#        cat release.md
+      - uses: actions/checkout@v3
 
-    - name: Create release on GitHub
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.BOT_HUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: ${{ github.ref }}
-        # body_path: release.md
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
+
+      - uses: actions/cache@v3.0.1
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('.github/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install Python requirements
+        run: pip install -r .github/requirements.txt
+
+      - name : Get current changelog
+        run: qgis-plugin-ci changelog ${{ env.RELEASE_VERSION }} >> release.md
+
+      - name: Create release on GitHub
+        uses: ncipollo/release-action@v1.10.0
+        with:
+          bodyFile: release.md
+          token: ${{ secrets.BOT_HUB_TOKEN }}
