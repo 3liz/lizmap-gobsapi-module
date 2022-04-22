@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.4.1 - 2022-04-22
+
+* Observation - Return the full geometry (Point, Linestring or Polygon)
+  and not the centroid anymore in the "wkt" property of the observation.
+* QGIS Project - Get the QGIS PostgreSQL connection name and use it as the name of the
+  PostgreSQL service file to use for the database connection.
+* Installation - Use the new method `createEntryPoint` to correctly install gobsapi.php
+* CI - Create a release on GitHub after a publishing a tag
+* Docs - Switch to MkDocs
+
 ## 0.4.0 - 2021-07-04
 
 * User - Automatically create an actor in the G-Obs database for the authenticated user
