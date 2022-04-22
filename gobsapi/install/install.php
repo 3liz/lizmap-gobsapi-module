@@ -13,8 +13,7 @@ class gobsapiModuleInstaller extends jInstallerModule
     {
         if (method_exists($this, 'createEntryPoint')) {
             $this->createEntryPoint('gobsapi.php', 'gobsapi/config.ini.php', 'gobsapi', 'classic');
-        }
-        else {
+        } else {
             // Copy configuration file
             $gobs_config_target = jApp::configPath('gobsapi.ini.php');
             if (!file_exists($gobs_config_target)) {
