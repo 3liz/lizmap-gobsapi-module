@@ -383,9 +383,9 @@ class apiController extends jController
 
         // Add logged user to the prefix
         // to facilitate grepping the log
-        $login = $this->user->login;
-        if (!empty($login)) {
-            $prefix .=  ' / ' . $login;
+        $login = null;
+        if ($this->user && $this->user->login) {
+            $prefix .=  ' / ' . $this->user->login;;
         }
         $prefix .= ' - ';
 

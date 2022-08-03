@@ -64,23 +64,6 @@ lizmap/install/clean_vartmp.sh
 php lizmap/install/installer.php
 ```
 
-### Finalize the configuration
-
-* You need to add a new database profile in the `lizmap/var/config/profiles.ini.php`
-  like the following example (change the required fields)
-
-```ini
-[jdb:gobsapi]
-driver=pgsql
-database=gobs
-host=localhost
-port=5433
-user=gobs_user
-password=********
-persistent=off
-
-```
-
 ## Authentication driver
 
 If your Lizmap Web Client uses **SAMLv2** to authenticate the users,

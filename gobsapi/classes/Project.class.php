@@ -84,7 +84,7 @@ class Project
             }
         } else {
             $key = $this->lizmap_project->getData('repository').'~'.$this->lizmap_project->getData('id');
-            jLog::log('Project "'.$key.'" connection name is not valid: "'.$connectionName.'"', 'error');
+            jLog::log('Project "'.$key.'" connection name is not valid: "'.$connectionName.'"');
         }
     }
 
