@@ -8,7 +8,7 @@ class apiController extends jController
     );
 
     protected $http_codes = array(
-        '200' => 'Successfull operation',
+        '200' => 'Successful operation',
         '401' => 'Unauthorize',
         '400' => 'Bad Request',
         '403' => 'Forbidden',
@@ -378,17 +378,25 @@ class apiController extends jController
         if ($ini['gobsapi']['log_api_calls'] != 'debug') {
             return;
         }
-        $prefix = 'GOBSAPI - ';
+        $prefix = 'GOBSAPI';
         $level = 'default';
+
+        // Add logged user to the prefix
+        // to facilitate grepping the log
+        $login = $this->user->login;
+        if (!empty($login)) {
+            $prefix .=  ' / ' . $login;
+        }
+        $prefix .= ' - ';
 
         // path. Ex: getProjectByKey
         $log = $prefix.'path: '.$path;
-        jLog::log($log, $level);
+        \jLog::log($log, $level);
 
         // connection_name. Ex: gobs_test
         if (!empty($this->gobs_project->connectionName)) {
             $log = $prefix.'connection_name: '.$this->gobs_project->connectionName;
-            jLog::log($log, $level);
+            \jLog::log($log, $level);
         }
 
         // input_data. Ex: {"projectKey":"lizmapdemo~lampadairess","module":"gobsapi","action":"project:getProjectByKey"}
@@ -397,35 +405,35 @@ class apiController extends jController
         }
         if (!empty($input_data)) {
             $log = $prefix.'input_data: '.json_encode($input_data);
-            jLog::log($log, $level);
+            \jLog::log($log, $level);
         }
 
         // http code. Ex: 404
         if (!empty($http_code)) {
             $log = $prefix.'http_code: '.$http_code;
-            jLog::log($log, $level);
+            \jLog::log($log, $level);
         }
 
         // status. Ex:  success
         if (!empty($status)) {
             $log = $prefix.'status: '.$status;
-            jLog::log($log, $level);
+            \jLog::log($log, $level);
         }
 
         // message. Ex: The given project key does not refer to a known project
         if (!empty($message)) {
             $log = $prefix.'message: '.$message;
-            jLog::log($log, $level);
+            \jLog::log($log, $level);
         }
 
         // data. Ex: {"key":"lizmapdemo~lampadaires","label":"Paris by night","description":...}
         if (!empty($data)) {
             $log = $prefix.'data: '.json_encode($data);
-            jLog::log($log, $level);
+            \jLog::log($log, $level);
         }
 
         // End of block
         $log = $prefix.'################';
-        jLog::log($log, $level);
+        \jLog::log($log, $level);
     }
 }
