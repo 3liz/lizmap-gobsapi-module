@@ -4,9 +4,12 @@
 
 NB: all the path given are relative to your Lizmap Web Client instance folder.
 
-* Copy the `gobsapi` directory inside the `lizmap/lizmap-modules/` of a working Lizmap Web Client instance to have a new `lizmap/lizmap-modules/gobsapi/` folder containing the files `module.xml`, `events.xml`, and folders.
+* Copy the `gobsapi` directory inside the `lizmap/lizmap-modules/` of a working
+  Lizmap Web Client instance to have a new `lizmap/lizmap-modules/gobsapi/` folder
+  containing the files `module.xml`, `events.xml`, and folders.
 
-* Then modify the file `lizmap/var/config/localconfig.ini.php` to add `gobsapi.access=2` in the `[modules]` section, such as
+* Then modify the file `lizmap/var/config/localconfig.ini.php`
+  to add `gobsapi.access=2` in the `[modules]` section, such as
 
 ```ini
 [modules]
@@ -14,7 +17,10 @@ gobsapi.access=2
 
 ```
 
-* You need to manually edit the file `lizmap/projects.xml` and add the following content inside the `<entrypoints>` section
+### For Lizmap Web Client <= 3.4.x
+
+* You need to manually edit the file `lizmap/projects.xml`
+  and add the following content inside the `<entrypoints>` section
 
 ```xml
     <entry file="gobsapi.php" config="gobsapi/config.ini.php" type="classic"/>
@@ -31,7 +37,8 @@ Afterwards, you should have a content like this in the `entrypoints` section
     </entrypoints>
 ```
 
-* Copy the folder `gobsapi/install/gobsapi` inside the Lizmap folder `lizmap/var/config/` to have a new folder `lizmap/var/config/gobsapi` with a file `config.ini.php` inside
+* Copy the folder `gobsapi/install/gobsapi` inside the Lizmap folder `lizmap/var/config/`
+  to have a new folder `lizmap/var/config/gobsapi` with a file `config.ini.php` inside
 
 ```bash
 cp -R lizmap/lizmap-modules/gobsapi/install/gobsapi lizmap/var/config/gobsapi
@@ -43,6 +50,12 @@ cp -R lizmap/lizmap-modules/gobsapi/install/gobsapi lizmap/var/config/gobsapi
 cp -R lizmap/lizmap-modules/gobsapi/install/gobsapi.php lizmap/www/
 ```
 
+### For Lizmap Web Client >= 3.5.x
+
+You do not need to copy, modify or create files, everything is done by the module installer.
+
+### Run the Lizmap Web Client installer
+
 * Then you need to run the Lizmap installer
 
 ```bash
@@ -51,7 +64,10 @@ lizmap/install/clean_vartmp.sh
 php lizmap/install/installer.php
 ```
 
-* You need to add a new database profile in the `lizmap/var/config/profiles.ini.php` like the following example (change the required fields)
+### Finalize the configuration
+
+* You need to add a new database profile in the `lizmap/var/config/profiles.ini.php`
+  like the following example (change the required fields)
 
 ```ini
 [jdb:gobsapi]
@@ -60,16 +76,19 @@ database=gobs
 host=localhost
 port=5433
 user=gobs_user
-password=gobs
+password=********
 persistent=off
 
 ```
 
 ## Authentication driver
 
-If your Lizmap Web Client uses **SAMLv2** to authenticate the users, you need to force the gobsapi module to use another driver. The SAML protocol is based on URL redirections, which are not suitable for the G-Obs API end point.
+If your Lizmap Web Client uses **SAMLv2** to authenticate the users,
+you need to force the `gobsapi` module to use another driver.
+The `SAML` protocol is based on URL redirections, which are not suitable for the G-Obs API end point.
 
-You can override the configuration to force the `gobsapi.php` entry point to use another driver. To do so, you must first edit the file `localconfig.ini.php` and change the `[module]` section into:
+You can override the configuration to force the `gobsapi.php` entry point to use another driver.
+To do so, you must first edit the file `localconfig.ini.php` and change the `[module]` section into:
 
 ```ini
 [modules]
@@ -89,7 +108,11 @@ saml.access=0
 gobsapi.access=2
 ```
 
-We have deactivated gobs & saml in the main config (localconfig): they must now be activated only for the entry points index and admin by editing their configuration files `lizmap/var/config/index/config.ini.php` and `lizmap/var/config/admin/config.ini.php`. Example contents
+We have deactivated gobs & saml in the main config (localconfig):
+they must now be activated **only** for the entry points **index** and **admin**
+by editing their configuration files `lizmap/var/config/index/config.ini.php` and `lizmap/var/config/admin/config.ini.php`.
+
+Example contents:
 
 * for the index entrypoint:
 
@@ -204,7 +227,8 @@ on_error_action="jelix~error:badright"
 
 ## Test the API
 
-Then you are ready to test. For example with curl (you need curl to pass JWT token in Authorization header). Full API Documentation is available: https://docs.3liz.org/lizmap-gobsapi-module/api/
+Then you are ready to test. For example with curl (you need curl to pass JWT token in Authorization header).
+Full API Documentation is available: https://docs.3liz.org/lizmap-gobsapi-module/api/
 
 In the following examples, we use `http://lizmap.localhost/` as the base URL:
 
@@ -305,7 +329,8 @@ curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "reque
 
 ## Debug
 
-You can activate the **debug mode** by manually editing the configuration file `lizmap/var/config/gobsapi.ini.php` and modify the variable `log_api_calls' with the `debug` value:
+You can activate the **debug mode** by manually editing the configuration file `lizmap/var/config/gobsapi.ini.php`
+and modify the variable `log_api_calls' with the `debug` value:
 
 ```ini
 [gobsapi]
