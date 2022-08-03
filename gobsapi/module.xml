@@ -10,8 +10,7 @@
         <homepageURL>http://3liz.com</homepageURL>
     </info>
     <dependencies>
-        <jelix minversion="1.6.27-pre" maxversion="1.7.*"/>
-        <module name="lizmap" />
+        <module name="lizmap" minversion="3.4.*" maxversion="3.5.*"/>
     </dependencies>
     <autoload>
         <namespacePathMap name="Gobsapi" dir="lib"/>
