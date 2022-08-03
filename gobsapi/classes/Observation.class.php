@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author    3liz
  * @copyright 2020 3liz
@@ -86,6 +87,7 @@ class Observation
         }
 
         // Check JSON given if body is passed
+        // Do nothing in constructor, delegate to other methods
         if ($body_data) {
             // Do nothing
         }
@@ -177,6 +179,8 @@ class Observation
                 'Observation JSON data is empty',
             );
         }
+
+        // Decode body data
         $body_data = json_decode($data);
 
         // Check indicator given in body corresponds to the observation indicator instance
@@ -256,9 +260,36 @@ class Observation
         } else {
             // CREATION
 
+            // If uid is passed in body, check if it is correct
+            // and does not already exists. If so, it will be used
+            // instead of the observation default value created
+            // by the database on INSERT
+            $body_uuid = '';
+            if (property_exists($body_data, 'uuid') && $this->isValidUuid($body_data->uuid)) {
+                $body_uuid = $body_data->uuid;
+
+                // Check it does not yet exist in the database
+                $database_uid = null;
+                $sql = 'SELECT ob_uid FROM gobs.observation WHERE ob_uid = $1';
+                $cnx = jDb::getConnection($this->indicator->getConnectionProfile());
+                $resultset = $cnx->prepare($sql);
+                $params = array($body_uuid);
+                $resultset->execute($params);
+                foreach ($resultset->fetchAll() as $record) {
+                    $database_uid = $record->ob_uid;
+                }
+                if (!empty($database_uid)) {
+                    $body_uuid = '';
+                    return array(
+                        'error',
+                        'Observation cannot be created: given UID already exists.',
+                    );
+                }
+            }
+
             // Set data to null before inserting into database
             $body_data->id = null;
-            $body_data->uuid = null;
+            $body_data->uuid = $body_uuid;
             $body_data->media_url = null;
             $body_data->created_at = null;
             $body_data->updated_at = null;
@@ -520,11 +551,16 @@ class Observation
             obs AS (
                 INSERT INTO gobs.observation (
                     fk_id_series, fk_id_spatial_object, fk_id_import,
-                    ob_value, ob_start_timestamp, ob_end_timestamp
+                    ob_value, ob_start_timestamp, ob_end_timestamp,
+                    ob_uid
                 )
                 SELECT
                     ser.id, so.id, imp.id,
-                    (o->'values')::jsonb, (o->>'start_timestamp')::timestamp, (o->>'end_timestamp')::timestamp
+                    (o->'values')::jsonb, (o->>'start_timestamp')::timestamp, (o->>'end_timestamp')::timestamp,
+                    CASE
+                        WHEN o->>'uuid' IS NULL or o->>'uuid' = '' THEN uuid_generate_v4()
+                        ELSE o->>'uuid'::uuid
+                    END
                 FROM
                     ser, so, imp, source
                 RETURNING *
@@ -687,17 +723,17 @@ class Observation
         // Set messages
         $messages = array(
             'insert' => array(
-                'A database error occured while creating the observation',
+                'A database error occurred while creating the observation',
                 'The observation has not been created because one already exists with the same data',
                 'created',
             ),
             'update' => array(
-                'A database error occured while modifying the observation',
+                'A database error occurred while modifying the observation',
                 'The observation has not been modified',
                 'modified',
             ),
             'delete' => array(
-                'A database error occured while deleting the observation',
+                'A database error occurred while deleting the observation',
                 'The observation has not been deleted',
                 'deleted',
             ),
@@ -735,7 +771,7 @@ class Observation
             // Return response
             return array(
                 'success',
-                'The observation has been sucessfully '.$messages[$action][2],
+                'The observation has been successfully ' . $messages[$action][2],
                 $data,
             );
         }
@@ -751,7 +787,7 @@ class Observation
             // Return response
             return array(
                 'success',
-                'The observation has been sucessfully '.$messages[$action][2],
+                'The observation has been sucessfully ' . $messages[$action][2],
                 json_decode($json),
             );
         }
@@ -859,7 +895,7 @@ class Observation
         if ($delete[0] == 'error') {
             return $delete;
         }
-        $save = $form->saveFile('mediaFile', $this->observation_media_directory, $destination_basename.'.'.$extension);
+        $save = $form->saveFile('mediaFile', $this->observation_media_directory, $destination_basename . '.' . $extension);
         if (!$save) {
             jForms::destroy('gobsapi~media', $this->observation_uid);
 
@@ -891,10 +927,10 @@ class Observation
         if ($this->isValidUuid($uid)) {
             $destination_basename = $uid;
         }
-        $destination_basepath = $this->observation_media_directory.'/'.$destination_basename;
+        $destination_basepath = $this->observation_media_directory . '/' . $destination_basename;
         $media_path = null;
         foreach ($this->media_mimes as $mime) {
-            $path = $destination_basepath.'.'.$mime;
+            $path = $destination_basepath . '.' . $mime;
             if (file_exists($path)) {
                 $media_path = $path;
 
@@ -928,10 +964,10 @@ class Observation
         if ($this->isValidUuid($uid)) {
             $destination_basename = $uid;
         }
-        $destination_basepath = $this->observation_media_directory.'/'.$destination_basename;
+        $destination_basepath = $this->observation_media_directory . '/' . $destination_basename;
         $deleted = 0;
         foreach ($this->media_mimes as $mime) {
-            $path = $destination_basepath.'.'.$mime;
+            $path = $destination_basepath . '.' . $mime;
             if (file_exists($path)) {
                 try {
                     unlink($path);

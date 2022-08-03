@@ -148,11 +148,13 @@ class observationCtrl extends apiController
     }
 
     // Check parameters for actions having the body of an observation as parameter
+    // It is mainly for observation creation and update
     private function checkBodyActions($from)
     {
         // Parameters
         $body = $this->request->readHttpBody();
-        $gobs_observation = new Observation($this->user, $this->indicator, null, $body);
+        $observation_uid = null;
+        $gobs_observation = new Observation($this->user, $this->indicator, $observation_uid, $body);
 
         // Check observation JSON
         $action = 'create';
