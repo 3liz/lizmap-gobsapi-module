@@ -71,14 +71,13 @@ class observationCtrl extends apiController
         );
         if (in_array($from, $uid_actions)) {
             // Observation uid is passed
-            $check_method = 'checkUidActions';
+            // Run the check
+            list($code, $status, $message) = $this->checkUidActions($from);
         } elseif (in_array($from, $body_actions)) {
             // Observation is given in body
-            $check_method = 'checkBodyActions';
+            // Run the check
+            list($code, $status, $message) = $this->checkBodyActions($from);
         }
-
-        // Run the check
-        list($code, $status, $message) = $this->{$check_method}($from);
 
         return array(
             $code,

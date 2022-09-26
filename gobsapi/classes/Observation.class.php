@@ -557,10 +557,10 @@ class Observation
                 SELECT
                     ser.id, so.id, imp.id,
                     (o->'values')::jsonb, (o->>'start_timestamp')::timestamp, (o->>'end_timestamp')::timestamp,
-                    CASE
-                        WHEN o->>'uuid' IS NULL or o->>'uuid' = '' THEN uuid_generate_v4()
-                        ELSE o->>'uuid'::uuid
-                    END
+                    (CASE
+                        WHEN o->>'uuid' IS NULL or o->>'uuid' = '' THEN uuid_generate_v4()::text
+                        ELSE o->>'uuid'
+                    END)::uuid
                 FROM
                     ser, so, imp, source
                 RETURNING *
@@ -724,7 +724,7 @@ class Observation
         $messages = array(
             'insert' => array(
                 'A database error occurred while creating the observation',
-                'The observation has not been created because one already exists with the same data',
+                'The observation has not been created',
                 'created',
             ),
             'update' => array(
