@@ -213,6 +213,8 @@ on_error_action="jelix~error:badright"
 Then you are ready to test. For example with curl (you need curl to pass JWT token in Authorization header).
 Full API Documentation is available: https://docs.3liz.org/lizmap-gobsapi-module/api/
 
+You can find examples in the [tests folder]()
+
 In the following examples, we use `http://lizmap.localhost/` as the base URL:
 
 * Define the API base URL:
@@ -221,94 +223,224 @@ In the following examples, we use `http://lizmap.localhost/` as the base URL:
 BASEURL="http://lizmap.localhost/gobsapi.php"
 ```
 
-* User:
+### User
+
+* Log in
 
 ```bash
-# USER
-###
-
 # login
 # we get the authentication TOKEN variable by first log the user in
 TOKEN=$(curl -s -X GET -H 'Content-Type: application/json' "$BASEURL/user/login?username=admin&password=admin" | jq -r '.token') && echo $TOKEN
+```
 
+returns the token, for example
+
+```
+dacf5135c6686417c3916a649adbd146
+```
+
+* Get the user projects
+
+```bash
 # User Projects
 # we use the $TOKEN variable in the Authorization header
 echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" $BASEURL/user/projects)
+```
 
+returns
+
+```json
+[{"key":"gobs~gobsapi","label":"gobsapi","description":"","media_url":"http:\/\/lizmap.localhost\/3_5\/index.php\/view\/media\/illustration?repository=gobs&project=gobsapi","geopackage_url":"http:\/\/lizmap.localhost\/3_5\/gobsapi.php\/project\/gobs~gobsapi\/geopackage","extent":{"xmin":"-5.56054637104951","ymin":"46.6872332512938","xmax":"-0.76410351074025","ymax":"49.4663846292183"}}]
+```
+
+
+* Log out
+
+```bash
 # logUserOut
 echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" $BASEURL/user/logout)
-
 ```
 
-* Project:
+returns
+
+```json
+{"code":1,"status":"success","message":"The user has been successfully logged out"}
+```
+
+### Project
+
+* Get a project details
 
 ```bash
-# PROJECT
-###
-
 # getProjectByKey
-echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" $BASEURL/project/lizmapdemo~lampadaires)
+echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" $BASEURL/project/gobs~gobsapi)
+```
+returns
 
+```json
+{"key":"gobs~gobsapi","label":"gobsapi","description":"","media_url":"http:\/\/lizmap.localhost\/3_5\/index.php\/view\/media\/illustration?repository=gobs&project=gobsapi","geopackage_url":"http:\/\/lizmap.localhost\/3_5\/gobsapi.php\/project\/gobs~gobsapi\/geopackage","extent":{"xmin":"-5.56054637104951","ymin":"46.6872332512938","xmax":"-0.76410351074025","ymax":"49.4663846292183"}}
+```
+
+* Get the list of indicators
+
+```bash
 # getProjectIndicators
-echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" $BASEURL/project/lizmapdemo~lampadaires/indicators)
+echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" $BASEURL/project/gobs~gobsapi/indicators)
+```
+returns
 
+```json
+[{"id":1,"code":"pluviometry","label":"Hourly pluviometry ","description":"Hourly rainfall pluviometry in millimetre","category":"Water","date_format":"hour","values":[{"code":"pluviometry","name":"Pluviometry","type":"real","unit":"mm"}],"documents":[],"preview":null,"icon":null,"created_at":"2022-05-30T15:54:34.818617","updated_at":"2022-05-30T15:54:34.818617"},{"id":2,"code":"population","label":"Population ","description":"Number of inhabitants for city","category":"Population","date_format":"year","values":[{"code":"population","name":"Population","type":"integer","unit":"people"}],"documents":[],"preview":null,"icon":null,"created_at":"2022-05-30T15:54:34.818617","updated_at":"2022-05-30T15:54:34.818617"}]
+```
+
+* Get the project Geopackage
+
+```bash
 # getProjectGeopackage
-curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" $BASEURL/project/lizmapdemo~lampadaires/geopackage --output /tmp/test.gpkg
+curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" $BASEURL/project/gobs~gobsapi/geopackage --output /tmp/test.gpkg
 ```
+returns the binary file and save it to `/tmp/test.gpkg`
 
-* Indicator:
+### Indicator
 
+* Get an indicator data
+*
 ```bash
-# INDICATOR
-###
-
 # getIndicatorByCode
-echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" $BASEURL/project/lizmapdemo~lampadaires/indicator/pluviometry)
-
-# getObservationsByIndicator
-echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "lastSyncDate: $(date '+%Y-%m-%d %H:%M:%S' -d '7 days ago')" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" $BASEURL/project/lizmapdemo~lampadaires/indicator/pluviometry/observations)
-
-# getDeletedObservationsByIndicator
-echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "lastSyncDate: $(date '+%Y-%m-%d %H:%M:%S' -d '13 days ago')" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" $BASEURL/project/lizmapdemo~lampadaires/indicator/pluviometry/deletedObservations)
-
-# getIndicatorDocument
-curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" $BASEURL/project/lizmapdemo~lampadaires/indicator/pluviometry/document/946fee64-e86c-40fa-a55e-8d9ad3579734 --output /tmp/test.jpeg
+echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" $BASEURL/project/gobs~gobsapi/indicator/pluviometry)
 ```
 
-* Observation:
+returns
+
+```json
+{"id":1,"code":"pluviometry","label":"Hourly pluviometry ","description":"Hourly rainfall pluviometry in millimetre","category":"Water","date_format":"hour","values":[{"code":"pluviometry","name":"Pluviometry","type":"real","unit":"mm"}],"documents":[],"preview":null,"icon":null,"created_at":"2022-05-30T15:54:34.818617","updated_at":"2022-05-30T15:54:34.818617"}
+```
+
+* Get the observation of a given indicator between two dates
 
 ```bash
-# OBSERVATION
-###
-
-
-# createObservation
-echo $(curl -X POST -H "Accept: application/json" -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" -H "Content-Type: application/json" -d "{\"id\":null,\"indicator\":\"pluviometry\",\"uuid\":null,\"start_timestamp\":\"2019-07-19 03:30:00\",\"end_timestamp\":null,\"coordinates\":{\"x\":-3.785956510771293,\"y\":48.4744332531894},\"wkt\":\"POINT(-3.78595651077129 48.4744332531894)\",\"values\":[0.8],\"photo\":null,\"created_at\":null,\"updated_at\":null}" "$BASEURL/project/lizmapdemo~lampadaires/indicator/pluviometry/observation")
-
-{"id":3595,"indicator":"pluviometry","uuid":"e8f0a46c-1d24-456a-925a-387740ade1c6","start_timestamp":"2019-07-19T03:30:00","end_timestamp":null,"coordinates":{"x":-3.78595651077129,"y":48.4744332531894},"wkt":"POINT(-3.78595651077129 48.4744332531894)","values":[0.8],"photo":null,"created_at":"2020-12-24T15:17:43","updated_at":"2020-12-24T15:17:43"}
-
-# updateObservation
-echo $(curl -X PUT -H "Accept: application/json" -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" -H "Content-Type: application/json" -d "{\"id\":1,\"indicator\":\"pluviometry\",\"uuid\":\"e8f0a46c-1d24-456a-925a-387740ade1c6\",\"start_timestamp\":\"2019-07-16 03:35:00\",\"end_timestamp\":null,\"coordinates\":{\"x\":-3.785956510771293,\"y\":48.4744332531894},\"wkt\":\"POINT(-3.78595651077999 48.4744332531999)\",\"values\":[1.2],\"photo\":null,\"created_at\":\"2020-12-03 15:04:40\",\"updated_at\":\"2020-12-03 17:55:59\"}" "$BASEURL/project/lizmapdemo~lampadaires/indicator/pluviometry/observation")
-
-# getObservationById
-echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" $BASEURL/project/lizmapdemo~lampadaires/indicator/pluviometry/observation/e8f0a46c-1d24-456a-925a-387740ade1c6)
-
-# deleteObservationById
-echo $(curl -X DELETE -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" $BASEURL/project/lizmapdemo~lampadaires/indicator/pluviometry/observation/e8f0a46c-1d24-456a-925a-387740ade1c6)
+# getObservationsByIndicator
+# between seven days ago and now
+echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "lastSyncDate: $(date '+%Y-%m-%d %H:%M:%S' -d '7 days ago')" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" $BASEURL/project/gobs~gobsapi/indicator/pluviometry/observations)
 ```
 
-* Observation media:
+returns all the matching observations.
+
+```json
+[{"id":32800,"indicator":"pluviometry","uuid":"7b35c3af-7d7d-4791-b7a4-eed9a781dc91","start_timestamp":"2019-07-16T06:00:00","end_timestamp":null,"coordinates":{"x":-2.16761209396085,"y":48.2541044163058},"wkt":"POINT(-2.16761209396085 48.2541044163058)","values":[0],"media_url":null,"created_at":"2022-05-30T17:38:00","updated_at":"2022-05-30T17:38:00","editable":false},{"id":32801,"indicator":"pluviometry","uuid":"2d9e94bc-2472-4db0-bff3-c02247cf28f8","start_timestamp":"2019-07-16T06:00:00","end_timestamp":null,"coordinates":{"x":-3.87242472398041,"y":48.354208417112},"wkt":"POINT(-3.87242472398041 48.354208417112)","values":[0],"media_url":null,"created_at":"2022-05-30T17:38:00","updated_at":"2022-05-30T17:38:00","editable":false}]
+```
+
+* Get the deleted observation on the server between two dates
+
+```bash
+# getDeletedObservationsByIndicator
+echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "lastSyncDate: $(date '+%Y-%m-%d %H:%M:%S' -d '13 days ago')" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" $BASEURL/project/gobs~gobsapi/indicator/pluviometry/deletedObservations)
+```
+
+returns a list of the deleted observation uids
+
+```json
+["98020996-2dec-4cbe-93d7-c2ba1b43b871","230d5b17-96b3-4bad-8c78-6379f1e9b1c6","ced021b2-6eda-4a80-8903-b013291a6b2d","2d198922-5cd0-4d0f-bc96-dfcc17c01ced","1fc001b6-c147-49ef-ae6e-66f8ea5e0b39"]
+```
+
+* Get the indicator documents
+
+```bash
+# getIndicatorDocument
+curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" $BASEURL/project/gobs~gobsapi/indicator/pluviometry/document/946fee64-e86c-40fa-a55e-8d9ad3579734 --output /tmp/test.jpeg
+```
+
+### Observation
+
+* Create a new observation
+*
+```bash
+# createObservation
+echo $(curl -X POST -H "Accept: application/json" -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" -H "Content-Type: application/json" -d "{\"id\":null,\"indicator\":\"pluviometry\",\"uuid\":null,\"start_timestamp\":\"2019-07-19 03:30:00\",\"end_timestamp\":null,\"coordinates\":{\"x\":-3.785956510771293,\"y\":48.4744332531894},\"wkt\":\"POINT(-3.78595651077129 48.4744332531894)\",\"values\":[0.8],\"photo\":null,\"created_at\":null,\"updated_at\":null}" "$BASEURL/project/gobs~gobsapi/indicator/pluviometry/observation")
+```
+
+returns
+
+```json
+{"id":3595,"indicator":"pluviometry","uuid":"e8f0a46c-1d24-456a-925a-387740ade1c6","start_timestamp":"2019-07-19T03:30:00","end_timestamp":null,"coordinates":{"x":-3.78595651077129,"y":48.4744332531894},"wkt":"POINT(-3.78595651077129 48.4744332531894)","values":[0.8],"photo":null,"created_at":"2020-12-24T15:17:43","updated_at":"2020-12-24T15:17:43"}
+```
+
+* Update an existing observation
+
+```bash
+# updateObservation
+echo $(curl -X PUT -H "Accept: application/json" -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" -H "Content-Type: application/json" -d "{\"id\":1,\"indicator\":\"pluviometry\",\"uuid\":\"e8f0a46c-1d24-456a-925a-387740ade1c6\",\"start_timestamp\":\"2019-07-16 03:35:00\",\"end_timestamp\":null,\"coordinates\":{\"x\":-3.785956510771293,\"y\":48.4744332531894},\"wkt\":\"POINT(-3.78595651077999 48.4744332531999)\",\"values\":[1.2],\"photo\":null,\"created_at\":\"2020-12-03 15:04:40\",\"updated_at\":\"2020-12-03 17:55:59\"}" "$BASEURL/project/gobs~gobsapi/indicator/pluviometry/observation")
+```
+
+returns
+
+```json
+
+```
+
+* Get an observation data
+
+```bash
+# getObservationById
+echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" $BASEURL/project/gobs~gobsapi/indicator/pluviometry/observation/e8f0a46c-1d24-456a-925a-387740ade1c6)
+```
+
+returns
+
+```json
+
+```
+
+* Delete an observation
+
+```bash
+# deleteObservationById
+echo $(curl -X DELETE -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" $BASEURL/project/gobs~gobsapi/indicator/pluviometry/observation/e8f0a46c-1d24-456a-925a-387740ade1c6)
+```
+
+returns
+
+```json
+
+```
+
+### Observation media
+
+* Upload a media for a given observation
 
 ```bash
 # uploadObservationMedia
-echo $(curl -X POST -H  "Accept: application/json" -H  "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" -H  "Content-Type: multipart/form-data" -F "mediaFile=@/home/mdouchin/Documents/3liz/mdouchin_carre.jpeg;type=image/jpeg" $BASEURL/project/lizmapdemo~lampadaires/indicator/pluviometry/observation/e8f0a46c-1d24-456a-925a-387740ade1c6/uploadMedia)
-
-# deleteObservationMedia
-echo $(curl -X DELETE -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" $BASEURL/project/lizmapdemo~lampadaires/indicator/pluviometry/observation/e8f0a46c-1d24-456a-925a-387740ade1c6/deleteMedia)
-
-# getObservationMedia
-curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" $BASEURL/project/lizmapdemo~lampadaires/indicator/pluviometry/observation/e8f0a46c-1d24-456a-925a-387740ade1c6/media --output /tmp/test.jpeg
+echo $(curl -X POST -H  "Accept: application/json" -H  "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" -H  "Content-Type: multipart/form-data" -F "mediaFile=@/home/mdouchin/Documents/3liz/mdouchin_carre.jpeg;type=image/jpeg" $BASEURL/project/gobs~gobsapi/indicator/pluviometry/observation/e8f0a46c-1d24-456a-925a-387740ade1c6/uploadMedia)
 ```
+
+returns
+
+```json
+
+```
+
+* Delete an observation  media
+
+```bash
+# deleteObservationMedia
+echo $(curl -X DELETE -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" $BASEURL/project/gobs~gobsapi/indicator/pluviometry/observation/e8f0a46c-1d24-456a-925a-387740ade1c6/deleteMedia)
+```
+
+returns
+
+```json
+
+```
+
+* Download an observation media
+
+```bash
+# getObservationMedia
+curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" $BASEURL/project/gobs~gobsapi/indicator/pluviometry/observation/e8f0a46c-1d24-456a-925a-387740ade1c6/media --output /tmp/test.jpeg
+```
+
+returns the media file in binary and save it to `/tmp/test.jpeg`
+
 
 ## Debug
 
