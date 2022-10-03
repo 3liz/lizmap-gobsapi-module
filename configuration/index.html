@@ -16,7 +16,7 @@
         <link rel="canonical" href="https://docs.3liz.org/lizmap-gobsapi-module/configuration/">
       
       <link rel="icon" href="../media/icon.png">
-      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-7.1.11">
+      <meta name="generator" content="mkdocs-1.4.0, mkdocs-material-7.1.11">
     
     
       
@@ -568,11 +568,10 @@
 <li><code>url</code>: a URL pointing to an external ressource</li>
 </ul>
 <p>All the document files must be stored in the API server. The document files must be stored inside a <code>media/gobsapi/documents/</code> folder, with the <code>media</code> folder located in Lizmap repository root folder. This <code>media</code> folder must be writable. Do it for example with</p>
-<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code>chown -R :www-data /srv/data/media
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>chown -R :www-data /srv/data/media
 chmod <span class="m">775</span> -R /srv/data/media
-</code></pre></div>
-</td></tr></table>
+</code></pre></div></td></tr></table></div>
 <p>For example, if Lizmap Web Client repository root folder is <code>/srv/data/</code>, the root gobsapi media folder will be <code>/srv/data/media/</code> and the documents must be stored in <code>/srv/data/media/gobsapi/documents/INDICATOR_CODE/DOCUMENT_TYPE/DOCUMENT_FILE_NAME.EXT</code>, where</p>
 <ul>
 <li><code>INDICATOR_CODE</code> is the code of the indicator, for example <code>pluviometry</code></li>

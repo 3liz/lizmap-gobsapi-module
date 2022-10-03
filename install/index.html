@@ -16,7 +16,7 @@
         <link rel="canonical" href="https://docs.3liz.org/lizmap-gobsapi-module/install/">
       
       <link rel="icon" href="../media/icon.png">
-      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-7.1.11">
+      <meta name="generator" content="mkdocs-1.4.0, mkdocs-material-7.1.11">
     
     
       
@@ -354,6 +354,33 @@
     Lizmap Web Client gobsapi module
   </a>
   
+    <nav class="md-nav" aria-label="Lizmap Web Client gobsapi module">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#for-lizmap-web-client-34x" class="md-nav__link">
+    For Lizmap Web Client &lt;= 3.4.x
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#for-lizmap-web-client-35x" class="md-nav__link">
+    For Lizmap Web Client &gt;= 3.5.x
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-the-lizmap-web-client-installer" class="md-nav__link">
+    Run the Lizmap Web Client installer
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -367,6 +394,47 @@
   <a href="#test-the-api" class="md-nav__link">
     Test the API
   </a>
+  
+    <nav class="md-nav" aria-label="Test the API">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#user" class="md-nav__link">
+    User
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#project" class="md-nav__link">
+    Project
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#indicator" class="md-nav__link">
+    Indicator
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#observation" class="md-nav__link">
+    Observation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#observation-media" class="md-nav__link">
+    Observation media
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -460,6 +528,33 @@
     Lizmap Web Client gobsapi module
   </a>
   
+    <nav class="md-nav" aria-label="Lizmap Web Client gobsapi module">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#for-lizmap-web-client-34x" class="md-nav__link">
+    For Lizmap Web Client &lt;= 3.4.x
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#for-lizmap-web-client-35x" class="md-nav__link">
+    For Lizmap Web Client &gt;= 3.5.x
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-the-lizmap-web-client-installer" class="md-nav__link">
+    Run the Lizmap Web Client installer
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -473,6 +568,47 @@
   <a href="#test-the-api" class="md-nav__link">
     Test the API
   </a>
+  
+    <nav class="md-nav" aria-label="Test the API">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#user" class="md-nav__link">
+    User
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#project" class="md-nav__link">
+    Project
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#indicator" class="md-nav__link">
+    Indicator
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#observation" class="md-nav__link">
+    Observation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#observation-media" class="md-nav__link">
+    Observation media
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -505,83 +641,69 @@
 <p>NB: all the path given are relative to your Lizmap Web Client instance folder.</p>
 <ul>
 <li>
-<p>Copy the <code>gobsapi</code> directory inside the <code>lizmap/lizmap-modules/</code> of a working Lizmap Web Client instance to have a new <code>lizmap/lizmap-modules/gobsapi/</code> folder containing the files <code>module.xml</code>, <code>events.xml</code>, and folders.</p>
+<p>Copy the <code>gobsapi</code> directory inside the <code>lizmap/lizmap-modules/</code> of a working
+  Lizmap Web Client instance to have a new <code>lizmap/lizmap-modules/gobsapi/</code> folder
+  containing the files <code>module.xml</code>, <code>events.xml</code>, and folders.</p>
 </li>
 <li>
-<p>Then modify the file <code>lizmap/var/config/localconfig.ini.php</code> to add <code>gobsapi.access=2</code> in the <code>[modules]</code> section, such as</p>
+<p>Then modify the file <code>lizmap/var/config/localconfig.ini.php</code>
+  to add <code>gobsapi.access=2</code> in the <code>[modules]</code> section, such as</p>
 </li>
 </ul>
-<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="k">[modules]</span><span class="w"></span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">[modules]</span><span class="w"></span>
 <span class="na">gobsapi.access</span><span class="o">=</span><span class="s">2</span><span class="w"></span>
-</code></pre></div>
-</td></tr></table>
+</code></pre></div></td></tr></table></div>
+<h3 id="for-lizmap-web-client-34x">For Lizmap Web Client &lt;= 3.4.x<a class="headerlink" href="#for-lizmap-web-client-34x" title="Permanent link">#</a></h3>
 <ul>
-<li>You need to manually edit the file <code>lizmap/projects.xml</code> and add the following content inside the <code>&lt;entrypoints&gt;</code> section</li>
+<li>You need to manually edit the file <code>lizmap/projects.xml</code>
+  and add the following content inside the <code>&lt;entrypoints&gt;</code> section</li>
 </ul>
-<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code>    <span class="nt">&lt;entry</span> <span class="na">file=</span><span class="s">&quot;gobsapi.php&quot;</span> <span class="na">config=</span><span class="s">&quot;gobsapi/config.ini.php&quot;</span> <span class="na">type=</span><span class="s">&quot;classic&quot;</span><span class="nt">/&gt;</span>
-</code></pre></div>
-</td></tr></table>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>    <span class="nt">&lt;entry</span> <span class="na">file=</span><span class="s">&quot;gobsapi.php&quot;</span> <span class="na">config=</span><span class="s">&quot;gobsapi/config.ini.php&quot;</span> <span class="na">type=</span><span class="s">&quot;classic&quot;</span><span class="nt">/&gt;</span>
+</code></pre></div></td></tr></table></div>
 <p>Afterwards, you should have a content like this in the <code>entrypoints</code> section</p>
-<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
 <span class="normal">3</span>
 <span class="normal">4</span>
 <span class="normal">5</span>
-<span class="normal">6</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code>    <span class="nt">&lt;entrypoints&gt;</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code>    <span class="nt">&lt;entrypoints&gt;</span>
         <span class="nt">&lt;entry</span> <span class="na">file=</span><span class="s">&quot;index.php&quot;</span> <span class="na">config=</span><span class="s">&quot;index/config.ini.php&quot;</span><span class="nt">/&gt;</span>
         <span class="nt">&lt;entry</span> <span class="na">file=</span><span class="s">&quot;admin.php&quot;</span> <span class="na">config=</span><span class="s">&quot;admin/config.ini.php&quot;</span> <span class="na">type=</span><span class="s">&quot;classic&quot;</span><span class="nt">/&gt;</span>
         <span class="nt">&lt;entry</span> <span class="na">file=</span><span class="s">&quot;script.php&quot;</span> <span class="na">config=</span><span class="s">&quot;cmdline/script.ini.php&quot;</span> <span class="na">type=</span><span class="s">&quot;cmdline&quot;</span><span class="nt">/&gt;</span>
         <span class="nt">&lt;entry</span> <span class="na">file=</span><span class="s">&quot;gobsapi.php&quot;</span> <span class="na">config=</span><span class="s">&quot;gobsapi/config.ini.php&quot;</span> <span class="na">type=</span><span class="s">&quot;classic&quot;</span><span class="nt">/&gt;</span>
     <span class="nt">&lt;/entrypoints&gt;</span>
-</code></pre></div>
-</td></tr></table>
+</code></pre></div></td></tr></table></div>
 <ul>
-<li>Copy the folder <code>gobsapi/install/gobsapi</code> inside the Lizmap folder <code>lizmap/var/config/</code> to have a new folder <code>lizmap/var/config/gobsapi</code> with a file <code>config.ini.php</code> inside</li>
+<li>Copy the folder <code>gobsapi/install/gobsapi</code> inside the Lizmap folder <code>lizmap/var/config/</code>
+  to have a new folder <code>lizmap/var/config/gobsapi</code> with a file <code>config.ini.php</code> inside</li>
 </ul>
-<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code>cp -R lizmap/lizmap-modules/gobsapi/install/gobsapi lizmap/var/config/gobsapi
-</code></pre></div>
-</td></tr></table>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>cp -R lizmap/lizmap-modules/gobsapi/install/gobsapi lizmap/var/config/gobsapi
+</code></pre></div></td></tr></table></div>
 <ul>
 <li>Copy the file <code>gobsapi/install/gobsapi.php</code> inside the <code>lizmap/www/</code> folder</li>
 </ul>
-<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code>cp -R lizmap/lizmap-modules/gobsapi/install/gobsapi.php lizmap/www/
-</code></pre></div>
-</td></tr></table>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>cp -R lizmap/lizmap-modules/gobsapi/install/gobsapi.php lizmap/www/
+</code></pre></div></td></tr></table></div>
+<h3 id="for-lizmap-web-client-35x">For Lizmap Web Client &gt;= 3.5.x<a class="headerlink" href="#for-lizmap-web-client-35x" title="Permanent link">#</a></h3>
+<p>You do not need to copy, modify or create files, everything is done by the module installer.</p>
+<h3 id="run-the-lizmap-web-client-installer">Run the Lizmap Web Client installer<a class="headerlink" href="#run-the-lizmap-web-client-installer" title="Permanent link">#</a></h3>
 <ul>
 <li>Then you need to run the Lizmap installer</li>
 </ul>
-<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
-<span class="normal">3</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code>lizmap/install/set_rights.sh
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>lizmap/install/set_rights.sh
 lizmap/install/clean_vartmp.sh
 php lizmap/install/installer.php
-</code></pre></div>
-</td></tr></table>
-<ul>
-<li>You need to add a new database profile in the <code>lizmap/var/config/profiles.ini.php</code> like the following example (change the required fields)</li>
-</ul>
-<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span>
-<span class="normal">8</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="k">[jdb:gobsapi]</span><span class="w"></span>
-<span class="na">driver</span><span class="o">=</span><span class="s">pgsql</span><span class="w"></span>
-<span class="na">database</span><span class="o">=</span><span class="s">gobs</span><span class="w"></span>
-<span class="na">host</span><span class="o">=</span><span class="s">localhost</span><span class="w"></span>
-<span class="na">port</span><span class="o">=</span><span class="s">5433</span><span class="w"></span>
-<span class="na">user</span><span class="o">=</span><span class="s">gobs_user</span><span class="w"></span>
-<span class="na">password</span><span class="o">=</span><span class="s">gobs</span><span class="w"></span>
-<span class="na">persistent</span><span class="o">=</span><span class="s">off</span><span class="w"></span>
-</code></pre></div>
-</td></tr></table>
+</code></pre></div></td></tr></table></div>
 <h2 id="authentication-driver">Authentication driver<a class="headerlink" href="#authentication-driver" title="Permanent link">#</a></h2>
-<p>If your Lizmap Web Client uses <strong>SAMLv2</strong> to authenticate the users, you need to force the gobsapi module to use another driver. The SAML protocol is based on URL redirections, which are not suitable for the G-Obs API end point.</p>
-<p>You can override the configuration to force the <code>gobsapi.php</code> entry point to use another driver. To do so, you must first edit the file <code>localconfig.ini.php</code> and change the <code>[module]</code> section into:</p>
-<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<p>If your Lizmap Web Client uses <strong>SAMLv2</strong> to authenticate the users,
+you need to force the <code>gobsapi</code> module to use another driver.
+The <code>SAML</code> protocol is based on URL redirections, which are not suitable for the G-Obs API end point.</p>
+<p>You can override the configuration to force the <code>gobsapi.php</code> entry point to use another driver.
+To do so, you must first edit the file <code>localconfig.ini.php</code> and change the <code>[module]</code> section into:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
 <span class="normal"> 2</span>
 <span class="normal"> 3</span>
 <span class="normal"> 4</span>
@@ -595,7 +717,7 @@ php lizmap/install/installer.php
 <span class="normal">12</span>
 <span class="normal">13</span>
 <span class="normal">14</span>
-<span class="normal">15</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="k">[modules]</span><span class="w"></span>
+<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">[modules]</span><span class="w"></span>
 <span class="c1">;; uncomment it if you want to use ldap for authentication</span><span class="w"></span>
 <span class="c1">;; see documentation to complete the ldap configuration</span><span class="w"></span>
 <span class="na">ldapdao.access</span><span class="o">=</span><span class="s">0</span><span class="w"></span>
@@ -610,13 +732,15 @@ php lizmap/install/installer.php
 <span class="na">saml.access</span><span class="o">=</span><span class="s">0</span><span class="w"></span>
 <span class="c1">;; we then activate the gobsapi module</span><span class="w"></span>
 <span class="na">gobsapi.access</span><span class="o">=</span><span class="s">2</span><span class="w"></span>
-</code></pre></div>
-</td></tr></table>
-<p>We have deactivated gobs &amp; saml in the main config (localconfig): they must now be activated only for the entry points index and admin by editing their configuration files <code>lizmap/var/config/index/config.ini.php</code> and <code>lizmap/var/config/admin/config.ini.php</code>. Example contents</p>
+</code></pre></div></td></tr></table></div>
+<p>We have deactivated gobs &amp; saml in the main config (localconfig):
+they must now be activated <strong>only</strong> for the entry points <strong>index</strong> and <strong>admin</strong>
+by editing their configuration files <code>lizmap/var/config/index/config.ini.php</code> and <code>lizmap/var/config/admin/config.ini.php</code>.</p>
+<p>Example contents:</p>
 <ul>
 <li>for the index entrypoint:</li>
 </ul>
-<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
 <span class="normal"> 2</span>
 <span class="normal"> 3</span>
 <span class="normal"> 4</span>
@@ -649,7 +773,7 @@ php lizmap/install/installer.php
 <span class="normal">31</span>
 <span class="normal">32</span>
 <span class="normal">33</span>
-<span class="normal">34</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="c1">;&lt;?php die(&#39;&#39;); ?&gt;</span><span class="w"></span>
+<span class="normal">34</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">;&lt;?php die(&#39;&#39;); ?&gt;</span><span class="w"></span>
 <span class="c1">;for security reasons , don&#39;t remove or modify the first line</span><span class="w"></span>
 
 <span class="na">startModule</span><span class="o">=</span><span class="s">view</span><span class="w"></span>
@@ -683,12 +807,11 @@ php lizmap/install/installer.php
 <span class="c1">;; uncomment it if you want to use ldap for authentication</span><span class="w"></span>
 <span class="c1">;; see documentation to complete the ldap configuration</span><span class="w"></span>
 <span class="na">driver</span><span class="o">=</span><span class="s">saml</span><span class="w"></span>
-</code></pre></div>
-</td></tr></table>
+</code></pre></div></td></tr></table></div>
 <ul>
 <li>for the admin entrypoint:</li>
 </ul>
-<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
 <span class="normal"> 2</span>
 <span class="normal"> 3</span>
 <span class="normal"> 4</span>
@@ -719,7 +842,7 @@ php lizmap/install/installer.php
 <span class="normal">29</span>
 <span class="normal">30</span>
 <span class="normal">31</span>
-<span class="normal">32</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="c1">;&lt;?php die(&#39;&#39;); ?&gt;</span><span class="w"></span>
+<span class="normal">32</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">;&lt;?php die(&#39;&#39;); ?&gt;</span><span class="w"></span>
 <span class="c1">;for security reasons , don&#39;t remove or modify the first line</span><span class="w"></span>
 
 <span class="na">startModule</span><span class="o">=</span><span class="s">master_admin</span><span class="w"></span>
@@ -751,12 +874,11 @@ php lizmap/install/installer.php
 <span class="c1">;; uncomment it if you want to use ldap for authentication</span><span class="w"></span>
 <span class="c1">;; see documentation to complete the ldap configuration</span><span class="w"></span>
 <span class="na">driver</span><span class="o">=</span><span class="s">saml</span><span class="w"></span>
-</code></pre></div>
-</td></tr></table>
+</code></pre></div></td></tr></table></div>
 <ul>
 <li>for the gobsapi entrypoint:</li>
 </ul>
-<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
 <span class="normal"> 2</span>
 <span class="normal"> 3</span>
 <span class="normal"> 4</span>
@@ -781,7 +903,7 @@ php lizmap/install/installer.php
 <span class="normal">23</span>
 <span class="normal">24</span>
 <span class="normal">25</span>
-<span class="normal">26</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="k">[modules]</span><span class="w"></span>
+<span class="normal">26</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">[modules]</span><span class="w"></span>
 <span class="na">jelix.access</span><span class="o">=</span><span class="s">1</span><span class="w"></span>
 <span class="na">lizmap.access</span><span class="o">=</span><span class="s">1</span><span class="w"></span>
 <span class="na">view.access</span><span class="o">=</span><span class="s">1</span><span class="w"></span>
@@ -807,190 +929,218 @@ php lizmap/install/installer.php
 <span class="na">on_error</span><span class="o">=</span><span class="s">2</span><span class="w"></span>
 <span class="na">error_message</span><span class="o">=</span><span class="s">&quot;jacl2~errors.action.right.needed&quot;</span><span class="w"></span>
 <span class="na">on_error_action</span><span class="o">=</span><span class="s">&quot;jelix~error:badright&quot;</span><span class="w"></span>
-</code></pre></div>
-</td></tr></table>
+</code></pre></div></td></tr></table></div>
 <h2 id="test-the-api">Test the API<a class="headerlink" href="#test-the-api" title="Permanent link">#</a></h2>
-<p>Then you are ready to test. For example with curl (you need curl to pass JWT token in Authorization header). Full API Documentation is available: <a href="https://docs.3liz.org/lizmap-gobsapi-module/api/">https://docs.3liz.org/lizmap-gobsapi-module/api/</a></p>
+<p>Then you are ready to test. For example with curl (you need curl to pass JWT token in Authorization header).
+Full API Documentation is available: <a href="https://docs.3liz.org/lizmap-gobsapi-module/api/">https://docs.3liz.org/lizmap-gobsapi-module/api/</a></p>
+<p>You can find examples in the <a href="">tests folder</a></p>
 <p>In the following examples, we use <code>http://lizmap.localhost/</code> as the base URL:</p>
 <ul>
 <li>Define the API base URL:</li>
 </ul>
-<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="nv">BASEURL</span><span class="o">=</span><span class="s2">&quot;http://lizmap.localhost/gobsapi.php&quot;</span>
-</code></pre></div>
-</td></tr></table>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nv">BASEURL</span><span class="o">=</span><span class="s2">&quot;http://lizmap.localhost/gobsapi.php&quot;</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="user">User<a class="headerlink" href="#user" title="Permanent link">#</a></h3>
 <ul>
-<li>User:</li>
+<li>Log in</li>
 </ul>
-<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="c1"># USER</span>
-<span class="c1">###</span>
-
-<span class="c1"># login</span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># login</span>
 <span class="c1"># we get the authentication TOKEN variable by first log the user in</span>
 <span class="nv">TOKEN</span><span class="o">=</span><span class="k">$(</span>curl -s -X GET -H <span class="s1">&#39;Content-Type: application/json&#39;</span> <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">/user/login?username=admin&amp;password=admin&quot;</span> <span class="p">|</span> jq -r <span class="s1">&#39;.token&#39;</span><span class="k">)</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="nv">$TOKEN</span>
-
-<span class="c1"># User Projects</span>
+</code></pre></div></td></tr></table></div>
+<p>returns the token, for example</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>dacf5135c6686417c3916a649adbd146
+</code></pre></div></td></tr></table></div>
+<ul>
+<li>Get the user projects</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># User Projects</span>
 <span class="c1"># we use the $TOKEN variable in the Authorization header</span>
 <span class="nb">echo</span> <span class="k">$(</span>curl -X GET -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> <span class="nv">$BASEURL</span>/user/projects<span class="k">)</span>
-
-<span class="c1"># logUserOut</span>
+</code></pre></div></td></tr></table></div>
+<p>returns</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">[{</span><span class="nt">&quot;key&quot;</span><span class="p">:</span><span class="s2">&quot;gobs~gobsapi&quot;</span><span class="p">,</span><span class="nt">&quot;label&quot;</span><span class="p">:</span><span class="s2">&quot;gobsapi&quot;</span><span class="p">,</span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="nt">&quot;media_url&quot;</span><span class="p">:</span><span class="s2">&quot;http:\/\/lizmap.localhost\/3_5\/index.php\/view\/media\/illustration?repository=gobs&amp;project=gobsapi&quot;</span><span class="p">,</span><span class="nt">&quot;geopackage_url&quot;</span><span class="p">:</span><span class="s2">&quot;http:\/\/lizmap.localhost\/3_5\/gobsapi.php\/project\/gobs~gobsapi\/geopackage&quot;</span><span class="p">,</span><span class="nt">&quot;extent&quot;</span><span class="p">:{</span><span class="nt">&quot;xmin&quot;</span><span class="p">:</span><span class="s2">&quot;-5.56054637104951&quot;</span><span class="p">,</span><span class="nt">&quot;ymin&quot;</span><span class="p">:</span><span class="s2">&quot;46.6872332512938&quot;</span><span class="p">,</span><span class="nt">&quot;xmax&quot;</span><span class="p">:</span><span class="s2">&quot;-0.76410351074025&quot;</span><span class="p">,</span><span class="nt">&quot;ymax&quot;</span><span class="p">:</span><span class="s2">&quot;49.4663846292183&quot;</span><span class="p">}}]</span><span class="w"></span>
+</code></pre></div></td></tr></table></div>
+<ul>
+<li>Log out</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># logUserOut</span>
 <span class="nb">echo</span> <span class="k">$(</span>curl -X GET -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> <span class="nv">$BASEURL</span>/user/logout<span class="k">)</span>
-</code></pre></div>
-</td></tr></table>
+</code></pre></div></td></tr></table></div>
+<p>returns</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span><span class="nt">&quot;code&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="s2">&quot;success&quot;</span><span class="p">,</span><span class="nt">&quot;message&quot;</span><span class="p">:</span><span class="s2">&quot;The user has been successfully logged out&quot;</span><span class="p">}</span><span class="w"></span>
+</code></pre></div></td></tr></table></div>
+<h3 id="project">Project<a class="headerlink" href="#project" title="Permanent link">#</a></h3>
 <ul>
-<li>Project:</li>
+<li>Get a project details</li>
 </ul>
-<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="c1"># PROJECT</span>
-<span class="c1">###</span>
-
-<span class="c1"># getProjectByKey</span>
-<span class="nb">echo</span> <span class="k">$(</span>curl -X GET -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> <span class="nv">$BASEURL</span>/project/lizmapdemo~lampadaires<span class="k">)</span>
-
-<span class="c1"># getProjectIndicators</span>
-<span class="nb">echo</span> <span class="k">$(</span>curl -X GET -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> <span class="nv">$BASEURL</span>/project/lizmapdemo~lampadaires/indicators<span class="k">)</span>
-
-<span class="c1"># getProjectGeopackage</span>
-curl -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> -H <span class="s2">&quot;requestSyncDate: </span><span class="k">$(</span>date <span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span> <span class="nv">$BASEURL</span>/project/lizmapdemo~lampadaires/geopackage --output /tmp/test.gpkg
-</code></pre></div>
-</td></tr></table>
+<p><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># getProjectByKey</span>
+<span class="nb">echo</span> <span class="k">$(</span>curl -X GET -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> <span class="nv">$BASEURL</span>/project/gobs~gobsapi<span class="k">)</span>
+</code></pre></div></td></tr></table></div>
+returns</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span><span class="nt">&quot;key&quot;</span><span class="p">:</span><span class="s2">&quot;gobs~gobsapi&quot;</span><span class="p">,</span><span class="nt">&quot;label&quot;</span><span class="p">:</span><span class="s2">&quot;gobsapi&quot;</span><span class="p">,</span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="nt">&quot;media_url&quot;</span><span class="p">:</span><span class="s2">&quot;http:\/\/lizmap.localhost\/3_5\/index.php\/view\/media\/illustration?repository=gobs&amp;project=gobsapi&quot;</span><span class="p">,</span><span class="nt">&quot;geopackage_url&quot;</span><span class="p">:</span><span class="s2">&quot;http:\/\/lizmap.localhost\/3_5\/gobsapi.php\/project\/gobs~gobsapi\/geopackage&quot;</span><span class="p">,</span><span class="nt">&quot;extent&quot;</span><span class="p">:{</span><span class="nt">&quot;xmin&quot;</span><span class="p">:</span><span class="s2">&quot;-5.56054637104951&quot;</span><span class="p">,</span><span class="nt">&quot;ymin&quot;</span><span class="p">:</span><span class="s2">&quot;46.6872332512938&quot;</span><span class="p">,</span><span class="nt">&quot;xmax&quot;</span><span class="p">:</span><span class="s2">&quot;-0.76410351074025&quot;</span><span class="p">,</span><span class="nt">&quot;ymax&quot;</span><span class="p">:</span><span class="s2">&quot;49.4663846292183&quot;</span><span class="p">}}</span><span class="w"></span>
+</code></pre></div></td></tr></table></div>
 <ul>
-<li>Indicator:</li>
+<li>Get the list of indicators</li>
 </ul>
-<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="c1"># INDICATOR</span>
-<span class="c1">###</span>
-
-<span class="c1"># getIndicatorByCode</span>
-<span class="nb">echo</span> <span class="k">$(</span>curl -X GET -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> <span class="nv">$BASEURL</span>/project/lizmapdemo~lampadaires/indicator/pluviometry<span class="k">)</span>
-
-<span class="c1"># getObservationsByIndicator</span>
-<span class="nb">echo</span> <span class="k">$(</span>curl -X GET -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> -H <span class="s2">&quot;lastSyncDate: </span><span class="k">$(</span>date <span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span> -d <span class="s1">&#39;7 days ago&#39;</span><span class="k">)</span><span class="s2">&quot;</span> -H <span class="s2">&quot;requestSyncDate: </span><span class="k">$(</span>date <span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span> <span class="nv">$BASEURL</span>/project/lizmapdemo~lampadaires/indicator/pluviometry/observations<span class="k">)</span>
-
-<span class="c1"># getDeletedObservationsByIndicator</span>
-<span class="nb">echo</span> <span class="k">$(</span>curl -X GET -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> -H <span class="s2">&quot;lastSyncDate: </span><span class="k">$(</span>date <span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span> -d <span class="s1">&#39;13 days ago&#39;</span><span class="k">)</span><span class="s2">&quot;</span> -H <span class="s2">&quot;requestSyncDate: </span><span class="k">$(</span>date <span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span> <span class="nv">$BASEURL</span>/project/lizmapdemo~lampadaires/indicator/pluviometry/deletedObservations<span class="k">)</span>
-
-<span class="c1"># getIndicatorDocument</span>
-curl -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> -H <span class="s2">&quot;requestSyncDate: </span><span class="k">$(</span>date <span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span> <span class="nv">$BASEURL</span>/project/lizmapdemo~lampadaires/indicator/pluviometry/document/946fee64-e86c-40fa-a55e-8d9ad3579734 --output /tmp/test.jpeg
-</code></pre></div>
-</td></tr></table>
+<p><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># getProjectIndicators</span>
+<span class="nb">echo</span> <span class="k">$(</span>curl -X GET -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> <span class="nv">$BASEURL</span>/project/gobs~gobsapi/indicators<span class="k">)</span>
+</code></pre></div></td></tr></table></div>
+returns</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">[{</span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="nt">&quot;code&quot;</span><span class="p">:</span><span class="s2">&quot;pluviometry&quot;</span><span class="p">,</span><span class="nt">&quot;label&quot;</span><span class="p">:</span><span class="s2">&quot;Hourly pluviometry &quot;</span><span class="p">,</span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="s2">&quot;Hourly rainfall pluviometry in millimetre&quot;</span><span class="p">,</span><span class="nt">&quot;category&quot;</span><span class="p">:</span><span class="s2">&quot;Water&quot;</span><span class="p">,</span><span class="nt">&quot;date_format&quot;</span><span class="p">:</span><span class="s2">&quot;hour&quot;</span><span class="p">,</span><span class="nt">&quot;values&quot;</span><span class="p">:[{</span><span class="nt">&quot;code&quot;</span><span class="p">:</span><span class="s2">&quot;pluviometry&quot;</span><span class="p">,</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;Pluviometry&quot;</span><span class="p">,</span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;real&quot;</span><span class="p">,</span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="s2">&quot;mm&quot;</span><span class="p">}],</span><span class="nt">&quot;documents&quot;</span><span class="p">:[],</span><span class="nt">&quot;preview&quot;</span><span class="p">:</span><span class="kc">null</span><span class="p">,</span><span class="nt">&quot;icon&quot;</span><span class="p">:</span><span class="kc">null</span><span class="p">,</span><span class="nt">&quot;created_at&quot;</span><span class="p">:</span><span class="s2">&quot;2022-05-30T15:54:34.818617&quot;</span><span class="p">,</span><span class="nt">&quot;updated_at&quot;</span><span class="p">:</span><span class="s2">&quot;2022-05-30T15:54:34.818617&quot;</span><span class="p">},{</span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span><span class="nt">&quot;code&quot;</span><span class="p">:</span><span class="s2">&quot;population&quot;</span><span class="p">,</span><span class="nt">&quot;label&quot;</span><span class="p">:</span><span class="s2">&quot;Population &quot;</span><span class="p">,</span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="s2">&quot;Number of inhabitants for city&quot;</span><span class="p">,</span><span class="nt">&quot;category&quot;</span><span class="p">:</span><span class="s2">&quot;Population&quot;</span><span class="p">,</span><span class="nt">&quot;date_format&quot;</span><span class="p">:</span><span class="s2">&quot;year&quot;</span><span class="p">,</span><span class="nt">&quot;values&quot;</span><span class="p">:[{</span><span class="nt">&quot;code&quot;</span><span class="p">:</span><span class="s2">&quot;population&quot;</span><span class="p">,</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;Population&quot;</span><span class="p">,</span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;integer&quot;</span><span class="p">,</span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="s2">&quot;people&quot;</span><span class="p">}],</span><span class="nt">&quot;documents&quot;</span><span class="p">:[],</span><span class="nt">&quot;preview&quot;</span><span class="p">:</span><span class="kc">null</span><span class="p">,</span><span class="nt">&quot;icon&quot;</span><span class="p">:</span><span class="kc">null</span><span class="p">,</span><span class="nt">&quot;created_at&quot;</span><span class="p">:</span><span class="s2">&quot;2022-05-30T15:54:34.818617&quot;</span><span class="p">,</span><span class="nt">&quot;updated_at&quot;</span><span class="p">:</span><span class="s2">&quot;2022-05-30T15:54:34.818617&quot;</span><span class="p">}]</span><span class="w"></span>
+</code></pre></div></td></tr></table></div>
 <ul>
-<li>Observation:</li>
+<li>Get the project Geopackage</li>
 </ul>
-<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="c1"># OBSERVATION</span>
-<span class="c1">###</span>
-
-
-<span class="c1"># createObservation</span>
-<span class="nb">echo</span> <span class="k">$(</span>curl -X POST -H <span class="s2">&quot;Accept: application/json&quot;</span> -H <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> -H <span class="s2">&quot;requestSyncDate: </span><span class="k">$(</span>date <span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span> -H <span class="s2">&quot;Content-Type: application/json&quot;</span> -d <span class="s2">&quot;{\&quot;id\&quot;:null,\&quot;indicator\&quot;:\&quot;pluviometry\&quot;,\&quot;uuid\&quot;:null,\&quot;start_timestamp\&quot;:\&quot;2019-07-19 03:30:00\&quot;,\&quot;end_timestamp\&quot;:null,\&quot;coordinates\&quot;:{\&quot;x\&quot;:-3.785956510771293,\&quot;y\&quot;:48.4744332531894},\&quot;wkt\&quot;:\&quot;POINT(-3.78595651077129 48.4744332531894)\&quot;,\&quot;values\&quot;:[0.8],\&quot;photo\&quot;:null,\&quot;created_at\&quot;:null,\&quot;updated_at\&quot;:null}&quot;</span> <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">/project/lizmapdemo~lampadaires/indicator/pluviometry/observation&quot;</span><span class="k">)</span>
-
-<span class="o">{</span><span class="s2">&quot;id&quot;</span>:3595,<span class="s2">&quot;indicator&quot;</span>:<span class="s2">&quot;pluviometry&quot;</span>,<span class="s2">&quot;uuid&quot;</span>:<span class="s2">&quot;e8f0a46c-1d24-456a-925a-387740ade1c6&quot;</span>,<span class="s2">&quot;start_timestamp&quot;</span>:<span class="s2">&quot;2019-07-19T03:30:00&quot;</span>,<span class="s2">&quot;end_timestamp&quot;</span>:null,<span class="s2">&quot;coordinates&quot;</span>:<span class="o">{</span><span class="s2">&quot;x&quot;</span>:-3.78595651077129,<span class="s2">&quot;y&quot;</span>:48.4744332531894<span class="o">}</span>,<span class="s2">&quot;wkt&quot;</span>:<span class="s2">&quot;POINT(-3.78595651077129 48.4744332531894)&quot;</span>,<span class="s2">&quot;values&quot;</span>:<span class="o">[</span><span class="m">0</span>.8<span class="o">]</span>,<span class="s2">&quot;photo&quot;</span>:null,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2020-12-24T15:17:43&quot;</span>,<span class="s2">&quot;updated_at&quot;</span>:<span class="s2">&quot;2020-12-24T15:17:43&quot;</span><span class="o">}</span>
-
-<span class="c1"># updateObservation</span>
-<span class="nb">echo</span> <span class="k">$(</span>curl -X PUT -H <span class="s2">&quot;Accept: application/json&quot;</span> -H <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> -H <span class="s2">&quot;requestSyncDate: </span><span class="k">$(</span>date <span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span> -H <span class="s2">&quot;Content-Type: application/json&quot;</span> -d <span class="s2">&quot;{\&quot;id\&quot;:1,\&quot;indicator\&quot;:\&quot;pluviometry\&quot;,\&quot;uuid\&quot;:\&quot;e8f0a46c-1d24-456a-925a-387740ade1c6\&quot;,\&quot;start_timestamp\&quot;:\&quot;2019-07-16 03:35:00\&quot;,\&quot;end_timestamp\&quot;:null,\&quot;coordinates\&quot;:{\&quot;x\&quot;:-3.785956510771293,\&quot;y\&quot;:48.4744332531894},\&quot;wkt\&quot;:\&quot;POINT(-3.78595651077999 48.4744332531999)\&quot;,\&quot;values\&quot;:[1.2],\&quot;photo\&quot;:null,\&quot;created_at\&quot;:\&quot;2020-12-03 15:04:40\&quot;,\&quot;updated_at\&quot;:\&quot;2020-12-03 17:55:59\&quot;}&quot;</span> <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">/project/lizmapdemo~lampadaires/indicator/pluviometry/observation&quot;</span><span class="k">)</span>
-
-<span class="c1"># getObservationById</span>
-<span class="nb">echo</span> <span class="k">$(</span>curl -X GET -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> -H <span class="s2">&quot;requestSyncDate: </span><span class="k">$(</span>date <span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span> <span class="nv">$BASEURL</span>/project/lizmapdemo~lampadaires/indicator/pluviometry/observation/e8f0a46c-1d24-456a-925a-387740ade1c6<span class="k">)</span>
-
-<span class="c1"># deleteObservationById</span>
-<span class="nb">echo</span> <span class="k">$(</span>curl -X DELETE -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> -H <span class="s2">&quot;requestSyncDate: </span><span class="k">$(</span>date <span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span> <span class="nv">$BASEURL</span>/project/lizmapdemo~lampadaires/indicator/pluviometry/observation/e8f0a46c-1d24-456a-925a-387740ade1c6<span class="k">)</span>
-</code></pre></div>
-</td></tr></table>
+<p><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># getProjectGeopackage</span>
+curl -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> -H <span class="s2">&quot;requestSyncDate: </span><span class="k">$(</span>date <span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span> <span class="nv">$BASEURL</span>/project/gobs~gobsapi/geopackage --output /tmp/test.gpkg
+</code></pre></div></td></tr></table></div>
+returns the binary file and save it to <code>/tmp/test.gpkg</code></p>
+<h3 id="indicator">Indicator<a class="headerlink" href="#indicator" title="Permanent link">#</a></h3>
 <ul>
-<li>Observation media:</li>
+<li>Get an indicator data
+*
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># getIndicatorByCode</span>
+<span class="nb">echo</span> <span class="k">$(</span>curl -X GET -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> <span class="nv">$BASEURL</span>/project/gobs~gobsapi/indicator/pluviometry<span class="k">)</span>
+</code></pre></div></td></tr></table></div></li>
 </ul>
-<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<p>returns</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="nt">&quot;code&quot;</span><span class="p">:</span><span class="s2">&quot;pluviometry&quot;</span><span class="p">,</span><span class="nt">&quot;label&quot;</span><span class="p">:</span><span class="s2">&quot;Hourly pluviometry &quot;</span><span class="p">,</span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="s2">&quot;Hourly rainfall pluviometry in millimetre&quot;</span><span class="p">,</span><span class="nt">&quot;category&quot;</span><span class="p">:</span><span class="s2">&quot;Water&quot;</span><span class="p">,</span><span class="nt">&quot;date_format&quot;</span><span class="p">:</span><span class="s2">&quot;hour&quot;</span><span class="p">,</span><span class="nt">&quot;values&quot;</span><span class="p">:[{</span><span class="nt">&quot;code&quot;</span><span class="p">:</span><span class="s2">&quot;pluviometry&quot;</span><span class="p">,</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;Pluviometry&quot;</span><span class="p">,</span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;real&quot;</span><span class="p">,</span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="s2">&quot;mm&quot;</span><span class="p">}],</span><span class="nt">&quot;documents&quot;</span><span class="p">:[],</span><span class="nt">&quot;preview&quot;</span><span class="p">:</span><span class="kc">null</span><span class="p">,</span><span class="nt">&quot;icon&quot;</span><span class="p">:</span><span class="kc">null</span><span class="p">,</span><span class="nt">&quot;created_at&quot;</span><span class="p">:</span><span class="s2">&quot;2022-05-30T15:54:34.818617&quot;</span><span class="p">,</span><span class="nt">&quot;updated_at&quot;</span><span class="p">:</span><span class="s2">&quot;2022-05-30T15:54:34.818617&quot;</span><span class="p">}</span><span class="w"></span>
+</code></pre></div></td></tr></table></div>
+<ul>
+<li>Get the observation of a given indicator between two dates</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span>
-<span class="normal">8</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="c1"># uploadObservationMedia</span>
-<span class="nb">echo</span> <span class="k">$(</span>curl -X POST -H  <span class="s2">&quot;Accept: application/json&quot;</span> -H  <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> -H <span class="s2">&quot;requestSyncDate: </span><span class="k">$(</span>date <span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span> -H  <span class="s2">&quot;Content-Type: multipart/form-data&quot;</span> -F <span class="s2">&quot;mediaFile=@/home/mdouchin/Documents/3liz/mdouchin_carre.jpeg;type=image/jpeg&quot;</span> <span class="nv">$BASEURL</span>/project/lizmapdemo~lampadaires/indicator/pluviometry/observation/e8f0a46c-1d24-456a-925a-387740ade1c6/uploadMedia<span class="k">)</span>
-
-<span class="c1"># deleteObservationMedia</span>
-<span class="nb">echo</span> <span class="k">$(</span>curl -X DELETE -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> -H <span class="s2">&quot;requestSyncDate: </span><span class="k">$(</span>date <span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span> <span class="nv">$BASEURL</span>/project/lizmapdemo~lampadaires/indicator/pluviometry/observation/e8f0a46c-1d24-456a-925a-387740ade1c6/deleteMedia<span class="k">)</span>
-
-<span class="c1"># getObservationMedia</span>
-curl -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> -H <span class="s2">&quot;requestSyncDate: </span><span class="k">$(</span>date <span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span> <span class="nv">$BASEURL</span>/project/lizmapdemo~lampadaires/indicator/pluviometry/observation/e8f0a46c-1d24-456a-925a-387740ade1c6/media --output /tmp/test.jpeg
-</code></pre></div>
-</td></tr></table>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># getObservationsByIndicator</span>
+<span class="c1"># between seven days ago and now</span>
+<span class="nb">echo</span> <span class="k">$(</span>curl -X GET -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> -H <span class="s2">&quot;lastSyncDate: </span><span class="k">$(</span>date <span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span> -d <span class="s1">&#39;7 days ago&#39;</span><span class="k">)</span><span class="s2">&quot;</span> -H <span class="s2">&quot;requestSyncDate: </span><span class="k">$(</span>date <span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span> <span class="nv">$BASEURL</span>/project/gobs~gobsapi/indicator/pluviometry/observations<span class="k">)</span>
+</code></pre></div></td></tr></table></div>
+<p>returns all the matching observations.</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">[{</span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="mi">32800</span><span class="p">,</span><span class="nt">&quot;indicator&quot;</span><span class="p">:</span><span class="s2">&quot;pluviometry&quot;</span><span class="p">,</span><span class="nt">&quot;uuid&quot;</span><span class="p">:</span><span class="s2">&quot;7b35c3af-7d7d-4791-b7a4-eed9a781dc91&quot;</span><span class="p">,</span><span class="nt">&quot;start_timestamp&quot;</span><span class="p">:</span><span class="s2">&quot;2019-07-16T06:00:00&quot;</span><span class="p">,</span><span class="nt">&quot;end_timestamp&quot;</span><span class="p">:</span><span class="kc">null</span><span class="p">,</span><span class="nt">&quot;coordinates&quot;</span><span class="p">:{</span><span class="nt">&quot;x&quot;</span><span class="p">:</span><span class="mf">-2.16761209396085</span><span class="p">,</span><span class="nt">&quot;y&quot;</span><span class="p">:</span><span class="mf">48.2541044163058</span><span class="p">},</span><span class="nt">&quot;wkt&quot;</span><span class="p">:</span><span class="s2">&quot;POINT(-2.16761209396085 48.2541044163058)&quot;</span><span class="p">,</span><span class="nt">&quot;values&quot;</span><span class="p">:[</span><span class="mi">0</span><span class="p">],</span><span class="nt">&quot;media_url&quot;</span><span class="p">:</span><span class="kc">null</span><span class="p">,</span><span class="nt">&quot;created_at&quot;</span><span class="p">:</span><span class="s2">&quot;2022-05-30T17:38:00&quot;</span><span class="p">,</span><span class="nt">&quot;updated_at&quot;</span><span class="p">:</span><span class="s2">&quot;2022-05-30T17:38:00&quot;</span><span class="p">,</span><span class="nt">&quot;editable&quot;</span><span class="p">:</span><span class="kc">false</span><span class="p">},{</span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="mi">32801</span><span class="p">,</span><span class="nt">&quot;indicator&quot;</span><span class="p">:</span><span class="s2">&quot;pluviometry&quot;</span><span class="p">,</span><span class="nt">&quot;uuid&quot;</span><span class="p">:</span><span class="s2">&quot;2d9e94bc-2472-4db0-bff3-c02247cf28f8&quot;</span><span class="p">,</span><span class="nt">&quot;start_timestamp&quot;</span><span class="p">:</span><span class="s2">&quot;2019-07-16T06:00:00&quot;</span><span class="p">,</span><span class="nt">&quot;end_timestamp&quot;</span><span class="p">:</span><span class="kc">null</span><span class="p">,</span><span class="nt">&quot;coordinates&quot;</span><span class="p">:{</span><span class="nt">&quot;x&quot;</span><span class="p">:</span><span class="mf">-3.87242472398041</span><span class="p">,</span><span class="nt">&quot;y&quot;</span><span class="p">:</span><span class="mf">48.354208417112</span><span class="p">},</span><span class="nt">&quot;wkt&quot;</span><span class="p">:</span><span class="s2">&quot;POINT(-3.87242472398041 48.354208417112)&quot;</span><span class="p">,</span><span class="nt">&quot;values&quot;</span><span class="p">:[</span><span class="mi">0</span><span class="p">],</span><span class="nt">&quot;media_url&quot;</span><span class="p">:</span><span class="kc">null</span><span class="p">,</span><span class="nt">&quot;created_at&quot;</span><span class="p">:</span><span class="s2">&quot;2022-05-30T17:38:00&quot;</span><span class="p">,</span><span class="nt">&quot;updated_at&quot;</span><span class="p">:</span><span class="s2">&quot;2022-05-30T17:38:00&quot;</span><span class="p">,</span><span class="nt">&quot;editable&quot;</span><span class="p">:</span><span class="kc">false</span><span class="p">}]</span><span class="w"></span>
+</code></pre></div></td></tr></table></div>
+<ul>
+<li>Get the deleted observation on the server between two dates</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># getDeletedObservationsByIndicator</span>
+<span class="nb">echo</span> <span class="k">$(</span>curl -X GET -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> -H <span class="s2">&quot;lastSyncDate: </span><span class="k">$(</span>date <span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span> -d <span class="s1">&#39;13 days ago&#39;</span><span class="k">)</span><span class="s2">&quot;</span> -H <span class="s2">&quot;requestSyncDate: </span><span class="k">$(</span>date <span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span> <span class="nv">$BASEURL</span>/project/gobs~gobsapi/indicator/pluviometry/deletedObservations<span class="k">)</span>
+</code></pre></div></td></tr></table></div>
+<p>returns a list of the deleted observation uids</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">[</span><span class="s2">&quot;98020996-2dec-4cbe-93d7-c2ba1b43b871&quot;</span><span class="p">,</span><span class="s2">&quot;230d5b17-96b3-4bad-8c78-6379f1e9b1c6&quot;</span><span class="p">,</span><span class="s2">&quot;ced021b2-6eda-4a80-8903-b013291a6b2d&quot;</span><span class="p">,</span><span class="s2">&quot;2d198922-5cd0-4d0f-bc96-dfcc17c01ced&quot;</span><span class="p">,</span><span class="s2">&quot;1fc001b6-c147-49ef-ae6e-66f8ea5e0b39&quot;</span><span class="p">]</span><span class="w"></span>
+</code></pre></div></td></tr></table></div>
+<ul>
+<li>Get the indicator documents</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># getIndicatorDocument</span>
+curl -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> -H <span class="s2">&quot;requestSyncDate: </span><span class="k">$(</span>date <span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span> <span class="nv">$BASEURL</span>/project/gobs~gobsapi/indicator/pluviometry/document/946fee64-e86c-40fa-a55e-8d9ad3579734 --output /tmp/test.jpeg
+</code></pre></div></td></tr></table></div>
+<h3 id="observation">Observation<a class="headerlink" href="#observation" title="Permanent link">#</a></h3>
+<ul>
+<li>Create a new observation
+*
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># createObservation</span>
+<span class="nb">echo</span> <span class="k">$(</span>curl -X POST -H <span class="s2">&quot;Accept: application/json&quot;</span> -H <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> -H <span class="s2">&quot;requestSyncDate: </span><span class="k">$(</span>date <span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span> -H <span class="s2">&quot;Content-Type: application/json&quot;</span> -d <span class="s2">&quot;{\&quot;id\&quot;:null,\&quot;indicator\&quot;:\&quot;pluviometry\&quot;,\&quot;uuid\&quot;:null,\&quot;start_timestamp\&quot;:\&quot;2019-07-19 03:30:00\&quot;,\&quot;end_timestamp\&quot;:null,\&quot;coordinates\&quot;:{\&quot;x\&quot;:-3.785956510771293,\&quot;y\&quot;:48.4744332531894},\&quot;wkt\&quot;:\&quot;POINT(-3.78595651077129 48.4744332531894)\&quot;,\&quot;values\&quot;:[0.8],\&quot;photo\&quot;:null,\&quot;created_at\&quot;:null,\&quot;updated_at\&quot;:null}&quot;</span> <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">/project/gobs~gobsapi/indicator/pluviometry/observation&quot;</span><span class="k">)</span>
+</code></pre></div></td></tr></table></div></li>
+</ul>
+<p>returns</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="mi">3595</span><span class="p">,</span><span class="nt">&quot;indicator&quot;</span><span class="p">:</span><span class="s2">&quot;pluviometry&quot;</span><span class="p">,</span><span class="nt">&quot;uuid&quot;</span><span class="p">:</span><span class="s2">&quot;e8f0a46c-1d24-456a-925a-387740ade1c6&quot;</span><span class="p">,</span><span class="nt">&quot;start_timestamp&quot;</span><span class="p">:</span><span class="s2">&quot;2019-07-19T03:30:00&quot;</span><span class="p">,</span><span class="nt">&quot;end_timestamp&quot;</span><span class="p">:</span><span class="kc">null</span><span class="p">,</span><span class="nt">&quot;coordinates&quot;</span><span class="p">:{</span><span class="nt">&quot;x&quot;</span><span class="p">:</span><span class="mf">-3.78595651077129</span><span class="p">,</span><span class="nt">&quot;y&quot;</span><span class="p">:</span><span class="mf">48.4744332531894</span><span class="p">},</span><span class="nt">&quot;wkt&quot;</span><span class="p">:</span><span class="s2">&quot;POINT(-3.78595651077129 48.4744332531894)&quot;</span><span class="p">,</span><span class="nt">&quot;values&quot;</span><span class="p">:[</span><span class="mf">0.8</span><span class="p">],</span><span class="nt">&quot;photo&quot;</span><span class="p">:</span><span class="kc">null</span><span class="p">,</span><span class="nt">&quot;created_at&quot;</span><span class="p">:</span><span class="s2">&quot;2020-12-24T15:17:43&quot;</span><span class="p">,</span><span class="nt">&quot;updated_at&quot;</span><span class="p">:</span><span class="s2">&quot;2020-12-24T15:17:43&quot;</span><span class="p">}</span><span class="w"></span>
+</code></pre></div></td></tr></table></div>
+<ul>
+<li>Update an existing observation</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># updateObservation</span>
+<span class="nb">echo</span> <span class="k">$(</span>curl -X PUT -H <span class="s2">&quot;Accept: application/json&quot;</span> -H <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> -H <span class="s2">&quot;requestSyncDate: </span><span class="k">$(</span>date <span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span> -H <span class="s2">&quot;Content-Type: application/json&quot;</span> -d <span class="s2">&quot;{\&quot;id\&quot;:1,\&quot;indicator\&quot;:\&quot;pluviometry\&quot;,\&quot;uuid\&quot;:\&quot;e8f0a46c-1d24-456a-925a-387740ade1c6\&quot;,\&quot;start_timestamp\&quot;:\&quot;2019-07-16 03:35:00\&quot;,\&quot;end_timestamp\&quot;:null,\&quot;coordinates\&quot;:{\&quot;x\&quot;:-3.785956510771293,\&quot;y\&quot;:48.4744332531894},\&quot;wkt\&quot;:\&quot;POINT(-3.78595651077999 48.4744332531999)\&quot;,\&quot;values\&quot;:[1.2],\&quot;photo\&quot;:null,\&quot;created_at\&quot;:\&quot;2020-12-03 15:04:40\&quot;,\&quot;updated_at\&quot;:\&quot;2020-12-03 17:55:59\&quot;}&quot;</span> <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">/project/gobs~gobsapi/indicator/pluviometry/observation&quot;</span><span class="k">)</span>
+</code></pre></div></td></tr></table></div>
+<p>returns</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>
+</code></pre></div></td></tr></table></div>
+<ul>
+<li>Get an observation data</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># getObservationById</span>
+<span class="nb">echo</span> <span class="k">$(</span>curl -X GET -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> -H <span class="s2">&quot;requestSyncDate: </span><span class="k">$(</span>date <span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span> <span class="nv">$BASEURL</span>/project/gobs~gobsapi/indicator/pluviometry/observation/e8f0a46c-1d24-456a-925a-387740ade1c6<span class="k">)</span>
+</code></pre></div></td></tr></table></div>
+<p>returns</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>
+</code></pre></div></td></tr></table></div>
+<ul>
+<li>Delete an observation</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># deleteObservationById</span>
+<span class="nb">echo</span> <span class="k">$(</span>curl -X DELETE -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> -H <span class="s2">&quot;requestSyncDate: </span><span class="k">$(</span>date <span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span> <span class="nv">$BASEURL</span>/project/gobs~gobsapi/indicator/pluviometry/observation/e8f0a46c-1d24-456a-925a-387740ade1c6<span class="k">)</span>
+</code></pre></div></td></tr></table></div>
+<p>returns</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>
+</code></pre></div></td></tr></table></div>
+<h3 id="observation-media">Observation media<a class="headerlink" href="#observation-media" title="Permanent link">#</a></h3>
+<ul>
+<li>Upload a media for a given observation</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># uploadObservationMedia</span>
+<span class="nb">echo</span> <span class="k">$(</span>curl -X POST -H  <span class="s2">&quot;Accept: application/json&quot;</span> -H  <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> -H <span class="s2">&quot;requestSyncDate: </span><span class="k">$(</span>date <span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span> -H  <span class="s2">&quot;Content-Type: multipart/form-data&quot;</span> -F <span class="s2">&quot;mediaFile=@/home/mdouchin/Documents/3liz/mdouchin_carre.jpeg;type=image/jpeg&quot;</span> <span class="nv">$BASEURL</span>/project/gobs~gobsapi/indicator/pluviometry/observation/e8f0a46c-1d24-456a-925a-387740ade1c6/uploadMedia<span class="k">)</span>
+</code></pre></div></td></tr></table></div>
+<p>returns</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>
+</code></pre></div></td></tr></table></div>
+<ul>
+<li>Delete an observation  media</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># deleteObservationMedia</span>
+<span class="nb">echo</span> <span class="k">$(</span>curl -X DELETE -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> -H <span class="s2">&quot;requestSyncDate: </span><span class="k">$(</span>date <span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span> <span class="nv">$BASEURL</span>/project/gobs~gobsapi/indicator/pluviometry/observation/e8f0a46c-1d24-456a-925a-387740ade1c6/deleteMedia<span class="k">)</span>
+</code></pre></div></td></tr></table></div>
+<p>returns</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>
+</code></pre></div></td></tr></table></div>
+<ul>
+<li>Download an observation media</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># getObservationMedia</span>
+curl -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> -H <span class="s2">&quot;requestSyncDate: </span><span class="k">$(</span>date <span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span> <span class="nv">$BASEURL</span>/project/gobs~gobsapi/indicator/pluviometry/observation/e8f0a46c-1d24-456a-925a-387740ade1c6/media --output /tmp/test.jpeg
+</code></pre></div></td></tr></table></div>
+<p>returns the media file in binary and save it to <code>/tmp/test.jpeg</code></p>
 <h2 id="debug">Debug<a class="headerlink" href="#debug" title="Permanent link">#</a></h2>
-<p>You can activate the <strong>debug mode</strong> by manually editing the configuration file <code>lizmap/var/config/gobsapi.ini.php</code> and modify the variable <code>log_api_calls' with the</code>debug` value:</p>
-<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="k">[gobsapi]</span><span class="w"></span>
+<p>You can activate the <strong>debug mode</strong> by manually editing the configuration file <code>lizmap/var/config/gobsapi.ini.php</code>
+and modify the variable <code>log_api_calls' with the</code>debug` value:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">[gobsapi]</span><span class="w"></span>
 <span class="na">log_api_calls</span><span class="o">=</span><span class="s">debug</span><span class="w"></span>
-</code></pre></div>
-</td></tr></table>
+</code></pre></div></td></tr></table></div>
 <p>You will then be able to see the API calls log written in the file <code>lizmap/var/log/messages.log</code></p>
-<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code>tail -f lizmap/var/log/messages.log
-</code></pre></div>
-</td></tr></table>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>tail -f lizmap/var/log/messages.log
+</code></pre></div></td></tr></table></div>
 <p>Messages will be like</p>
-<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
 <span class="normal">3</span>
 <span class="normal">4</span>
 <span class="normal">5</span>
 <span class="normal">6</span>
-<span class="normal">7</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code>2021-02-09 17:18:52 127.0.0.1   default GOBSAPI - ################
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code>2021-02-09 17:18:52 127.0.0.1   default GOBSAPI - ################
 2021-02-09 17:19:05 127.0.0.1   default GOBSAPI - path: getProjectByKey
 2021-02-09 17:19:05 127.0.0.1   default GOBSAPI - input_data: {&quot;projectKey&quot;:&quot;lizmapdemo~a_fake_project&quot;,&quot;module&quot;:&quot;gobsapi&quot;,&quot;action&quot;:&quot;project:getProjectByKey&quot;}
 2021-02-09 17:19:05 127.0.0.1   default GOBSAPI - http_code: 404
 2021-02-09 17:19:05 127.0.0.1   default GOBSAPI - status: error
 2021-02-09 17:19:05 127.0.0.1   default GOBSAPI - message: The given project key does not refer to a known project
 2021-02-09 17:19:05 127.0.0.1   default GOBSAPI - ################
-</code></pre></div>
-</td></tr></table>
+</code></pre></div></td></tr></table></div>
                 
               
               
