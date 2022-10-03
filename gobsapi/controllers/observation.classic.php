@@ -152,6 +152,11 @@ class observationCtrl extends apiController
     {
         // Parameters
         $body = $this->request->readHttpBody();
+        if ($body && !is_string($body)) {
+            // FIXME, Lizmap 3.6/jelix 1.8 decode automatically json data
+            // we should avoid to do this, by modifying Observation....
+            $body = json_encode($body);
+        }
         $observation_uid = null;
         $gobs_observation = new Observation($this->user, $this->indicator, $observation_uid, $body);
 

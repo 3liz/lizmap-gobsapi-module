@@ -1,60 +1,39 @@
 # Installation
 
+This documentation is only for Lizmap 3.6+. 
+
 ## Lizmap Web Client gobsapi module
 
 NB: all the path given are relative to your Lizmap Web Client instance folder.
 
-* Copy the `gobsapi` directory inside the `lizmap/lizmap-modules/` of a working
-  Lizmap Web Client instance to have a new `lizmap/lizmap-modules/gobsapi/` folder
-  containing the files `module.xml`, `events.xml`, and folders.
+### installing source code from sources
 
-* Then modify the file `lizmap/var/config/localconfig.ini.php`
-  to add `gobsapi.access=2` in the `[modules]` section, such as
+Copy the `gobsapi` directory inside the `lizmap/lizmap-modules/` of a working
+Lizmap Web Client instance to have a new `lizmap/lizmap-modules/gobsapi/` folder
+containing the files `module.xml`, `events.xml`, and folders.
 
-```ini
-[modules]
-gobsapi.access=2
+### installing source code with Composer
 
-```
-
-### For Lizmap Web Client <= 3.4.x
-
-* You need to manually edit the file `lizmap/projects.xml`
-  and add the following content inside the `<entrypoints>` section
-
-```xml
-    <entry file="gobsapi.php" config="gobsapi/config.ini.php" type="classic"/>
-```
-
-Afterwards, you should have a content like this in the `entrypoints` section
-
-```xml
-    <entrypoints>
-        <entry file="index.php" config="index/config.ini.php"/>
-        <entry file="admin.php" config="admin/config.ini.php" type="classic"/>
-        <entry file="script.php" config="cmdline/script.ini.php" type="cmdline"/>
-        <entry file="gobsapi.php" config="gobsapi/config.ini.php" type="classic"/>
-    </entrypoints>
-```
-
-* Copy the folder `gobsapi/install/gobsapi` inside the Lizmap folder `lizmap/var/config/`
-  to have a new folder `lizmap/var/config/gobsapi` with a file `config.ini.php` inside
+If you have Composer (the package manager for PHP), `lizmap/my-packages/` and 
+create the composer.json file if it does not exists:
 
 ```bash
-cp -R lizmap/lizmap-modules/gobsapi/install/gobsapi lizmap/var/config/gobsapi
+cp lizmap/my-packages/composer.json.dist lizmap/my-packages/composer.json
 ```
 
-* Copy the file `gobsapi/install/gobsapi.php` inside the `lizmap/www/` folder
+Then declare the package of the gobsapi module:
 
 ```bash
-cp -R lizmap/lizmap-modules/gobsapi/install/gobsapi.php lizmap/www/
+composer --working-dir=lizmap/my-packages/ require "lizmap/lizmap-gobsapi-module"
 ```
-
-### For Lizmap Web Client >= 3.5.x
-
-You do not need to copy, modify or create files, everything is done by the module installer.
 
 ### Run the Lizmap Web Client installer
+
+* Enable the module by running the configurator of lizmap
+
+```bash
+php lizmap/install/configurator.php gobsapi
+```
 
 * Then you need to run the Lizmap installer
 
@@ -70,142 +49,47 @@ If your Lizmap Web Client uses **SAMLv2** to authenticate the users,
 you need to force the `gobsapi` module to use another driver.
 The `SAML` protocol is based on URL redirections, which are not suitable for the G-Obs API end point.
 
-You can override the configuration to force the `gobsapi.php` entry point to use another driver.
-To do so, you must first edit the file `localconfig.ini.php` and change the `[module]` section into:
+In the `lizmap/var/config/gobsapi/config.ini.php`, set these parameters:
 
 ```ini
-[modules]
-;; uncomment it if you want to use ldap for authentication
-;; see documentation to complete the ldap configuration
-ldapdao.access=0
-lizmap.installparam=
-multiauth.access=0
-
-;; we deactivate gobs & saml which must be activated
-;; only for the entry points index and admin
-;; by editing their configuration files lizmap/var/config/index/config.ini.php
-;; and lizmap/var/config/admin/config.ini.php
-gobs.access=0
-saml.access=0
-;; we then activate the gobsapi module
-gobsapi.access=2
-```
-
-We have deactivated gobs & saml in the main config (localconfig):
-they must now be activated **only** for the entry points **index** and **admin**
-by editing their configuration files `lizmap/var/config/index/config.ini.php` and `lizmap/var/config/admin/config.ini.php`.
-
-Example contents:
-
-* for the index entrypoint:
-
-
-```ini
-;<?php die(''); ?>
-;for security reasons , don't remove or modify the first line
-
-startModule=view
-startAction="default:index"
-
 [coordplugins]
-jacl2=1
-
-saml="saml/saml.coord.ini.php"
-saml.name=auth
-
-[modules]
-dataviz.access=2
-dynamicLayers.access=2
-jelix.access=2
-lizmap.access=2
-view.access=2
-filter.access=2
-action.access=2
-
-jacl2db_admin.access=1
-jauthdb_admin.access=1
-master_admin.access=1
-
-saml.access=2
-saml.installparam="localconfig;useradmin=mdouchin;emailadmin=mdouchin@3liz.com"
-saml.path="app:my-packages/vendor/jelix/saml-module/saml"
-gobs.access=2
-
-[coordplugin_auth]
-;; uncomment it if you want to use ldap for authentication
-;; see documentation to complete the ldap configuration
-driver=saml
-```
-
-* for the admin entrypoint:
-
-```ini
-;<?php die(''); ?>
-;for security reasons , don't remove or modify the first line
-
-startModule=master_admin
-startAction="default:index"
-
-[responses]
-html=adminHtmlResponse
-htmlauth=adminLoginHtmlResponse
-
-[modules]
-admin.access=2
-jauthdb_admin.access=2
-jacl2db_admin.access=2
-master_admin.access=2
-jcommunity.access=2
-
-saml.access=2
-saml.installparam="localconfig;useradmin=mdouchin;emailadmin=mdouchin@3liz.com"
-saml.path="app:my-packages/vendor/jelix/saml-module/saml"
-gobs.access=2
-
-[coordplugins]
-jacl2=1
-
-saml="saml/saml.coord.ini.php"
-saml.name=auth
-
-[coordplugin_auth]
-;; uncomment it if you want to use ldap for authentication
-;; see documentation to complete the ldap configuration
-driver=saml
-
-```
-
-* for the gobsapi entrypoint:
-
-```ini
-[modules]
-jelix.access=1
-lizmap.access=1
-view.access=1
-
-jacl2db_admin.access=1
-jauthdb_admin.access=1
-master_admin.access=1
-
-;; on active le module gobsapi
-gobsapi.access=2
-
-;; et ldapdao
-ldapdao.access=1
-jacl2.access=1
-jauth.access=1
-jauthdb.access=1
-
-[coordplugins]
-jacl2=1
 auth="gobsapi/auth.coord.ini.php"
-
-[coordplugin_jacl2]
-on_error=2
-error_message="jacl2~errors.action.right.needed"
-on_error_action="jelix~error:badright"
-
 ```
+
+And create the file `lizmap/var/config/gobsapi/auth.coord.ini.php`, containing:
+
+```ini
+;<?php die(''); ?>
+;for security reasons , don't remove or modify the first line
+driver=Db
+session_name=JELIX_USER
+secure_with_ip=0
+timeout=0
+auth_required=off
+on_error=2
+error_message="jcommunity~login.error.notlogged"
+on_error_action="jcommunity~login:out"
+bad_ip_action="jcommunity~login:out"
+on_error_sleep=0
+after_login="view~default:index"
+after_logout="jcommunity~login:index"
+enable_after_login_override=on
+enable_after_logout_override=on
+persistant_enable=on
+persistant_cookie_name=LizmapSession
+persistant_duration=1
+password_hash_method=1
+password_hash_options=
+
+[Db]
+dao="lizmap~user"
+profile=jauth
+password_crypt_function=sha1
+form="lizmap~account_admin"
+userform="lizmap~account"
+uploadsDirectory=
+```
+
 
 
 ## Test the API

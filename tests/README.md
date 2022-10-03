@@ -11,11 +11,23 @@ make clean
 # Run the different services
 make run
 make import-data
+```
+
+- Activate the gobsapi module.
+
+```bash
+make setup-module
+```
+
+- Add the test data:
+
+```bash
+make import-data
 make import-lizmap-acl
 ```
 
-
 - Open your browser at http://localhost:9095
+  Then you can try the [Lizmap test map](http://localhost:9095/index.php/view/map/?repository=gobsapi&project=gobsapi).
 
 For more information, refer to the [docker compose documentation](https://docs.docker.com/compose/)
 
@@ -140,3 +152,4 @@ pytest -v -k _with_spatial_layer
 # Deactivate env
 deactivate
 ```
+

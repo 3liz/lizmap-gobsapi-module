@@ -5,12 +5,12 @@
         <label lang="en_US">gobsapi</label>
         <description lang="en_US" />
         <license URL="">Mozilla Public Licence (MPL)</license>
-        <copyright>2017 3liz</copyright>
+        <copyright>2017-2024 3liz</copyright>
         <creator name="3liz" email="info@3liz.com" active="true"/>
         <homepageURL>http://3liz.com</homepageURL>
     </info>
     <dependencies>
-        <module name="lizmap" minversion="3.4.*" maxversion="3.6.*"/>
+        <module name="lizmap" minversion="3.6.*" maxversion="3.7.*"/>
     </dependencies>
     <autoload>
         <namespacePathMap name="Gobsapi" dir="lib"/>
