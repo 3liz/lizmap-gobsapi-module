@@ -23,3 +23,6 @@ docs/CHANGELOG.md
 # Python for MkDocs
 .venv/
 venv/
+
+# Tests
+tests/.env

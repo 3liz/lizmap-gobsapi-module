@@ -9,7 +9,7 @@ LIZMAP_USER_ID:=$(shell id -u)
 LIZMAP_USER_GID:=$(shell id -g)
 
 LIZMAP_VERSION_TAG:=3.5
-QGIS_VERSION_TAG:=3.22
+QGIS_VERSION_TAG:=ltr-rc
 POSTGIS_VERSION_TAG:=11-2.5
 
 QGIS_MAP_WORKERS:=1
@@ -77,15 +77,21 @@ pull:
 shell:
 	docker-compose exec -u ${LIZMAP_USER_ID} lizmap /bin/sh -l
 
-install-plugins:
+install-plugins: dirs
+	@echo "Install QGIS server plugins"
 	docker run \
-	    -u $(LIZMAP_USER_ID):$(LIZMAP_USER_GID) \
-	    --rm -it \
-	    -e QGSRV_SERVER_PLUGINPATH=/srv/plugins \
-	    -v $(LIZMAP_DIR)/qgis-server-plugins:/srv/plugins \
-	    -v $(shell pwd)/:/src \
-	    --entrypoint /src/add-server-plugins.sh \
-	    3liz/qgis-map-server:${QGIS_VERSION_TAG}
+		-u $(LIZMAP_USER_ID):$(LIZMAP_USER_GID) \
+		--rm -i \
+		-e QGSRV_SERVER_PLUGINPATH=/srv/plugins \
+		-e QGIS_PLUGIN_MANAGER_SOURCES_FILE=/tmp/sources-plugin-manager.list \
+		-e QGIS_PLUGIN_MANAGER_CACHE_DIR=/tmp/cache-plugin-manager \
+		-v $(LIZMAP_DIR)/qgis-server-plugins:/srv/plugins \
+		-v $(shell pwd)/:/src \
+		--entrypoint /bin/bash \
+		3liz/qgis-map-server:$(QGIS_VERSION_TAG) \
+		-c "qgis-plugin-manager init; \
+		    qgis-plugin-manager update; \
+		    qgis-plugin-manager install 'Lizmap server'"
 
 import-data:
 	export PGPASSWORD=lizmap1234!; psql -h localhost -U lizmap -d lizmap -p 9097 -c 'DROP SCHEMA IF EXISTS gobs CASCADE;'
