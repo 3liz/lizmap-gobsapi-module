@@ -11,9 +11,9 @@ Steps:
     make run
     ```
 
-- A simple `gobsapi` project is present but you have to set rights in administration to view it.
+- A simple `gobsapi` project is present, but you have to set rights in administration to view it.
 
-- Open your browser at `http://localhost:9095`
+- Open your browser at http://localhost:9095
 
 For more information, refer to the [docker compose documentation](https://docs.docker.com/compose/)
 

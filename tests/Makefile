@@ -58,13 +58,13 @@ env: dirs
 		EOF
 
 run: stop env install-plugins
-	docker-compose up
+	docker compose up
 
 stop:
-	docker-compose down || true
+	docker compose down || true
 
 clean: stop
-	docker-compose down -v
+	docker compose down -v
 	rm -rf $(LIZMAP_DIR)/www/*
 	rm -rf $(LIZMAP_DIR)/var/*
 
@@ -75,7 +75,7 @@ pull:
 	docker pull 3liz/postgis:${POSTGIS_VERSION_TAG}
 
 shell:
-	docker-compose exec -u ${LIZMAP_USER_ID} lizmap /bin/sh -l
+	docker compose exec -u ${LIZMAP_USER_ID} lizmap /bin/sh -l
 
 install-plugins: dirs
 	@echo "Install QGIS server plugins"
