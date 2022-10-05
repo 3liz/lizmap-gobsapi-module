@@ -57,3 +57,19 @@ psql service=lizmap-gobsapi -f tests/sql/test_data.sql
 ```
 
 Then you can try the [Lizmap test map](http://localhost:9095/index.php/view/map/?repository=gobsapi&project=gobsapi).
+
+## Test the API with Python unit tests
+
+You can use `pytest` to run the available unit tests:
+
+```bash
+# create & activate virtual env
+python3 -m venv gobsapi
+source gobsapi/bin/activate
+# install requirements
+pip3 install -r requirements/tests.txt
+# Run tests
+cd tests/api_test
+pytest-3
+pytest-3 -s -v
+```

@@ -1,0 +1,21 @@
+{
+    "id": 1,
+    "code": "pluviometry",
+    "label": "Hourly pluviometry ",
+    "description": "Hourly rainfall pluviometry in millimetre",
+    "category": "Water",
+    "date_format": "hour",
+    "values": [
+        {
+            "code": "pluviometry",
+            "name": "Pluviometry",
+            "type": "real",
+            "unit": "mm"
+        }
+    ],
+    "documents": [],
+    "preview": null,
+    "icon": null,
+    "created_at": "2022-05-30T15:54:34.818617",
+    "updated_at": "2022-05-30T15:54:34.818617"
+}

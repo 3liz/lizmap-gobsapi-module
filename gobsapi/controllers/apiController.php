@@ -106,6 +106,12 @@ class apiController extends jController
                 'error',
                 'The given project key does not refer to a known project',
             );
+        } catch (Exception $e) {
+            return array(
+                '404',
+                'error',
+                'The given project key does not refer to a known project',
+            );
         }
 
         // Check the authenticated user can access to the project

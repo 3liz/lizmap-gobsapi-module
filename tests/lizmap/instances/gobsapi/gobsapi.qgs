@@ -1,4 +1,4 @@
-<qgis projectname="" saveDateTime="2022-10-03T11:13:20" saveUser="mdouchin" saveUserFull="mdouchin" version="3.22.8-Białowieża">
+<qgis projectname="" saveDateTime="2022-10-05T11:06:39" saveUser="mdouchin" saveUserFull="mdouchin" version="3.22.8-Białowieża">
   <homePath path=""></homePath>
   <title></title>
   <autotransaction active="0"></autotransaction>
@@ -970,6 +970,10 @@ def my_form_open(dialog, layer, feature):
       <AreaUnits type="QString">m2</AreaUnits>
       <DistanceUnits type="QString">meters</DistanceUnits>
     </Measurement>
+    <Mergin>
+      <PhotoQuality type="int">0</PhotoQuality>
+      <Snapping type="int">0</Snapping>
+    </Mergin>
     <PAL>
       <CandidatesLinePerCM type="double">5</CandidatesLinePerCM>
       <CandidatesPolygonPerCM type="double">2.5</CandidatesPolygonPerCM>
@@ -991,6 +995,12 @@ def my_form_open(dialog, layer, feature):
       <DecimalPlaces type="int">2</DecimalPlaces>
       <DegreeFormat type="QString">MU</DegreeFormat>
     </PositionPrecision>
+    <QFieldSync>
+      <attachmentDirs type="QStringList">
+        <value>DCIM</value>
+      </attachmentDirs>
+    </QFieldSync>
+    <RenderMapTile type="bool">false</RenderMapTile>
     <SpatialRefSys>
       <ProjectionsEnabled type="int">1</ProjectionsEnabled>
     </SpatialRefSys>
@@ -1002,7 +1012,7 @@ def my_form_open(dialog, layer, feature):
         <value>lizmap_user_groups</value>
       </variableNames>
       <variableValues type="QStringList">
-        <value>gobs</value>
+        <value>lizmap-gobsapi</value>
         <value>pluviometry,population</value>
         <value></value>
         <value></value>
@@ -1034,6 +1044,7 @@ def my_form_open(dialog, layer, feature):
       <value>413640.3384566762</value>
       <value>6936830.292097823</value>
     </WMSExtent>
+    <WMSFeatureInfoUseAttributeFormSettings type="bool">false</WMSFeatureInfoUseAttributeFormSettings>
     <WMSFees type="QString">conditions unknown</WMSFees>
     <WMSImageQuality type="int">90</WMSImageQuality>
     <WMSKeywordList type="QStringList">

@@ -1,0 +1,15 @@
+[
+    {
+        "key": "gobsapi~gobsapi",
+        "label": "gobsapi",
+        "description": "",
+        "media_url": "http:\/\/localhost:9095\/index.php\/view\/media\/illustration?repository=gobsapi&project=gobsapi",
+        "geopackage_url": "http:\/\/localhost:9095\/gobsapi.php\/project\/gobsapi~gobsapi\/geopackage",
+        "extent": {
+            "xmin": "-5.56054637104951",
+            "ymin": "46.6872332512938",
+            "xmax": "-0.76410351074025",
+            "ymax": "49.4663846292183"
+        }
+    }
+]
