@@ -46,6 +46,8 @@ execute `make shell`.
 
 ## Add the test data
 
+### PostgreSQL gobs data
+
 You can add some data in your docker test PostgreSQL database by running the SQL `tests/sql/test_data.sql`.
 
 ```bash
@@ -56,7 +58,30 @@ or
 psql service=lizmap-gobsapi -f tests/sql/test_data.sql
 ```
 
-Then you can try the [Lizmap test map](http://localhost:9095/index.php/view/map/?repository=gobsapi&project=gobsapi).
+### Lizmap Web Client groups, users and rights
+
+Before running manual or automatic tests, you also need to add some Lizmap groups, users and rights
+
+```bash
+make add-test-users
+```
+
+Create group:
+* `gobsapi`, label `GobsAPI group`
+
+Created users (all inside `gobsapi` group):
+* `gobsapi_writer`, with
+  * email `al@al.al`
+  * password `al_password`
+  * which corresponds to the Gobs actor `Al A.`
+  * it can get, create, update and delete observations.
+* `gobsapi_reader`, with:
+  * email `bob@bob.bob`
+  * password `bob_password`
+  * which corresponds to the Gobs actor `Bob B.`
+  * it has only read access
+
+They can both access the [Lizmap test map](http://localhost:9095/index.php/view/map/?repository=gobsapi&project=gobsapi).
 
 ## Test the API with Python unit tests
 
@@ -64,12 +89,16 @@ You can use `pytest` to run the available unit tests:
 
 ```bash
 # create & activate virtual env
-python3 -m venv gobsapi
-source gobsapi/bin/activate
+python3 -m venv /tmp/gobsapi
+source /tmp/gobsapi/bin/activate
+
 # install requirements
+cd tests/api_tests/
 pip3 install -r requirements/tests.txt
+
 # Run tests
-cd tests/api_test
-pytest-3
-pytest-3 -s -v
+pytest
+
+# Deactivate env
+deactiate
 ```

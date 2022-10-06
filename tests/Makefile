@@ -28,6 +28,9 @@ main:
 			run:   initialise environnement and run stack
 			stop:  stop docker and remove containers
 			clean: reset containers and remove lizmap configuration
+			shell: open a shell in Lizmap web container
+			install-plugins: install QGIS Server plugins
+			import-data: import test data inside the PostgreSQL database
 
 			Note: Un fichier d'environment pour docker compose
 			est crée à chaque invocation de 'run'.
@@ -58,7 +61,7 @@ env: dirs
 		EOF
 
 run: stop env install-plugins
-	docker compose up
+	docker compose up -d
 
 stop:
 	docker compose down || true
@@ -96,3 +99,12 @@ install-plugins: dirs
 import-data:
 	export PGPASSWORD=lizmap1234!; psql -h localhost -U lizmap -d lizmap -p 9097 -c 'DROP SCHEMA IF EXISTS gobs CASCADE;'
 	export PGPASSWORD=lizmap1234!; psql -h localhost -U lizmap -d lizmap -p 9097 -f sql/test_data.sql
+
+add-lizmap-users:
+	docker compose exec -u 1000 lizmap /bin/sh -c 'php lizmap/scripts/script.php jcommunity~user:create -v --no-error-if-exists --admin gobsapi_writer al@al.al al_password'
+	docker compose exec -u 1000 lizmap /bin/sh -c 'php lizmap/scripts/script.php jcommunity~user:create -v --no-error-if-exists gobsapi_reader bob@bob.bob bob_password'
+	docker compose exec -u 1000 lizmap /bin/sh -c 'php lizmap/cmd.php acl2group create gobsapi_group "GobsAPI group"'
+	docker compose exec -u 1000 lizmap /bin/sh -c 'php lizmap/cmd.php acl2group adduser gobsapi_group gobsapi_reader'
+	docker compose exec -u 1000 lizmap /bin/sh -c 'php lizmap/cmd.php acl2group adduser gobsapi_group gobsapi_writer'
+	docker compose exec -u 1000 lizmap /bin/sh -c 'php lizmap/cmd.php acl2right add gobsapi_group "lizmap.repositories.view" "gobsapi"'
+	docker compose exec -u 1000 lizmap /bin/sh -c 'php lizmap/cmd.php acl2right add admins "lizmap.repositories.view" "gobsapi"'

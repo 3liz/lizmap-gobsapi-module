@@ -1,0 +1,18 @@
+{
+    "id": null,
+    "indicator": "hiker_position",
+    "uuid": null,
+    "start_timestamp": "2019-07-19 03:30:00",
+    "end_timestamp": null,
+    "coordinates": {
+        "x": -3.785956510771293,
+        "y": 48.4744332531894
+    },
+    "wkt": "POINT(-3.78595651077129 48.4744332531894)",
+    "values": [
+        125
+    ],
+    "photo": null,
+    "created_at": null,
+    "updated_at": null
+}

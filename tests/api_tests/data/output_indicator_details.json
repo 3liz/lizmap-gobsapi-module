@@ -1,0 +1,21 @@
+{
+    "id": 3,
+    "code": "hiker_position",
+    "label": "Hikers position",
+    "description": "Position and altitude of hikers",
+    "category": "Tracks",
+    "date_format": "second",
+    "values": [
+        {
+            "code": "altitude",
+            "name": "Altitude",
+            "type": "integer",
+            "unit": "m"
+        }
+    ],
+    "documents": [],
+    "preview": null,
+    "icon": null,
+    "created_at": "2022-10-05T16:03:24.479396",
+    "updated_at": "2022-10-05T16:03:24.479396"
+}
