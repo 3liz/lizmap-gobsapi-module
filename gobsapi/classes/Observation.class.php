@@ -556,7 +556,8 @@ class Observation
                 )
                 SELECT
                     ser.id, so.id, imp.id,
-                    (o->'values')::jsonb, (o->>'start_timestamp')::timestamp, (o->>'end_timestamp')::timestamp,
+                    (o->'values')::jsonb,
+                    (o->>'start_timestamp')::timestamp, (o->>'end_timestamp')::timestamp,
                     (CASE
                         WHEN o->>'uuid' IS NULL or o->>'uuid' = '' THEN uuid_generate_v4()::text
                         ELSE o->>'uuid'
@@ -814,6 +815,14 @@ class Observation
         if ($media_url) {
             $data->media_url = $media_url;
         }
+
+        // Format start and end timestamps (remove T)
+        $data->start_timestamp = str_replace('T', ' ', $data->start_timestamp);
+        if (!empty($data->end_timestamp)) {
+            $data->end_timestamp = str_replace('T', ' ', $data->end_timestamp);
+        }
+        $data->created_at = str_replace('T', ' ', $data->created_at);
+        $data->updated_at = str_replace('T', ' ', $data->updated_at);
 
         return $data;
     }

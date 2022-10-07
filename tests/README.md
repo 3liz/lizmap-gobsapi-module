@@ -88,12 +88,14 @@ They can both access the [Lizmap test map](http://localhost:9095/index.php/view/
 You can use `pytest` to run the available unit tests:
 
 ```bash
+# Go the the Python test directory
+cd tests/api_tests/
+
 # create & activate virtual env
-python3 -m venv /tmp/gobsapi
-source /tmp/gobsapi/bin/activate
+python3 -m venv gobsapi
+source gobsapi/bin/activate
 
 # install requirements
-cd tests/api_tests/
 pip3 install -r requirements/tests.txt
 
 # Run tests

@@ -202,7 +202,7 @@ class observationCtrl extends apiController
         );
 
         // Unknown error
-        return array('500', 'error', 'An unknown error has occured');
+        return array('500', 'error', 'An unknown error has occurred');
     }
 
     /**

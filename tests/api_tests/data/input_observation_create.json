@@ -2,17 +2,17 @@
     "id": null,
     "indicator": "hiker_position",
     "uuid": null,
-    "start_timestamp": "2019-07-19 03:30:00",
+    "start_timestamp": "2022-07-22 03:30:00",
     "end_timestamp": null,
     "coordinates": {
-        "x": -3.785956510771293,
-        "y": 48.4744332531894
+        "x": -3.785,
+        "y": 48.15
     },
-    "wkt": "POINT(-3.78595651077129 48.4744332531894)",
+    "wkt": "POINT(-3.785 48.15)",
     "values": [
-        125
+        40
     ],
-    "photo": null,
+    "media_url": null,
     "created_at": null,
     "updated_at": null
 }
