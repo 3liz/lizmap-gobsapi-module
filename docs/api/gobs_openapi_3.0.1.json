@@ -751,6 +751,71 @@
         }
       }
     },
+    "/project/{projectKey}/indicator/{indicatorCode}/document/{documentUuid}": {
+      "get": {
+        "tags": [
+          "indicator"
+        ],
+        "summary": "Get an indicator document by its UUID",
+        "description": "Returns a single indicator document",
+        "operationId": "getIndicatorDocumentByUuid",
+        "parameters": [
+          {
+            "name": "projectKey",
+            "in": "path",
+            "description": "Project key to filter by.",
+            "example": "environment~weather",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "indicatorCode",
+            "in": "path",
+            "description": "Code of indicator to return",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "weather_status"
+          },
+          {
+            "name": "documentUuid",
+            "in": "path",
+            "description": "UUID of indicator document to return",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "1a7f7323-6b18-46ed-a9fe-9efbe1f006a2"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IndicatorDocument"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid code supplied",
+            "content": {}
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "description": "Indicator document not found",
+            "content": {}
+          }
+        }
+      }
+    },
     "/project/{projectKey}/indicator/{indicatorCode}/observations": {
       "get": {
         "tags": [

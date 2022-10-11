@@ -13,8 +13,20 @@
             "unit": "m"
         }
     ],
-    "documents": [],
-    "preview": null,
+    "documents": [
+        {
+            "id": 2,
+            "uid": "1a7f7323-6b18-46ed-a9fe-9efbe1f006a2",
+            "indicator": "hiker_position",
+            "label": "Hiking presentation",
+            "description": "Presentation of hiking.",
+            "type": "document",
+            "url": "http:\/\/localhost:9095\/gobsapi.php\/project\/gobsapi~gobsapi\/indicator\/hiker_position\/document\/1a7f7323-6b18-46ed-a9fe-9efbe1f006a2",
+            "created_at": "2022-10-11T08:30:18.012801",
+            "updated_at": "2022-10-11T08:50:01.248526"
+        }
+    ],
+    "preview": "http:\/\/localhost:9095\/gobsapi.php\/project\/gobsapi~gobsapi\/indicator\/hiker_position\/document\/542aa72f-d1de-4810-97bb-208f2388698b",
     "icon": null,
     "created_at": "2022-10-05T16:03:24.479396",
     "updated_at": "2022-10-05T16:03:24.479396"

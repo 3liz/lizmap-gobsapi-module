@@ -1,0 +1,19 @@
+{
+    "id": 3627,
+    "indicator": "hiker_position",
+    "uuid": "1adae0cf-0f3b-4af5-bf26-e72c7fde24f2",
+    "start_timestamp": "2017-10-31 13:53:36",
+    "end_timestamp": null,
+    "coordinates": {
+        "x": -3.72125184936781,
+        "y": 48.46867835863
+    },
+    "wkt": "POINT(-3.72125184936781 48.46867835863)",
+    "values": [
+        777
+    ],
+    "media_url": null,
+    "created_at": "2022-10-05 16:03:24",
+    "updated_at": "2022-10-05 16:03:24",
+    "editable": true
+}

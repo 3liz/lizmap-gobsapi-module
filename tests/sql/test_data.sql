@@ -2073,6 +2073,8 @@ COPY gobs.deleted_data_log (de_table, de_uid, de_timestamp) FROM stdin;
 --
 
 COPY gobs.document (id, do_uid, do_label, do_description, do_type, do_path, fk_id_indicator, created_at, updated_at) FROM stdin;
+1	542aa72f-d1de-4810-97bb-208f2388698b	Illustration	Picture to use as the indicator illustration.	preview	hiker_position/preview/hiking.jpg	3	2022-10-11 08:30:18.012801	2022-10-11 08:50:01.248526
+2	1a7f7323-6b18-46ed-a9fe-9efbe1f006a2	Hiking presentation	Presentation of hiking.	document	hiker_position/document/hiking_doc.txt	3	2022-10-11 08:30:18.012801	2022-10-11 08:50:01.248526
 \.
 
 
@@ -7084,7 +7086,7 @@ SELECT pg_catalog.setval('gobs.application_id_seq', 1, false);
 -- Name: document_id_seq; Type: SEQUENCE SET; Schema: gobs; Owner: -
 --
 
-SELECT pg_catalog.setval('gobs.document_id_seq', 1, false);
+SELECT pg_catalog.setval('gobs.document_id_seq', 2, true);
 
 
 --
@@ -7716,4 +7718,3 @@ ALTER TABLE ONLY gobs.spatial_object
 --
 -- PostgreSQL database dump complete
 --
-

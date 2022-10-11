@@ -894,7 +894,10 @@ class Observation
         // Get values
         $mediaFile = trim($form->getData('mediaFile'));
         $info = pathinfo($mediaFile);
-        $extension = strtolower($info['extension']);
+        $extension = 'ext';
+        if (array_key_exists('extension', $info)) {
+            $extension = strtolower($info['extension']);
+        }
 
         // Destination folder and filename
         $destination_basename = $this->observation_uid;
@@ -917,7 +920,7 @@ class Observation
 
         return array(
             'success',
-            'Observation media has been sucessfully uploaded',
+            'Observation media has been successfully uploaded',
             null,
         );
     }

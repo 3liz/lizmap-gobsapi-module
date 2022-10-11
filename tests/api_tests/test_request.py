@@ -3,6 +3,7 @@
 import json
 import unittest
 from datetime import datetime, timedelta
+from pathlib import Path
 
 import requests
 
@@ -15,7 +16,7 @@ class TestRequests(unittest.TestCase):
         self.base_url = 'http://localhost:9095/gobsapi.php/'
         self.api_token = None
 
-    def getHeader(self, content_type=None, token=None, request_sync_date=None, last_sync_date=None):
+    def getHeader(self, content_type=None, token=None, request_sync_date=None, last_sync_date=None) -> dict:
         """ Set request header """
         headers = {
             'Accept': content_type
@@ -80,48 +81,65 @@ class TestRequests(unittest.TestCase):
             request_sync_date=request_sync_date,
             last_sync_date=last_sync_date
         )
-        # files = {'media': open('test.jpg', 'rb')}
-        # requests.post(url, files=files)
 
         if method == 'get':
-            req = requests.get(url, params=params, headers=headers)
-        elif method == 'post':
-            # get data
-            data_content = None
+            response = requests.get(url, params=params, headers=headers)
+        elif method in ('post', 'put'):
+            # We must send data read from the data_file path
             json_content = None
-            if data_file:
-                with open(data_file) as json_file:
-                    file_content = json.load(json_file)
-                    if content_type == 'application/json':
-                        json_content = file_content
-                    else:
-                        data_content = file_content
-            req = requests.post(url, params=params, headers=headers, data=data_content, json=json_content)
+            files_content = None
+            file_mode = 'r'
+            if content_type == 'multipart/form-data':
+                file_mode = 'rb'
+            with open(Path(__file__).parent.absolute() / data_file, mode=file_mode) as source_file:
+                if content_type == 'application/json':
+                    json_content = json.load(source_file)
+                elif content_type == 'multipart/form-data':
+                    files_content = {'mediaFile': source_file}
+                    # requests will pass the correct content type
+                    # it should NOT be set in the api call
+                    del headers['Content-Type']
+                if method == 'post':
+                    response = requests.post(
+                        url, params=params, headers=headers,
+                        json=json_content, files=files_content
+                    )
+                elif method == 'put':
+                    response = requests.put(
+                        url, params=params, headers=headers,
+                        json=json_content, files=files_content
+                    )
         elif method == 'delete':
-            req = requests.delete(url, params=params, headers=headers)
+            response = requests.delete(url, params=params, headers=headers)
         else:
-            req = requests.get(url, params=params, headers=headers)
+            response = requests.get(url, params=params, headers=headers)
 
-        print(req.text)
-        # {"code":0,"status":"error","message":"The observation media folder does not exist or is not writable"}
+        # Log response text to ease debugging
+        print(response.text)
 
         # Status code
-        self.assertEqual(req.status_code, expected_status_code)
+        self.assertEqual(response.status_code, expected_status_code)
 
         # Compare the JSON contained in the test_file
         # to the request text response
         if test_file:
-            with open(test_file) as json_file:
-                data = json.load(json_file)
-                if expected_format == 'dict':
-                    self.assertDictEqual(json.loads(req.text), data)
-                elif expected_format == 'list':
-                    self.assertListEqual(json.loads(req.text), data)
-                else:
-                    self.assertEqual(json.loads(req.text), data)
+            if expected_format in ('dict', 'list', 'text'):
+                with open(Path(__file__).parent.absolute() / test_file) as expected_file:
+                    if expected_format == 'text':
+                        self.assertEqual(response.text, expected_file.read())
+                    else:
+                        expected_content = json.load(expected_file)
+                        received_content = json.loads(response.text)
+                        if expected_format == 'dict':
+                            self.assertDictEqual(received_content, expected_content)
+                        elif expected_format == 'list':
+                            self.assertListEqual(received_content, expected_content)
+            elif expected_format == 'binary':
+                with open(Path(__file__).parent.absolute() / test_file, mode='rb') as expected_file:
+                    self.assertEqual(response.content, expected_file.read())
 
-        # Return the content
-        return req.text
+        # Return the reponse
+        return response
 
     def is_valid_uuid(self, given_uid):
         """ Check if the uuid is valid """
@@ -188,6 +206,15 @@ class TestRequests(unittest.TestCase):
             expected_format='list'
         )
 
+    def test_project_geopackage(self):
+        """ Get the Geopackage of a project """
+        project_key = 'gobsapi~gobsapi'
+        self.api_call(
+            entry_point=f'/project/{project_key}/geopackage',
+            test_file='data/output_project_geopackage.gpkg',
+            expected_format='binary'
+        )
+
     def test_indicator_details(self):
         """ Get details of the indicator """
         project_key = 'gobsapi~gobsapi'
@@ -197,53 +224,54 @@ class TestRequests(unittest.TestCase):
             test_file='data/output_indicator_details.json',
         )
 
-    def test_observation_create_witout_id_and_spatial_object(self):
+    def test_observation_create_without_id_and_spatial_object(self):
         """ Create an observation """
-        project_key = 'gobsapi~gobsapi'
-        indicator_key = 'hiker_position'
         # We do not ask the api_call to check the JSON response against the file
         # So that we can do it manually
         # Since the result of the call contains dynamically generated data
         # such as id, created_at, update_at, etc.
-        text_response = self.api_call(
+        project_key = 'gobsapi~gobsapi'
+        indicator_key = 'hiker_position'
+        response = self.api_call(
             entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation',
             method='post',
             content_type='application/json',
             data_file='data/input_observation_create.json',
             test_file=None,
         )
+
         # Check the data is not empty
-        self.assertTrue(len(text_response))
+        self.assertTrue(len(response.text))
 
         # Check the returned observation contains expected data
-        json_response = json.loads(text_response)
+        json_response = json.loads(response.text)
         expected_content = 'data/input_observation_create.json'
         fields_equals = [
             'indicator', 'start_timestamp', 'end_timestamp',
             'coordinates', 'wkt', 'values',
             'media_url'
         ]
-        with open(expected_content) as f:
+        with open(Path(__file__).parent.absolute() / expected_content) as f:
             expected_data = json.load(f)
             for field in fields_equals:
                 expected = expected_data[field]
-                response = json_response[field]
+                received = json_response[field]
                 if isinstance(expected, str):
-                    self.assertEqual(response, expected)
+                    self.assertEqual(received, expected)
                 elif isinstance(expected, dict):
-                    self.assertDictEqual(response, expected)
-                    self.assertEqual(response, expected)
+                    self.assertDictEqual(received, expected)
+                    self.assertEqual(received, expected)
                 elif isinstance(expected, list):
-                    self.assertListEqual(response, expected)
+                    self.assertListEqual(received, expected)
                 else:
-                    self.assertEqual(response, expected)
+                    self.assertEqual(received, expected)
         # Check UID is valid
         observation_uuid = json_response['uuid']
         self.assertTrue(self.is_valid_uuid(observation_uuid))
 
         # Check created_at and updated_at
         # BEWARE: the test stack PostgreSQL timezone is in UTC !!!
-        # DO NOT USE THIS UNTIL postgresql SERVER IS IN UTC
+        # DO NOT USE THIS UNTIL PostgreSQL SERVER IS IN UTC
         # now = datetime.now()
         now = datetime.utcnow()
         now_str = now.strftime("%Y-%m-%d %H:%M")
@@ -288,35 +316,182 @@ class TestRequests(unittest.TestCase):
         delta_seconds = 2
         last_sync_datetime = created_at - timedelta(seconds=delta_seconds)
         last_sync_date = last_sync_datetime.strftime("%Y-%m-%d %H:%M:%S")
-        text_response = self.api_call(
+        response = self.api_call(
             entry_point=f'/project/{project_key}/indicator/{indicator_key}/deletedObservations',
             last_sync_date=last_sync_date,
             test_file=None,
             expected_format='list'
         )
-        json_response = json.loads(text_response)
+        json_response = json.loads(response.text)
         self.assertEqual(json_response, [observation_uuid])
+
+    def test_indicator_document(self):
+        """ Get an indicator document by uid """
+        project_key = 'gobsapi~gobsapi'
+        indicator_key = 'hiker_position'
+        document_uid = '1a7f7323-6b18-46ed-a9fe-9efbe1f006a2'
+        self.api_call(
+            entry_point=f'/project/{project_key}/indicator/{indicator_key}/document/{document_uid}',
+            test_file='data/output_indicator_document_text_file.txt',
+            expected_format='text',
+        )
+
+    def test_indicator_preview(self):
+        """ Get an indicator document by uid """
+        project_key = 'gobsapi~gobsapi'
+        indicator_key = 'hiker_position'
+        document_uid = '542aa72f-d1de-4810-97bb-208f2388698b'
+        self.api_call(
+            entry_point=f'/project/{project_key}/indicator/{indicator_key}/document/{document_uid}',
+            test_file='data/output_indicator_document_preview.jpg',
+            expected_format='binary'
+        )
 
     def test_indicator_observations_all(self):
         """ Get observations of the indicator population """
         project_key = 'gobsapi~gobsapi'
         indicator_key = 'population'
-        text_response = self.api_call(
+        response = self.api_call(
             entry_point=f'/project/{project_key}/indicator/{indicator_key}/observations',
             test_file=None,
-            expected_format='list'
+            expected_format='list',
         )
-        json_response = json.loads(text_response)
+        json_response = json.loads(response.text)
         self.assertEqual(len(json_response), 44)
 
+    def test_indicator_observation_detail(self):
+        """ Get an observation of the indicator hiker_position """
+        project_key = 'gobsapi~gobsapi'
+        indicator_key = 'hiker_position'
+        observation_uuid = '1adae0cf-0f3b-4af5-bf26-e72c7fde24f2'
+        self.api_call(
+            entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation/{observation_uuid}',
+            test_file='data/output_observation_details.json',
+            expected_format='dict',
+        )
 
-# TODO
-# Get the indicator documents
-# Update an existing observation
-# Get an observation data
-# Upload a media for a given observation
-# Delete an observation media
-# Download an observation media
+    def test_observation_update(self):
+        """ Create an observation & test media upload, download, deletion """
+        # Create a new observation
+        project_key = 'gobsapi~gobsapi'
+        indicator_key = 'hiker_position'
+        response = self.api_call(
+            entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation',
+            method='post',
+            content_type='application/json',
+            data_file='data/input_observation_create.json',
+            test_file=None,
+        )
+
+        # Check the data is not empty
+        self.assertTrue(len(response.text))
+
+        # Check UID is valid
+        json_response = json.loads(response.text)
+        observation_id = json_response['id']
+        observation_uuid = json_response['uuid']
+        self.assertTrue(self.is_valid_uuid(observation_uuid))
+
+        # Update this observation
+        # Uid must be replace in the template file
+        data_file = 'data/input_observation_update.json'
+        dynamic_update_file_path = 'data/input_observation_update_DYNAMIC.json'
+        with open(Path(__file__).parent.absolute() / data_file, mode='r') as source_file:
+            with open(Path(__file__).parent.absolute() / dynamic_update_file_path, mode='w') as dynamic_file:
+                # Update the newly created observation id and uuid in the JSON content
+                json_content = json.load(source_file)
+                json_content['id'] = observation_id
+                json_content['uuid'] = observation_uuid
+                json.dump(json_content, dynamic_file)
+
+        # Send update requests with this new JSON file
+        response = self.api_call(
+            entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation',
+            method='put',
+            content_type='application/json',
+            data_file=dynamic_update_file_path,
+            test_file=None,
+        )
+
+        # Get observation back
+        response = self.api_call(
+            entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation/{observation_uuid}',
+            test_file=None,
+            expected_format='dict',
+        )
+        observation = json.loads(response.text)
+
+        # Check modified data are OK
+        self.assertDictEqual(observation['coordinates'], {"x": -3.791, "y": 48.33})
+        self.assertEqual(observation['wkt'], 'POINT(-3.791 48.33)')
+        self.assertListEqual(observation['values'], [45])
+
+        # Delete file
+        (Path(__file__).parent.absolute() / dynamic_update_file_path).unlink()
+
+        # Delete this observation to be idempotent
+        self.api_call(
+            entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation/{observation_uuid}',
+            test_file=None,
+            method='delete',
+            expected_format='dict'
+        )
+
+    def test_observation_media_actions(self):
+        """ Create an observation & test media upload, download, deletion """
+        # Create a new observation
+        project_key = 'gobsapi~gobsapi'
+        indicator_key = 'hiker_position'
+        response = self.api_call(
+            entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation',
+            method='post',
+            content_type='application/json',
+            data_file='data/input_observation_create.json',
+            test_file=None,
+        )
+        # Check the data is not empty
+        self.assertTrue(len(response.text))
+
+        # Check UID is valid
+        json_response = json.loads(response.text)
+        observation_uuid = json_response['uuid']
+        self.assertTrue(self.is_valid_uuid(observation_uuid))
+
+        # Upload a media file
+        response = self.api_call(
+            entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation/{observation_uuid}/uploadMedia',
+            method='post',
+            content_type='multipart/form-data',
+            data_file='data/input_observation_media_file.jpg',
+            test_file='data/output_observation_upload_media_success.json',
+        )
+
+        # Get observation back with the URL
+        response = self.api_call(
+            entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation/{observation_uuid}',
+            test_file=None,
+            expected_format='dict',
+        )
+        observation = json.loads(response.text)
+        expected_url = f'{self.base_url }project/{project_key}/indicator/{indicator_key}/observation/{observation_uuid}/media'
+        self.assertEqual(observation['media_url'], expected_url)
+
+        # Delete the media
+        self.api_call(
+            entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation/{observation_uuid}/deleteMedia',
+            method='delete',
+            test_file='data/output_observation_delete_media_success.json',
+            expected_format='dict',
+        )
+
+        # Delete this observation to be idempotent
+        self.api_call(
+            entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation/{observation_uuid}',
+            test_file=None,
+            method='delete',
+            expected_format='dict'
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

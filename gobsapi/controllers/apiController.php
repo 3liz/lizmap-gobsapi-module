@@ -333,6 +333,7 @@ class apiController extends jController
             $rep->setExpires('+1 hours');
             $status = 'success';
             $message = null;
+            $http_code = '200';
         } else {
             $status = 'error';
             $http_code = '404';
