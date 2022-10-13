@@ -21,13 +21,8 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: "3.10"
-
-      - uses: actions/cache@v3.0.1
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('.github/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
+          cache: "pip"
+          cache-dependency-path: ".github/requirements.txt"
 
       - name: Install Python requirements
         run: pip install -r .github/requirements.txt
