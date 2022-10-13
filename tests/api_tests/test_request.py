@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 
 import json
+import os
 import unittest
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -13,10 +14,16 @@ class TestRequests(unittest.TestCase):
     def __init__(self, methodName="runTest"):
         super().__init__(methodName)
 
-        self.base_url = 'http://localhost:9095/gobsapi.php/'
+        self.default_port = 9095
+        self.default_host = "localhost"
+        self.port = os.getenv("LIZMAP_PORT", self.default_port)
+        self.host = os.getenv("LIZMAP_HOST", self.default_host)
+        self.base_url = f'http://{self.host}:{self.port}/gobsapi.php/'
         self.api_token = None
+        self.maxDiff = None
 
-    def getHeader(self, content_type=None, token=None, request_sync_date=None, last_sync_date=None) -> dict:
+    @staticmethod
+    def get_header(content_type=None, token=None, request_sync_date=None, last_sync_date=None) -> dict:
         """ Set request header """
         headers = {
             'Accept': content_type
@@ -47,7 +54,7 @@ class TestRequests(unittest.TestCase):
             'username': username,
             'password': password,
         }
-        headers = self.getHeader(
+        headers = self.get_header(
             content_type='application/json'
         )
         req = requests.get(self.base_url + url, params=params, headers=headers)
@@ -62,7 +69,7 @@ class TestRequests(unittest.TestCase):
 
     def api_call(
         self, entry_point, test_file, method='get',
-        params={}, data_file=None,
+        params=None, data_file=None,
         expected_format='dict', expected_status_code=200,
         content_type=None, token_required=True,
         request_sync_date=None, last_sync_date=None
@@ -70,12 +77,15 @@ class TestRequests(unittest.TestCase):
         """
         Wrapper which test an api call against test data
         """
+        if params is None:
+            params = {}
+
         if not self.api_token and token_required:
             pass
 
         # Send request
         url = self.base_url + entry_point
-        headers = self.getHeader(
+        headers = self.get_header(
             content_type=content_type,
             token=self.api_token,
             request_sync_date=request_sync_date,
@@ -125,10 +135,18 @@ class TestRequests(unittest.TestCase):
         if test_file:
             if expected_format in ('dict', 'list', 'text'):
                 with open(Path(__file__).parent.absolute() / test_file) as expected_file:
+
+                    # Where we are running tests from a different host/port
+                    test_file_content = expected_file.read()
+                    test_file_content = test_file_content.replace(
+                        f"{self.default_host}:{self.default_port}",
+                        f"{self.host}:{self.port}"
+                    )
+
                     if expected_format == 'text':
-                        self.assertEqual(response.text, expected_file.read())
+                        self.assertEqual(response.text, test_file_content)
                     else:
-                        expected_content = json.load(expected_file)
+                        expected_content = json.loads(test_file_content)
                         received_content = json.loads(response.text)
                         if expected_format == 'dict':
                             self.assertDictEqual(received_content, expected_content)
@@ -138,10 +156,11 @@ class TestRequests(unittest.TestCase):
                 with open(Path(__file__).parent.absolute() / test_file, mode='rb') as expected_file:
                     self.assertEqual(response.content, expected_file.read())
 
-        # Return the reponse
+        # Return the response
         return response
 
-    def is_valid_uuid(self, given_uid):
+    @staticmethod
+    def is_valid_uuid(given_uid):
         """ Check if the uuid is valid """
         if len(given_uid) != 36:
             return False

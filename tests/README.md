@@ -3,15 +3,17 @@
 Steps:
 
 - Launch Lizmap with docker compose
-    ```
-    # Clean previous versions (optional)
-    make clean
 
-    # Run the different services
-    make run
-    ```
+```bash
+# Clean previous versions (optional)
+make clean
 
-- A simple `gobsapi` project is present, but you have to set rights in administration to view it.
+# Run the different services
+make run
+make import-data
+make import-lizmap-acl
+```
+
 
 - Open your browser at http://localhost:9095
 
@@ -21,7 +23,7 @@ For more information, refer to the [docker compose documentation](https://docs.d
 
 You can access the docker PostgreSQL test database `lizmap` from your host by configuring a
 [service file](https://docs.qgis.org/latest/en/docs/user_manual/managing_data_source/opening_data.html#postgresql-service-connection-file).
-The service file can be stored in your user home `~/.pg_service.conf` and should contains this section
+The service file can be stored in your user home `~/.pg_service.conf` and should contain this section
 
 ```ini
 [lizmap-gobsapi]
@@ -63,7 +65,7 @@ psql service=lizmap-gobsapi -f tests/sql/test_data.sql
 Before running manual or automatic tests, you also need to add some Lizmap groups, users and rights
 
 ```bash
-make add-test-users
+make import-lizmap-acl
 ```
 
 Create group:
@@ -83,7 +85,19 @@ Created users (all inside `gobsapi` group):
 
 They can both access the [Lizmap test map](http://localhost:9095/index.php/view/map/?repository=gobsapi&project=gobsapi).
 
-## Test the API with Python unit tests
+## API tests
+
+### Fully inside docker
+
+When the docker compose stack is running
+
+```bash
+docker compose run --rm pytest
+```
+
+### Local pytest
+
+But against the docker compose project
 
 You can use `pytest` to run the available unit tests:
 
@@ -92,8 +106,8 @@ You can use `pytest` to run the available unit tests:
 cd tests/api_tests/
 
 # create & activate virtual env
-python3 -m venv gobsapi
-source gobsapi/bin/activate
+python3 -m venv .venv
+source .venv/bin/activate
 
 # install requirements
 pip3 install -r requirements/tests.txt
@@ -102,5 +116,5 @@ pip3 install -r requirements/tests.txt
 pytest
 
 # Deactivate env
-deactiate
+deactivate
 ```

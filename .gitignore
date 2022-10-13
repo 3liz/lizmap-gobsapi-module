@@ -26,6 +26,7 @@ venv/
 
 # Tests
 tests/.env
+tests/api_tests/.pytest_cache
 tests/lizmap/www/
 tests/lizmap/var/
 tests/lizmap/qgis-server-plugins/

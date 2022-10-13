@@ -70,5 +70,32 @@ services:
       - ${LIZMAP_PORT}:8080
     depends_on:
       - lizmap
+  pytest:
+    image: python:3.10-slim
+    user: ${LIZMAP_USER_ID}:${LIZMAP_USER_ID}
+    command: "bash -c 'pip install -v --user -r /usr/src/gobsapi/tests/api_tests/requirements/tests.txt && /.local/bin/pytest -v -s'"
+    profiles:
+      - "python"
+    working_dir: /usr/src/gobsapi/tests/api_tests
+    environment:
+      POSTGRES_HOST: pgsql
+      POSTGRES_DB: lizmap
+      POSTGRES_USER: lizmap
+      POSTGRES_PASSWORD: lizmap1234!
+      POSTGRES_PORT: 5432
+      LIZMAP_PORT: 8080
+      LIZMAP_HOST: web
+      PIP_CACHE_DIR: "/.cache"
+    volumes:
+      # Python test folder
+      - ${GOBSAPI_MODULE_SRC}/tests/api_tests/:/usr/src/gobsapi/tests/api_tests
+      # Module folder
+      - ${GOBSAPI_MODULE_SRC}/gobsapi:/usr/src/gobsapi/gobsapi
+      # Cache
+      - ${LIZMAP_DIR}/local-python:/.local
+      - ${LIZMAP_DIR}/cache-python:/.cache
+      - ${GOBSAPI_MODULE_SRC}/tests/api_tests/.pytest_cache:/usr/src/gobsapi/tests/api_tests/.pytest_cache
+    depends_on:
+      - pgsql
 volumes:
   postgis-volume:
