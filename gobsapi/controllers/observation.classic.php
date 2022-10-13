@@ -288,6 +288,7 @@ class observationCtrl extends apiController
      * /observation/{observationId}.
      *
      * @param string Observation UID
+     *
      * @httpresponse JSON Observation data
      *
      * @return jResponseJson Observation data
@@ -328,6 +329,7 @@ class observationCtrl extends apiController
      * /observation/{observationId}.
      *
      * @param string Observation UID
+     *
      * @httpresponse JSON Standard api response
      *
      * @return jResponseJson Standard api response
@@ -370,6 +372,7 @@ class observationCtrl extends apiController
      * /observation/{observationId}/uploadMedia.
      *
      * @param string Observation UID
+     *
      * @httpresponse JSON Standard api response
      *
      * @return jResponseJson Standard api response
@@ -412,6 +415,7 @@ class observationCtrl extends apiController
      * /observation/{observationId}/deleteMedia.
      *
      * @param string Observation UID
+     *
      * @httpresponse JSON Standard api response
      *
      * @return jResponseJson Standard api response

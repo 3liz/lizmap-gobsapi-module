@@ -69,6 +69,7 @@ class projectCtrl extends apiController
      * /project/{projectKey}/indicators.
      *
      * @param string Project Key
+     *
      * @httpresponse JSON Indicator data
      *
      * @return jResponseJson Indicator data

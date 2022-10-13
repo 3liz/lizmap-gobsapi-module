@@ -73,6 +73,7 @@ class userCtrl extends apiController
      * Logs out current logged in user session. Invalidate the token.
      *
      * @httpmethod GET
+     *
      * @httpparam string token JWC token passed as: Authorization: Bearer <token>
      *
      * @return jResponseJson Status of the logout
@@ -132,6 +133,7 @@ class userCtrl extends apiController
      * Get projects for authenticated user.
      *
      * @httpmethod GET
+     *
      * @httpparam string token JWC token passed as: Authorization: Bearer <token>
      *
      * @return jResponseJson Status of the logout

@@ -299,7 +299,6 @@ class Indicator
     // Create the needed G-Obs series
     public function getOrAddGobsSeries()
     {
-
         // Check cache
         $cache_key = 'gobs_series_'.$this->code.'_'.$this->user->login;
         $series_id = jCache::get($cache_key);
@@ -523,7 +522,7 @@ class Indicator
             row_to_json(obs.*) AS object_json
         FROM obs
         ';
-        //jLog::log($sql, 'error');
+        // jLog::log($sql, 'error');
         $cnx = jDb::getConnection($this->connection_profile);
         $resultset = $cnx->prepare($sql);
         $params = array($this->code);
@@ -680,7 +679,7 @@ class Indicator
             uid
         FROM del
         ';
-        //jLog::log($sql, 'error');
+        // jLog::log($sql, 'error');
 
         $cnx = jDb::getConnection($this->connection_profile);
         $resultset = $cnx->prepare($sql);

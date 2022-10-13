@@ -7,8 +7,9 @@ $finder = PhpCsFixer\Finder::create()
           //->exclude(__DIR__.'/lizmap/modules/proj4php/classes/')
         ;
 
-return PhpCsFixer\Config::create()
-          ->setCacheFile(__DIR__.'/.php_cs.cache')
+$config = new PhpCsFixer\Config();
+return $config
+          ->setCacheFile(__DIR__.'/.php-cs-fixer.cache')
           ->setRules([
               '@PSR2' => true,
               '@Symfony' => true,
@@ -16,11 +17,10 @@ return PhpCsFixer\Config::create()
               'array_syntax' => array('syntax'=>'long'),
               'method_argument_space'=> ['on_multiline' => 'ensure_fully_multiline'],
               'new_with_braces'=> true,
-//              'concat_space'=> ['spacing' => 'one'],
               'no_whitespace_in_blank_line'=> true,
               'no_whitespace_before_comma_in_array'=> true,
               'no_useless_return' => true,
-              'no_unneeded_final_method'=> true,
+              'no_unneeded_final_method'=> false,
               'no_unset_cast' => false,
               'no_leading_import_slash'=> true,
               'no_leading_namespace_whitespace'=> true,
@@ -52,4 +52,3 @@ return PhpCsFixer\Config::create()
           ])
           ->setFinder($finder)
         ;
-

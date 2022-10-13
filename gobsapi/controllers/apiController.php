@@ -242,6 +242,7 @@ class apiController extends jController
      * @param null|mixed $path
      * @param null|mixed $input_data
      * @param null|mixed $output_data
+     *
      * @httpresponse JSON with code, status and message
      *
      * @return jResponseJson
@@ -280,6 +281,7 @@ class apiController extends jController
      * @param mixed      $data
      * @param null|mixed $path
      * @param null|mixed $input_data
+     *
      * @httpresponse JSON with project data
      *
      * @return jResponseJson
@@ -392,7 +394,7 @@ class apiController extends jController
         // to facilitate grepping the log
         $login = null;
         if ($this->user && $this->user->login) {
-            $prefix .=  ' / ' . $this->user->login;;
+            $prefix .= ' / '.$this->user->login;
         }
         $prefix .= ' - ';
 

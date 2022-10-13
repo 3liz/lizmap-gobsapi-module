@@ -17,7 +17,7 @@ class gobsapiModuleUpgrader extends jInstallerModule
         if (method_exists($this, 'createEntryPoint')) {
             $this->createEntryPoint('gobsapi.php', 'gobsapi/config.ini.php', 'gobsapi', 'classic');
         } else {
-            //deprecated and not safe
+            // deprecated and not safe
             $this->copyFile('gobsapi.php', jApp::wwwPath('gobsapi.php'));
         }
     }

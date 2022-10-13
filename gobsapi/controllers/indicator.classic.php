@@ -54,7 +54,6 @@ class indicatorCtrl extends apiController
      */
     public function getIndicatorByCode()
     {
-
         // Check indicator can be accessed and is a valid G-Obs indicator
         list($code, $status, $message) = $this->check();
         if ($status == 'error') {
@@ -81,13 +80,13 @@ class indicatorCtrl extends apiController
      * @param string Indicator Code
      * @param string Indicator lastSyncDate
      * @param string Indicator requestSyncDate
+     *
      * @httpresponse JSON observations data
      *
      * @return jResponseJson observations data
      */
     public function getObservationsByIndicator()
     {
-
         // Check indicator can be accessed and is a valid G-Obs indicator
         list($code, $status, $message) = $this->check();
         if ($status == 'error') {
@@ -117,6 +116,7 @@ class indicatorCtrl extends apiController
      * @param string Indicator Code
      * @param string Indicator lastSyncDate
      * @param string Indicator requestSyncDate
+     *
      * @httpresponse JSON observdeletedObservationsations data
      *
      * @return jResponseJson deletedObservations data

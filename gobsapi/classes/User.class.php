@@ -55,7 +55,6 @@ class User
         $repositories = lizmap::getRepositoryList();
         $projects = array();
         foreach ($repositories as $repository) {
-
             // Check rights
             if (!jAcl2::check('lizmap.repositories.view', $repository)) {
                 continue;
@@ -65,7 +64,6 @@ class User
             $lizmap_repository = lizmap::getRepository($repository);
             $get_projects = $lizmap_repository->getProjects();
             foreach ($get_projects as $project) {
-
                 // Check rights
                 if (!$project->checkAcl($this->login)) {
                     continue;
@@ -87,7 +85,6 @@ class User
     // Create actor and actor_category if needed
     public function createGobsActor($connection_profile)
     {
-
         // Check cache
         $cache_key = 'gobs_actor_'.$this->login;
         $cache = jCache::get($cache_key);

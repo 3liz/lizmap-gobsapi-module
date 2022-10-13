@@ -145,9 +145,9 @@ class Project
         if (file_exists($gpkg_file_path)) {
             $gpkg_url = jUrl::getFull(
                 'gobsapi~project:getProjectGeopackage',
-                //array(
-                //'projectKey' => $key,
-                //)
+                // array(
+                // 'projectKey' => $key,
+                // )
             );
             $gpkg_url = str_replace(
                 'index.php/gobsapi/project/getProjectGeopackage',
@@ -192,8 +192,8 @@ class Project
     {
         $qgs_path = $this->lizmap_project->getQgisPath();
         if (
-            !file_exists($qgs_path) ||
-            !file_exists($qgs_path.'.cfg')
+            !file_exists($qgs_path)
+            || !file_exists($qgs_path.'.cfg')
         ) {
             throw new Error('Files of project '.$this->key.' does not exists');
         }

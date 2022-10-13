@@ -14,7 +14,6 @@ class gobsapiModuleInstaller extends jInstallerModule
         if (method_exists($this, 'createEntryPoint')) {
             $this->createEntryPoint('gobsapi.php', 'gobsapi/config.ini.php', 'gobsapi', 'classic');
         } else {
-
             // Copy directory for Jelix configuration file related to new entry point
             $gobsapi_jelix_config_target = jApp::configPath('gobsapi/config.ini.php');
             $this->copyFile('gobsapi/config.ini.php', $gobsapi_jelix_config_target);

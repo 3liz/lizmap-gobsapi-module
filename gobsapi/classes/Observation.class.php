@@ -280,6 +280,7 @@ class Observation
                 }
                 if (!empty($database_uid)) {
                     $body_uuid = '';
+
                     return array(
                         'error',
                         'Observation cannot be created: given UID already exists.',
@@ -315,7 +316,6 @@ class Observation
      */
     public function getCapabilities($context = 'read')
     {
-
         // Set default capabilities
         $capabilities = array(
             'get' => false,
@@ -689,7 +689,7 @@ class Observation
             FROM del
             ';
         }
-        //jLog::log($sql, 'error');
+        // jLog::log($sql, 'error');
         return $sql;
     }
 
@@ -697,7 +697,7 @@ class Observation
     private function runDatabaseAction($action = 'insert')
     {
         // Check observation
-        if (!($this->observation_valid)) {
+        if (!$this->observation_valid) {
             return array(
                 'error',
                 'The given observation is not valid',
@@ -772,7 +772,7 @@ class Observation
             // Return response
             return array(
                 'success',
-                'The observation has been successfully ' . $messages[$action][2],
+                'The observation has been successfully '.$messages[$action][2],
                 $data,
             );
         }
@@ -788,7 +788,7 @@ class Observation
             // Return response
             return array(
                 'success',
-                'The observation has been sucessfully ' . $messages[$action][2],
+                'The observation has been sucessfully '.$messages[$action][2],
                 json_decode($json),
             );
         }
@@ -830,7 +830,7 @@ class Observation
     // Get Gobs representation of an observation object
     public function get()
     {
-        if (!($this->observation_valid)) {
+        if (!$this->observation_valid) {
             return array(
                 'error',
                 'The given observation is not valid',
@@ -907,7 +907,7 @@ class Observation
         if ($delete[0] == 'error') {
             return $delete;
         }
-        $save = $form->saveFile('mediaFile', $this->observation_media_directory, $destination_basename . '.' . $extension);
+        $save = $form->saveFile('mediaFile', $this->observation_media_directory, $destination_basename.'.'.$extension);
         if (!$save) {
             jForms::destroy('gobsapi~media', $this->observation_uid);
 
@@ -939,10 +939,10 @@ class Observation
         if ($this->isValidUuid($uid)) {
             $destination_basename = $uid;
         }
-        $destination_basepath = $this->observation_media_directory . '/' . $destination_basename;
+        $destination_basepath = $this->observation_media_directory.'/'.$destination_basename;
         $media_path = null;
         foreach ($this->media_mimes as $mime) {
-            $path = $destination_basepath . '.' . $mime;
+            $path = $destination_basepath.'.'.$mime;
             if (file_exists($path)) {
                 $media_path = $path;
 
@@ -976,10 +976,10 @@ class Observation
         if ($this->isValidUuid($uid)) {
             $destination_basename = $uid;
         }
-        $destination_basepath = $this->observation_media_directory . '/' . $destination_basename;
+        $destination_basepath = $this->observation_media_directory.'/'.$destination_basename;
         $deleted = 0;
         foreach ($this->media_mimes as $mime) {
-            $path = $destination_basepath . '.' . $mime;
+            $path = $destination_basepath.'.'.$mime;
             if (file_exists($path)) {
                 try {
                     unlink($path);

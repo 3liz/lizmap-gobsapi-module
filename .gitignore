@@ -13,8 +13,7 @@
 .vscode/
 
 # PHP
-.php_cs
-.php_cs.cache
+.php-cs-fixer.cache
 
 # MkDocs
 build/
