@@ -2,11 +2,28 @@
 
 import json
 import os
+from typing import Optional
+
+import requests
 import unittest
+
+from enum import Enum, auto
 from datetime import datetime, timedelta
 from pathlib import Path
 
-import requests
+
+class HttpMethod(Enum):
+    Delete = auto()
+    Get = auto()
+    Put = auto()
+    Post = auto()
+
+
+class ExpectedType(Enum):
+    Binary = auto()
+    Dict = auto()
+    List = auto()
+    Text = auto()
 
 
 class TestRequests(unittest.TestCase):
@@ -23,7 +40,10 @@ class TestRequests(unittest.TestCase):
         self.maxDiff = None
 
     @staticmethod
-    def get_header(content_type=None, token=None, request_sync_date=None, last_sync_date=None) -> dict:
+    def get_header(
+            content_type: str = None, token: str = None, request_sync_date: str = None,
+            last_sync_date: str = None
+    ) -> dict:
         """ Set request header """
         headers = {
             'Accept': content_type
@@ -47,7 +67,7 @@ class TestRequests(unittest.TestCase):
         """ Login as admin and set the token """
         self.login('gobsapi_writer', 'al_password')
 
-    def login(self, username='admin', password='admin') -> None:
+    def login(self, username: str = 'admin', password: str = 'admin') -> None:
         """ Login and get token """
         url = 'user/login'
         params = {
@@ -68,11 +88,11 @@ class TestRequests(unittest.TestCase):
         self.api_token = content['token']
 
     def api_call(
-        self, entry_point, test_file, method='get',
-        params=None, data_file=None,
-        expected_format='dict', expected_status_code=200,
-        content_type=None, token_required=True,
-        request_sync_date=None, last_sync_date=None
+        self, entry_point: str, test_file: Optional[str], method: HttpMethod = HttpMethod.Get,
+        params: dict = None, data_file: str = None,
+        expected_format: ExpectedType = ExpectedType.Dict, expected_status_code: int = 200,
+        content_type: str = None, token_required: bool = True,
+        request_sync_date: str = None, last_sync_date: str = None
     ):
         """
         Wrapper which test an api call against test data
@@ -92,12 +112,13 @@ class TestRequests(unittest.TestCase):
             last_sync_date=last_sync_date
         )
 
-        if method == 'get':
+        if method == HttpMethod.Get:
             response = requests.get(url, params=params, headers=headers)
-        elif method in ('post', 'put'):
+        elif method in (HttpMethod.Post, HttpMethod.Put):
             # We must send data read from the data_file path
             json_content = None
             files_content = None
+            response = None
             file_mode = 'r'
             if content_type == 'multipart/form-data':
                 file_mode = 'rb'
@@ -109,23 +130,27 @@ class TestRequests(unittest.TestCase):
                     # requests will pass the correct content type
                     # it should NOT be set in the api call
                     del headers['Content-Type']
-                if method == 'post':
+                if method == HttpMethod.Post:
                     response = requests.post(
                         url, params=params, headers=headers,
                         json=json_content, files=files_content
                     )
-                elif method == 'put':
+                elif method == HttpMethod.Put:
                     response = requests.put(
                         url, params=params, headers=headers,
                         json=json_content, files=files_content
                     )
-        elif method == 'delete':
+        elif method == HttpMethod.Delete:
             response = requests.delete(url, params=params, headers=headers)
         else:
-            response = requests.get(url, params=params, headers=headers)
+            raise Exception('Unknown HTTP method')
 
-        # Log response text to ease debugging
-        print(response.text)
+        if response is None:
+            raise Exception('Response is not defined')
+
+        # # Log response text to ease debugging
+        # if expected_format != ExpectedType.Binary:
+        #     print(response.text)
 
         # Status code
         self.assertEqual(response.status_code, expected_status_code)
@@ -133,7 +158,7 @@ class TestRequests(unittest.TestCase):
         # Compare the JSON contained in the test_file
         # to the request text response
         if test_file:
-            if expected_format in ('dict', 'list', 'text'):
+            if expected_format in (ExpectedType.Dict, ExpectedType.List, ExpectedType.Text):
                 with open(Path(__file__).parent.absolute() / test_file) as expected_file:
 
                     # Where we are running tests from a different host/port
@@ -143,16 +168,16 @@ class TestRequests(unittest.TestCase):
                         f"{self.host}:{self.port}"
                     )
 
-                    if expected_format == 'text':
+                    if expected_format == ExpectedType.Text:
                         self.assertEqual(response.text, test_file_content)
                     else:
                         expected_content = json.loads(test_file_content)
                         received_content = json.loads(response.text)
-                        if expected_format == 'dict':
+                        if expected_format == ExpectedType.Dict:
                             self.assertDictEqual(received_content, expected_content)
-                        elif expected_format == 'list':
+                        elif expected_format == ExpectedType.List:
                             self.assertListEqual(received_content, expected_content)
-            elif expected_format == 'binary':
+            elif expected_format == ExpectedType.Binary:
                 with open(Path(__file__).parent.absolute() / test_file, mode='rb') as expected_file:
                     self.assertEqual(response.content, expected_file.read())
 
@@ -174,7 +199,7 @@ class TestRequests(unittest.TestCase):
         self.api_call(
             entry_point='user/projects',
             test_file='data/output_user_projects.json',
-            expected_format='list',
+            expected_format=ExpectedType.List,
         )
 
     def test_logout(self):
@@ -183,14 +208,14 @@ class TestRequests(unittest.TestCase):
         self.api_call(
             entry_point='user/logout',
             test_file='data/output_user_logout.json',
-            expected_format='dict',
+            expected_format=ExpectedType.Dict,
         )
 
         # Get user projects -> expects 401
         self.api_call(
             entry_point='user/projects',
             test_file='data/output_access_token_missing.json',
-            expected_format='dict',
+            expected_format=ExpectedType.Dict,
             expected_status_code=401,
         )
 
@@ -198,12 +223,12 @@ class TestRequests(unittest.TestCase):
         self.login('gobsapi_writer', 'al_password')
 
     def test_project_unknown(self):
-        """ Get details of an unexistent project """
+        """ Get details of a nonexistent project """
         project_key = 'gobsapi~foobar'
         self.api_call(
             entry_point=f'/project/{project_key}',
             test_file='data/output_project_unknown.json',
-            expected_format='dict',
+            expected_format=ExpectedType.Dict,
             expected_status_code=404,
         )
 
@@ -213,7 +238,7 @@ class TestRequests(unittest.TestCase):
         self.api_call(
             entry_point=f'/project/{project_key}',
             test_file='data/output_project_details.json',
-            expected_format='dict'
+            expected_format=ExpectedType.Dict
         )
 
     def test_project_indicators(self):
@@ -222,7 +247,7 @@ class TestRequests(unittest.TestCase):
         self.api_call(
             entry_point=f'/project/{project_key}/indicators',
             test_file='data/output_project_indicators.json',
-            expected_format='list'
+            expected_format=ExpectedType.List
         )
 
     def test_project_geopackage(self):
@@ -231,7 +256,7 @@ class TestRequests(unittest.TestCase):
         self.api_call(
             entry_point=f'/project/{project_key}/geopackage',
             test_file='data/output_project_geopackage.gpkg',
-            expected_format='binary'
+            expected_format=ExpectedType.Binary
         )
 
     def test_indicator_details(self):
@@ -253,7 +278,7 @@ class TestRequests(unittest.TestCase):
         indicator_key = 'hiker_position'
         response = self.api_call(
             entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation',
-            method='post',
+            method=HttpMethod.Post,
             content_type='application/json',
             data_file='data/input_observation_create.json',
             test_file=None,
@@ -304,7 +329,7 @@ class TestRequests(unittest.TestCase):
         # Check we create the same observation -> an error must be raised
         self.api_call(
             entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation',
-            method='post',
+            method=HttpMethod.Post,
             content_type='application/json',
             data_file='data/input_observation_create.json',
             test_file=None,
@@ -317,16 +342,16 @@ class TestRequests(unittest.TestCase):
         self.api_call(
             entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation/{observation_uuid}',
             test_file=None,
-            method='delete',
-            expected_format='dict'
+            method=HttpMethod.Delete,
+            expected_format=ExpectedType.Dict
         )
 
         # Delete again -> should have a 404
         self.api_call(
             entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation/{observation_uuid}',
             test_file='data/output_observation_does_not_exist.json',
-            expected_format='dict',
-            method='delete',
+            expected_format=ExpectedType.Dict,
+            method=HttpMethod.Delete,
             expected_status_code=404
         )
 
@@ -339,7 +364,7 @@ class TestRequests(unittest.TestCase):
             entry_point=f'/project/{project_key}/indicator/{indicator_key}/deletedObservations',
             last_sync_date=last_sync_date,
             test_file=None,
-            expected_format='list'
+            expected_format=ExpectedType.List
         )
         json_response = json.loads(response.text)
         self.assertEqual(json_response, [observation_uuid])
@@ -352,7 +377,7 @@ class TestRequests(unittest.TestCase):
         self.api_call(
             entry_point=f'/project/{project_key}/indicator/{indicator_key}/document/{document_uid}',
             test_file='data/output_indicator_document_text_file.txt',
-            expected_format='text',
+            expected_format=ExpectedType.Text,
         )
 
     def test_indicator_preview(self):
@@ -363,7 +388,7 @@ class TestRequests(unittest.TestCase):
         self.api_call(
             entry_point=f'/project/{project_key}/indicator/{indicator_key}/document/{document_uid}',
             test_file='data/output_indicator_document_preview.jpg',
-            expected_format='binary'
+            expected_format=ExpectedType.Binary
         )
 
     def test_indicator_observations_all(self):
@@ -373,7 +398,7 @@ class TestRequests(unittest.TestCase):
         response = self.api_call(
             entry_point=f'/project/{project_key}/indicator/{indicator_key}/observations',
             test_file=None,
-            expected_format='list',
+            expected_format=ExpectedType.List,
         )
         json_response = json.loads(response.text)
         self.assertEqual(len(json_response), 44)
@@ -386,7 +411,7 @@ class TestRequests(unittest.TestCase):
         self.api_call(
             entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation/{observation_uuid}',
             test_file='data/output_observation_details.json',
-            expected_format='dict',
+            expected_format=ExpectedType.Dict,
         )
 
     def test_observation_update(self):
@@ -396,7 +421,7 @@ class TestRequests(unittest.TestCase):
         indicator_key = 'hiker_position'
         response = self.api_call(
             entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation',
-            method='post',
+            method=HttpMethod.Post,
             content_type='application/json',
             data_file='data/input_observation_create.json',
             test_file=None,
@@ -412,7 +437,7 @@ class TestRequests(unittest.TestCase):
         self.assertTrue(self.is_valid_uuid(observation_uuid))
 
         # Update this observation
-        # Uid must be replace in the template file
+        # Uid must be replaced in the template file
         data_file = 'data/input_observation_update.json'
         dynamic_update_file_path = 'data/input_observation_update_DYNAMIC.json'
         with open(Path(__file__).parent.absolute() / data_file, mode='r') as source_file:
@@ -424,9 +449,9 @@ class TestRequests(unittest.TestCase):
                 json.dump(json_content, dynamic_file)
 
         # Send update requests with this new JSON file
-        response = self.api_call(
+        self.api_call(
             entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation',
-            method='put',
+            method=HttpMethod.Put,
             content_type='application/json',
             data_file=dynamic_update_file_path,
             test_file=None,
@@ -436,7 +461,7 @@ class TestRequests(unittest.TestCase):
         response = self.api_call(
             entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation/{observation_uuid}',
             test_file=None,
-            expected_format='dict',
+            expected_format=ExpectedType.Dict,
         )
         observation = json.loads(response.text)
 
@@ -452,8 +477,8 @@ class TestRequests(unittest.TestCase):
         self.api_call(
             entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation/{observation_uuid}',
             test_file=None,
-            method='delete',
-            expected_format='dict'
+            method=HttpMethod.Delete,
+            expected_format=ExpectedType.Dict
         )
 
     def test_observation_media_actions(self):
@@ -463,7 +488,7 @@ class TestRequests(unittest.TestCase):
         indicator_key = 'hiker_position'
         response = self.api_call(
             entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation',
-            method='post',
+            method=HttpMethod.Post,
             content_type='application/json',
             data_file='data/input_observation_create.json',
             test_file=None,
@@ -477,9 +502,9 @@ class TestRequests(unittest.TestCase):
         self.assertTrue(self.is_valid_uuid(observation_uuid))
 
         # Upload a media file
-        response = self.api_call(
+        self.api_call(
             entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation/{observation_uuid}/uploadMedia',
-            method='post',
+            method=HttpMethod.Post,
             content_type='multipart/form-data',
             data_file='data/input_observation_media_file.jpg',
             test_file='data/output_observation_upload_media_success.json',
@@ -489,26 +514,28 @@ class TestRequests(unittest.TestCase):
         response = self.api_call(
             entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation/{observation_uuid}',
             test_file=None,
-            expected_format='dict',
+            expected_format=ExpectedType.Dict,
         )
         observation = json.loads(response.text)
-        expected_url = f'{self.base_url }project/{project_key}/indicator/{indicator_key}/observation/{observation_uuid}/media'
+        expected_url = (
+            f'{self.base_url }project/{project_key}/indicator/{indicator_key}/observation/{observation_uuid}/media'
+        )
         self.assertEqual(observation['media_url'], expected_url)
 
         # Delete the media
         self.api_call(
             entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation/{observation_uuid}/deleteMedia',
-            method='delete',
+            method=HttpMethod.Delete,
             test_file='data/output_observation_delete_media_success.json',
-            expected_format='dict',
+            expected_format=ExpectedType.Dict,
         )
 
         # Delete this observation to be idempotent
         self.api_call(
             entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation/{observation_uuid}',
             test_file=None,
-            method='delete',
-            expected_format='dict'
+            method=HttpMethod.Delete,
+            expected_format=ExpectedType.Dict
         )
 
 
