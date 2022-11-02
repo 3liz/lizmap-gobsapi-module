@@ -2,6 +2,30 @@
 
 ## Unreleased
 
+## 0.5.0 - 2022-11-02
+
+### Added
+
+* Observation - Respect and use the given `UUID` when creating a new observation
+  instead of always generate a new one
+
+### Changed
+
+* Installation - improve the installation process and adapt the code for LWC >= 3.5
+* Logs - Add the user login as a prefix in the API logs if available
+* Docs:
+  * Add the entry point `/project/{projectKey}/indicator/{indicatorCode}/document/{documentUuid}`
+    in the [API documentation](https://docs.3liz.org/lizmap-gobsapi-module/api/)
+  * Remove the useless mention of `jDb` profile
+
+### Tests
+
+* Unit tests - Add a full dockerized stack with Lizmap Web Client to test the API entry points
+  * Add test data (taken from the G-Obs QGIS plugin)
+  * Add a QGIS project with the test data and the needed variables
+  * Allow to use the make command to run the test stack and import the needed data
+  * Add 14 Python unit tests to cover the main API entry points
+
 ## 0.4.1 - 2022-04-22
 
 * Observation - Return the full geometry (Point, Linestring or Polygon)

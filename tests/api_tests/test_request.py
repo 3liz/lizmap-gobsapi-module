@@ -11,7 +11,6 @@ from enum import Enum, auto
 from datetime import datetime, timedelta
 from pathlib import Path
 
-
 class HttpMethod(Enum):
     Delete = auto()
     Get = auto()
@@ -99,7 +98,6 @@ class TestRequests(unittest.TestCase):
         """
         if params is None:
             params = {}
-
         if not self.api_token and token_required:
             pass
 
@@ -160,7 +158,6 @@ class TestRequests(unittest.TestCase):
         if test_file:
             if expected_format in (ExpectedType.Dict, ExpectedType.List, ExpectedType.Text):
                 with open(Path(__file__).parent.absolute() / test_file) as expected_file:
-
                     # Where we are running tests from a different host/port
                     test_file_content = expected_file.read()
                     test_file_content = test_file_content.replace(

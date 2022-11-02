@@ -13,6 +13,8 @@
 .vscode/
 
 # PHP
+.php_cs
+.php_cs.cache
 .php-cs-fixer.cache
 
 # MkDocs
@@ -31,3 +33,4 @@ tests/lizmap/var/
 tests/lizmap/qgis-server-plugins/
 tests/lizmap/cache-python
 tests/lizmap/local-python
+.pytest_cache
