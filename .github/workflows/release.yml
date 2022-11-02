@@ -19,9 +19,7 @@ jobs:
 
       - name: Changelog
         id: changelog
-        uses: Gustry/changelog-release@0.1.0
-        with:
-          tag_name: ${{ env.RELEASE_VERSION }}
+        uses: 3liz/changelog-release@0.2.0
 
       - name: Create release on GitHub
         uses: ncipollo/release-action@v1.11.1
