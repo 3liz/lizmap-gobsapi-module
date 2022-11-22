@@ -117,9 +117,45 @@ import-data:
 import-lizmap-acl:
 	@echo "Set repositories and users rights if needed"
 	@echo "Set view project"
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/cmd.php acl2right add __anonymous "lizmap.repositories.view" gobsapi'
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/cmd.php acl2right add users "lizmap.repositories.view" gobsapi'
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/cmd.php acl2right add admins "lizmap.repositories.view" gobsapi'
+	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c \
+		'php lizmap/console.php acl2:add __anonymous "lizmap.repositories.view" gobsapi' \
+		'php lizmap/console.php acl2:add users "lizmap.repositories.view" gobsapi' \
+		'php lizmap/console.php acl2:add admins "lizmap.repositories.view" gobsapi'
+	@echo "Display WMS links"
+	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c \
+		'php lizmap/console.php acl2:add __anonymous "lizmap.tools.displayGetCapabilitiesLinks" gobsapi' \
+		'php lizmap/console.php acl2:add users "lizmap.tools.displayGetCapabilitiesLinks" gobsapi' \
+		'php lizmap/console.php acl2:add admins "lizmap.tools.displayGetCapabilitiesLinks" gobsapi'
+	@echo "Edition"
+	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c \
+		'php lizmap/console.php acl2:add __anonymous "lizmap.tools.edition.use" gobsapi' \
+		'php lizmap/console.php acl2:add users "lizmap.tools.edition.use" gobsapi' \
+		'php lizmap/console.php acl2:add admins "lizmap.tools.edition.use" gobsapi'
+	@echo "Export layers"
+	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c \
+		'php lizmap/console.php acl2:add __anonymous "lizmap.tools.layer.export" gobsapi' \
+		'php lizmap/console.php acl2:add users "lizmap.tools.layer.export" gobsapi' \
+		'php lizmap/console.php acl2:add admins "lizmap.tools.layer.export" gobsapi'
+	@echo "Add users and groups"
+    # FIXME: when using Lizmap 3.6.3 or more, use these commands instead of script.php jcommunity~user:create
+    # 		'php lizmap/console.php jcommunity:user:create -v --no-error-if-exist --admin gobsapi_writer al@al.al al_password'
+    #		'php lizmap/console.php jcommunity:user:create -v --no-error-if-exist gobsapi_reader bob@bob.bob bob_password'
+	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c \
+		'php lizmap/scripts/script.php jcommunity~user:create -v --no-error-if-exists --admin gobsapi_writer al@al.al al_password' \
+		'php lizmap/scripts/script.php jcommunity~user:create -v --no-error-if-exists gobsapi_reader bob@bob.bob bob_password' \
+		'php lizmap/console.php acl2group:create gobsapi_group "GobsAPI group"' \
+		'php lizmap/console.php acl2user:addgroup gobsapi_reader gobsapi_group ' \
+		'php lizmap/console.php acl2user:addgroup gobsapi_writer gobsapi_group ' \
+		'php lizmap/console.php acl2:add gobsapi_group "lizmap.repositories.view" "gobsapi"' \
+		'php lizmap/console.php acl2:add admins "lizmap.repositories.view" "gobsapi"'
+
+import-lizmap-acl-35:
+	@echo "Set repositories and users rights if needed"
+	@echo "Set view project"
+	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c \
+		'php lizmap/cmd.php acl2right add __anonymous "lizmap.repositories.view" gobsapi' \
+		'php lizmap/cmd.php acl2right add users "lizmap.repositories.view" gobsapi' \
+		'php lizmap/cmd.php acl2right add admins "lizmap.repositories.view" gobsapi'
 	@echo "Display WMS links"
 	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/cmd.php acl2right add __anonymous "lizmap.tools.displayGetCapabilitiesLinks" gobsapi'
 	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/cmd.php acl2right add users "lizmap.tools.displayGetCapabilitiesLinks" gobsapi'
@@ -151,4 +187,5 @@ import-lizmap-acl:
 
 setup-module:
 	docker compose exec -u ${LIZMAP_USER} lizmap php /www/lizmap/install/configurator.php -v gobsapi
-	docker compose exec -u ${LIZMAP_USER} lizmap php /www/lizmap/install/installer.php -v
+	docker compose exec -u ${LIZMAP_USER} lizmap php /www/lizmap/install/installer.php -v --no-clean-temp
+	docker compose exec  lizmap /www/lizmap/install/clean_vartmp.sh

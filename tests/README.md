@@ -2,28 +2,30 @@
 
 Steps:
 
-- Launch Lizmap with docker compose
-
+- clean previous versions (optional)
 ```bash
-# Clean previous versions (optional)
 make clean
-
-# Run the different services
-make run
-make import-data
 ```
-
-- Activate the gobsapi module.
-
+- Launch Lizmap with docker compose (Lizmap 3.5 by default)
+```bash
+make run
+```
+  If you want to use a specific version of Lizmap (for example a local docker image),
+  indicate the version of the docker image into `LIZMAP_VERSION_TAG`:
+```bash
+make run LIZMAP_VERSION_TAG=3.6.0-rc.2
+```
+- If you are using Lizmap 3.6, execute:
 ```bash
 make setup-module
-```
-
-- Add the test data:
-
-```bash
 make import-data
 make import-lizmap-acl
+```
+
+- If you are using Lizmap 3.5, execute:
+```bash
+make import-data
+make import-lizmap-acl-35
 ```
 
 - Open your browser at http://localhost:9095
@@ -85,9 +87,16 @@ and add the modified file `tests/sql/test_data.sql` to your pull request.
 
 Before running manual or automatic tests, you also need to add some Lizmap groups, users and rights
 
+With Lizmap 3.5, execute:
+```bash
+make import-lizmap-acl-35
+```
+
+With Lizmap 3.6, execute:
 ```bash
 make import-lizmap-acl
 ```
+
 
 Create group:
 * `gobsapi_group`, label `GobsAPI group`
