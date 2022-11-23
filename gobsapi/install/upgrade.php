@@ -13,5 +13,4 @@ class gobsapiModuleUpgrader extends  \Jelix\Installer\Module\Installer
     {
         $helpers->updateEntryPointFile('gobsapi.php', 'gobsapi', 'classic');
     }
-
 }
