@@ -115,75 +115,7 @@ import-data:
 	export PGPASSWORD=lizmap1234!; psql -h localhost -U lizmap -d lizmap -p 9097 -f sql/test_data.sql
 
 import-lizmap-acl:
-	@echo "Set repositories and users rights if needed"
-	@echo "Set view project"
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c \
-		'php lizmap/console.php acl2:add __anonymous "lizmap.repositories.view" gobsapi' \
-		'php lizmap/console.php acl2:add users "lizmap.repositories.view" gobsapi' \
-		'php lizmap/console.php acl2:add admins "lizmap.repositories.view" gobsapi'
-	@echo "Display WMS links"
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c \
-		'php lizmap/console.php acl2:add __anonymous "lizmap.tools.displayGetCapabilitiesLinks" gobsapi' \
-		'php lizmap/console.php acl2:add users "lizmap.tools.displayGetCapabilitiesLinks" gobsapi' \
-		'php lizmap/console.php acl2:add admins "lizmap.tools.displayGetCapabilitiesLinks" gobsapi'
-	@echo "Edition"
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c \
-		'php lizmap/console.php acl2:add __anonymous "lizmap.tools.edition.use" gobsapi' \
-		'php lizmap/console.php acl2:add users "lizmap.tools.edition.use" gobsapi' \
-		'php lizmap/console.php acl2:add admins "lizmap.tools.edition.use" gobsapi'
-	@echo "Export layers"
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c \
-		'php lizmap/console.php acl2:add __anonymous "lizmap.tools.layer.export" gobsapi' \
-		'php lizmap/console.php acl2:add users "lizmap.tools.layer.export" gobsapi' \
-		'php lizmap/console.php acl2:add admins "lizmap.tools.layer.export" gobsapi'
-	@echo "Add users and groups"
-    # FIXME: when using Lizmap 3.6.3 or more, use these commands instead of script.php jcommunity~user:create
-    # 		'php lizmap/console.php jcommunity:user:create -v --no-error-if-exist --admin gobsapi_writer al@al.al al_password'
-    #		'php lizmap/console.php jcommunity:user:create -v --no-error-if-exist gobsapi_reader bob@bob.bob bob_password'
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c \
-		'php lizmap/scripts/script.php jcommunity~user:create -v --no-error-if-exists --admin gobsapi_writer al@al.al al_password' \
-		'php lizmap/scripts/script.php jcommunity~user:create -v --no-error-if-exists gobsapi_reader bob@bob.bob bob_password' \
-		'php lizmap/console.php acl2group:create gobsapi_group "GobsAPI group"' \
-		'php lizmap/console.php acl2user:addgroup gobsapi_reader gobsapi_group ' \
-		'php lizmap/console.php acl2user:addgroup gobsapi_writer gobsapi_group ' \
-		'php lizmap/console.php acl2:add gobsapi_group "lizmap.repositories.view" "gobsapi"' \
-		'php lizmap/console.php acl2:add admins "lizmap.repositories.view" "gobsapi"'
-
-import-lizmap-acl-35:
-	@echo "Set repositories and users rights if needed"
-	@echo "Set view project"
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c \
-		'php lizmap/cmd.php acl2right add __anonymous "lizmap.repositories.view" gobsapi' \
-		'php lizmap/cmd.php acl2right add users "lizmap.repositories.view" gobsapi' \
-		'php lizmap/cmd.php acl2right add admins "lizmap.repositories.view" gobsapi'
-	@echo "Display WMS links"
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/cmd.php acl2right add __anonymous "lizmap.tools.displayGetCapabilitiesLinks" gobsapi'
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/cmd.php acl2right add users "lizmap.tools.displayGetCapabilitiesLinks" gobsapi'
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/cmd.php acl2right add admins "lizmap.tools.displayGetCapabilitiesLinks" gobsapi'
-	@echo "Edition"
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/cmd.php acl2right add __anonymous "lizmap.tools.edition.use" gobsapi'
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/cmd.php acl2right add users "lizmap.tools.edition.use" gobsapi'
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/cmd.php acl2right add admins "lizmap.tools.edition.use" gobsapi'
-	@echo "Export layers"
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/cmd.php acl2right add __anonymous "lizmap.tools.layer.export" gobsapi'
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/cmd.php acl2right add users "lizmap.tools.layer.export" gobsapi'
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/cmd.php acl2right add admins "lizmap.tools.layer.export" gobsapi'
-	@echo "Add GobsAPI users"
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/scripts/script.php jcommunity~user:create -v --no-error-if-exists --admin gobsapi_writer al@al.al al_password'
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/scripts/script.php jcommunity~user:create -v --no-error-if-exists gobsapi_reader bob@bob.bob bob_password'
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/scripts/script.php jcommunity~user:create -v --no-error-if-exists gobsapi_writer_filtered md@md.md md_password'
-	@echo "Add GobsAPI groups"
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/cmd.php acl2group create gobsapi_group "GobsAPI group"'
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/cmd.php acl2group create gobsapi_global_group "GobsAPI global group"'
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/cmd.php acl2group create gobsapi_filtered_group "GobsAPI filtered group"'
-	@echo "Put users in their groups"
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/cmd.php acl2group adduser gobsapi_group gobsapi_writer'
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/cmd.php acl2group adduser gobsapi_group gobsapi_reader'
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/cmd.php acl2group adduser gobsapi_group gobsapi_writer_filtered'
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/cmd.php acl2group adduser gobsapi_global_group gobsapi_writer'
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/cmd.php acl2group adduser gobsapi_global_group gobsapi_reader'
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/cmd.php acl2group adduser gobsapi_filtered_group gobsapi_writer_filtered'
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/cmd.php acl2right add gobsapi_group "lizmap.repositories.view" "gobsapi"'
+	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c '/srv/etc/setup-lizmap.sh'
 
 setup-module:
 	docker compose exec -u ${LIZMAP_USER} lizmap php /www/lizmap/install/configurator.php -v gobsapi
