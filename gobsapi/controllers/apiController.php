@@ -195,16 +195,6 @@ class apiController extends jController
             );
         }
 
-        // Add series of observation for the authenticated user
-        $series_id = $gobs_indicator->getOrAddGobsSeries();
-        if (!$series_id) {
-            return array(
-                '400',
-                'error',
-                'An error occured while creating the needed series for this indicator and this user',
-            );
-        }
-
         // Set indicator property
         $this->indicator = $gobs_indicator;
 

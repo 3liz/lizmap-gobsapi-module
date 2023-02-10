@@ -11,6 +11,7 @@ from enum import Enum, auto
 from datetime import datetime, timedelta
 from pathlib import Path
 
+
 class HttpMethod(Enum):
     Delete = auto()
     Get = auto()
@@ -364,7 +365,48 @@ class TestRequests(unittest.TestCase):
             expected_format=ExpectedType.List
         )
         json_response = json.loads(response.text)
-        self.assertEqual(json_response, [observation_uuid])
+        self.assertTrue((observation_uuid in json_response))
+
+    def test_observation_create_with_spatial_layer_and_object(self):
+        """
+        Create an obs without coordinates or wkt
+        but with an existing spatial object and spatial layer
+        """
+        project_key = 'gobsapi~gobsapi'
+        indicator_key = 'population'
+        response = self.api_call(
+            entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation',
+            method=HttpMethod.Post,
+            content_type='application/json',
+            data_file='data/input_observation_create_with_spatial_object.json',
+            test_file=None,
+        )
+
+        # Check the data is not empty
+        self.assertTrue(len(response.text))
+
+        # Check the returned observation contains expected data
+        json_response = json.loads(response.text)
+
+        # Check the returned observation contains expected data
+        self.assertEqual(json_response['indicator'], 'population')
+        self.assertEqual(json_response['start_timestamp'], '2011-01-01 00:00:00')
+        self.assertEqual(json_response['coordinates']['x'], -3.76560994319688)
+        self.assertEqual(json_response['coordinates']['y'], 48.402962147635)
+
+        # Check UID is valid
+        observation_uuid = json_response['uuid']
+        self.assertTrue(self.is_valid_uuid(observation_uuid))
+
+        # Delete this observation to be idempotent
+        project_key = 'gobsapi~gobsapi'
+        indicator_key = 'population'
+        self.api_call(
+            entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation/{observation_uuid}',
+            test_file=None,
+            method=HttpMethod.Delete,
+            expected_format=ExpectedType.Dict
+        )
 
     def test_indicator_document(self):
         """ Get an indicator document by uid """

@@ -1,0 +1,22 @@
+{
+    "id": null,
+    "indicator": "population",
+    "uuid": null,
+    "start_timestamp": "2011-01-01 00:00:00",
+    "end_timestamp": null,
+    "coordinates": {
+        "x": null,
+        "y": null
+    },
+    "wkt": null,
+    "spatial_object": {
+        "layer_code": "brittany-cities",
+        "unique_id": "29007"
+    },
+    "values": [
+        1000
+    ],
+    "media_url": null,
+    "created_at": null,
+    "updated_at": null
+}

@@ -296,8 +296,16 @@ class Indicator
         return $data;
     }
 
-    // Create the needed G-Obs series
-    public function getOrAddGobsSeries()
+    /**
+     * Create the needed G-Obs series
+     *
+     * If a spatial layer code is given, use this layer
+     * and do not create a new spatial layer
+     *
+     * @param null|string $spatial_layer_code The spatial layer code to use.
+     * @return integer $series_id The Series internal integer ID.
+     */
+    public function getOrAddGobsSeries($spatial_layer_code = null)
     {
         // Check cache
         $cache_key = 'gobs_series_'.$this->code.'_'.$this->user->login;
@@ -325,7 +333,7 @@ class Indicator
             return null;
         }
 
-        // actor_category for spatial layer
+        // actor_category for actor
         $category_id = $utils->getOrAddObject(
             $this->connection_profile,
             'actor_category',
@@ -358,10 +366,13 @@ class Indicator
         }
 
         // spatial_layer
+        if ($spatial_layer_code === null) {
+            $spatial_layer_code = 'g_events_'.$this->code;
+        }
         $spatial_layer_id = $utils->getOrAddObject(
             $this->connection_profile,
             'spatial_layer',
-            array('g_events_'.$this->code),
+            array($spatial_layer_code),
             array(
                 'g_events_'.$this->code,
                 'Observation points for the indicator '.$this->code,

@@ -115,6 +115,9 @@ pip3 install -r requirements/tests.txt
 # Run tests
 pytest
 
+# Run only tests corresponding to a wildcard
+pytest -v -k _with_spatial_layer
+
 # Deactivate env
 deactivate
 ```
