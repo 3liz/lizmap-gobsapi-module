@@ -651,15 +651,15 @@
 </li>
 </ul>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">[modules]</span><span class="w"></span>
-<span class="na">gobsapi.access</span><span class="o">=</span><span class="s">2</span><span class="w"></span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">[modules]</span>
+<span class="na">gobsapi.access</span><span class="o">=</span><span class="s">2</span>
 </code></pre></div></td></tr></table></div>
 <h3 id="for-lizmap-web-client-34x">For Lizmap Web Client &lt;= 3.4.x<a class="headerlink" href="#for-lizmap-web-client-34x" title="Permanent link">#</a></h3>
 <ul>
 <li>You need to manually edit the file <code>lizmap/projects.xml</code>
   and add the following content inside the <code>&lt;entrypoints&gt;</code> section</li>
 </ul>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>    <span class="nt">&lt;entry</span> <span class="na">file=</span><span class="s">&quot;gobsapi.php&quot;</span> <span class="na">config=</span><span class="s">&quot;gobsapi/config.ini.php&quot;</span> <span class="na">type=</span><span class="s">&quot;classic&quot;</span><span class="nt">/&gt;</span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">    </span><span class="nt">&lt;entry</span><span class="w"> </span><span class="na">file=</span><span class="s">&quot;gobsapi.php&quot;</span><span class="w"> </span><span class="na">config=</span><span class="s">&quot;gobsapi/config.ini.php&quot;</span><span class="w"> </span><span class="na">type=</span><span class="s">&quot;classic&quot;</span><span class="nt">/&gt;</span>
 </code></pre></div></td></tr></table></div>
 <p>Afterwards, you should have a content like this in the <code>entrypoints</code> section</p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
@@ -667,23 +667,23 @@
 <span class="normal">3</span>
 <span class="normal">4</span>
 <span class="normal">5</span>
-<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code>    <span class="nt">&lt;entrypoints&gt;</span>
-        <span class="nt">&lt;entry</span> <span class="na">file=</span><span class="s">&quot;index.php&quot;</span> <span class="na">config=</span><span class="s">&quot;index/config.ini.php&quot;</span><span class="nt">/&gt;</span>
-        <span class="nt">&lt;entry</span> <span class="na">file=</span><span class="s">&quot;admin.php&quot;</span> <span class="na">config=</span><span class="s">&quot;admin/config.ini.php&quot;</span> <span class="na">type=</span><span class="s">&quot;classic&quot;</span><span class="nt">/&gt;</span>
-        <span class="nt">&lt;entry</span> <span class="na">file=</span><span class="s">&quot;script.php&quot;</span> <span class="na">config=</span><span class="s">&quot;cmdline/script.ini.php&quot;</span> <span class="na">type=</span><span class="s">&quot;cmdline&quot;</span><span class="nt">/&gt;</span>
-        <span class="nt">&lt;entry</span> <span class="na">file=</span><span class="s">&quot;gobsapi.php&quot;</span> <span class="na">config=</span><span class="s">&quot;gobsapi/config.ini.php&quot;</span> <span class="na">type=</span><span class="s">&quot;classic&quot;</span><span class="nt">/&gt;</span>
-    <span class="nt">&lt;/entrypoints&gt;</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">    </span><span class="nt">&lt;entrypoints&gt;</span>
+<span class="w">        </span><span class="nt">&lt;entry</span><span class="w"> </span><span class="na">file=</span><span class="s">&quot;index.php&quot;</span><span class="w"> </span><span class="na">config=</span><span class="s">&quot;index/config.ini.php&quot;</span><span class="nt">/&gt;</span>
+<span class="w">        </span><span class="nt">&lt;entry</span><span class="w"> </span><span class="na">file=</span><span class="s">&quot;admin.php&quot;</span><span class="w"> </span><span class="na">config=</span><span class="s">&quot;admin/config.ini.php&quot;</span><span class="w"> </span><span class="na">type=</span><span class="s">&quot;classic&quot;</span><span class="nt">/&gt;</span>
+<span class="w">        </span><span class="nt">&lt;entry</span><span class="w"> </span><span class="na">file=</span><span class="s">&quot;script.php&quot;</span><span class="w"> </span><span class="na">config=</span><span class="s">&quot;cmdline/script.ini.php&quot;</span><span class="w"> </span><span class="na">type=</span><span class="s">&quot;cmdline&quot;</span><span class="nt">/&gt;</span>
+<span class="w">        </span><span class="nt">&lt;entry</span><span class="w"> </span><span class="na">file=</span><span class="s">&quot;gobsapi.php&quot;</span><span class="w"> </span><span class="na">config=</span><span class="s">&quot;gobsapi/config.ini.php&quot;</span><span class="w"> </span><span class="na">type=</span><span class="s">&quot;classic&quot;</span><span class="nt">/&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/entrypoints&gt;</span>
 </code></pre></div></td></tr></table></div>
 <ul>
 <li>Copy the folder <code>gobsapi/install/gobsapi</code> inside the Lizmap folder <code>lizmap/var/config/</code>
   to have a new folder <code>lizmap/var/config/gobsapi</code> with a file <code>config.ini.php</code> inside</li>
 </ul>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>cp -R lizmap/lizmap-modules/gobsapi/install/gobsapi lizmap/var/config/gobsapi
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>cp<span class="w"> </span>-R<span class="w"> </span>lizmap/lizmap-modules/gobsapi/install/gobsapi<span class="w"> </span>lizmap/var/config/gobsapi
 </code></pre></div></td></tr></table></div>
 <ul>
 <li>Copy the file <code>gobsapi/install/gobsapi.php</code> inside the <code>lizmap/www/</code> folder</li>
 </ul>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>cp -R lizmap/lizmap-modules/gobsapi/install/gobsapi.php lizmap/www/
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>cp<span class="w"> </span>-R<span class="w"> </span>lizmap/lizmap-modules/gobsapi/install/gobsapi.php<span class="w"> </span>lizmap/www/
 </code></pre></div></td></tr></table></div>
 <h3 id="for-lizmap-web-client-35x">For Lizmap Web Client &gt;= 3.5.x<a class="headerlink" href="#for-lizmap-web-client-35x" title="Permanent link">#</a></h3>
 <p>You do not need to copy, modify or create files, everything is done by the module installer.</p>
@@ -695,7 +695,7 @@
 <span class="normal">2</span>
 <span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>lizmap/install/set_rights.sh
 lizmap/install/clean_vartmp.sh
-php lizmap/install/installer.php
+php<span class="w"> </span>lizmap/install/installer.php
 </code></pre></div></td></tr></table></div>
 <h2 id="authentication-driver">Authentication driver<a class="headerlink" href="#authentication-driver" title="Permanent link">#</a></h2>
 <p>If your Lizmap Web Client uses <strong>SAMLv2</strong> to authenticate the users,
@@ -717,21 +717,21 @@ To do so, you must first edit the file <code>localconfig.ini.php</code> and chan
 <span class="normal">12</span>
 <span class="normal">13</span>
 <span class="normal">14</span>
-<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">[modules]</span><span class="w"></span>
-<span class="c1">;; uncomment it if you want to use ldap for authentication</span><span class="w"></span>
-<span class="c1">;; see documentation to complete the ldap configuration</span><span class="w"></span>
-<span class="na">ldapdao.access</span><span class="o">=</span><span class="s">0</span><span class="w"></span>
-<span class="na">lizmap.installparam</span><span class="o">=</span><span class="w"></span>
-<span class="na">multiauth.access</span><span class="o">=</span><span class="s">0</span><span class="w"></span>
+<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">[modules]</span>
+<span class="c1">;; uncomment it if you want to use ldap for authentication</span>
+<span class="c1">;; see documentation to complete the ldap configuration</span>
+<span class="na">ldapdao.access</span><span class="o">=</span><span class="s">0</span>
+<span class="na">lizmap.installparam</span><span class="o">=</span>
+<span class="na">multiauth.access</span><span class="o">=</span><span class="s">0</span>
 
-<span class="c1">;; we deactivate gobs &amp; saml which must be activated</span><span class="w"></span>
-<span class="c1">;; only for the entry points index and admin</span><span class="w"></span>
-<span class="c1">;; by editing their configuration files lizmap/var/config/index/config.ini.php</span><span class="w"></span>
-<span class="c1">;; and lizmap/var/config/admin/config.ini.php</span><span class="w"></span>
-<span class="na">gobs.access</span><span class="o">=</span><span class="s">0</span><span class="w"></span>
-<span class="na">saml.access</span><span class="o">=</span><span class="s">0</span><span class="w"></span>
-<span class="c1">;; we then activate the gobsapi module</span><span class="w"></span>
-<span class="na">gobsapi.access</span><span class="o">=</span><span class="s">2</span><span class="w"></span>
+<span class="c1">;; we deactivate gobs &amp; saml which must be activated</span>
+<span class="c1">;; only for the entry points index and admin</span>
+<span class="c1">;; by editing their configuration files lizmap/var/config/index/config.ini.php</span>
+<span class="c1">;; and lizmap/var/config/admin/config.ini.php</span>
+<span class="na">gobs.access</span><span class="o">=</span><span class="s">0</span>
+<span class="na">saml.access</span><span class="o">=</span><span class="s">0</span>
+<span class="c1">;; we then activate the gobsapi module</span>
+<span class="na">gobsapi.access</span><span class="o">=</span><span class="s">2</span>
 </code></pre></div></td></tr></table></div>
 <p>We have deactivated gobs &amp; saml in the main config (localconfig):
 they must now be activated <strong>only</strong> for the entry points <strong>index</strong> and <strong>admin</strong>
@@ -773,40 +773,40 @@ by editing their configuration files <code>lizmap/var/config/index/config.ini.ph
 <span class="normal">31</span>
 <span class="normal">32</span>
 <span class="normal">33</span>
-<span class="normal">34</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">;&lt;?php die(&#39;&#39;); ?&gt;</span><span class="w"></span>
-<span class="c1">;for security reasons , don&#39;t remove or modify the first line</span><span class="w"></span>
+<span class="normal">34</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">;&lt;?php die(&#39;&#39;); ?&gt;</span>
+<span class="c1">;for security reasons , don&#39;t remove or modify the first line</span>
 
-<span class="na">startModule</span><span class="o">=</span><span class="s">view</span><span class="w"></span>
-<span class="na">startAction</span><span class="o">=</span><span class="s">&quot;default:index&quot;</span><span class="w"></span>
+<span class="na">startModule</span><span class="o">=</span><span class="s">view</span>
+<span class="na">startAction</span><span class="o">=</span><span class="s">&quot;default:index&quot;</span>
 
-<span class="k">[coordplugins]</span><span class="w"></span>
-<span class="na">jacl2</span><span class="o">=</span><span class="s">1</span><span class="w"></span>
+<span class="k">[coordplugins]</span>
+<span class="na">jacl2</span><span class="o">=</span><span class="s">1</span>
 
-<span class="na">saml</span><span class="o">=</span><span class="s">&quot;saml/saml.coord.ini.php&quot;</span><span class="w"></span>
-<span class="na">saml.name</span><span class="o">=</span><span class="s">auth</span><span class="w"></span>
+<span class="na">saml</span><span class="o">=</span><span class="s">&quot;saml/saml.coord.ini.php&quot;</span>
+<span class="na">saml.name</span><span class="o">=</span><span class="s">auth</span>
 
-<span class="k">[modules]</span><span class="w"></span>
-<span class="na">dataviz.access</span><span class="o">=</span><span class="s">2</span><span class="w"></span>
-<span class="na">dynamicLayers.access</span><span class="o">=</span><span class="s">2</span><span class="w"></span>
-<span class="na">jelix.access</span><span class="o">=</span><span class="s">2</span><span class="w"></span>
-<span class="na">lizmap.access</span><span class="o">=</span><span class="s">2</span><span class="w"></span>
-<span class="na">view.access</span><span class="o">=</span><span class="s">2</span><span class="w"></span>
-<span class="na">filter.access</span><span class="o">=</span><span class="s">2</span><span class="w"></span>
-<span class="na">action.access</span><span class="o">=</span><span class="s">2</span><span class="w"></span>
+<span class="k">[modules]</span>
+<span class="na">dataviz.access</span><span class="o">=</span><span class="s">2</span>
+<span class="na">dynamicLayers.access</span><span class="o">=</span><span class="s">2</span>
+<span class="na">jelix.access</span><span class="o">=</span><span class="s">2</span>
+<span class="na">lizmap.access</span><span class="o">=</span><span class="s">2</span>
+<span class="na">view.access</span><span class="o">=</span><span class="s">2</span>
+<span class="na">filter.access</span><span class="o">=</span><span class="s">2</span>
+<span class="na">action.access</span><span class="o">=</span><span class="s">2</span>
 
-<span class="na">jacl2db_admin.access</span><span class="o">=</span><span class="s">1</span><span class="w"></span>
-<span class="na">jauthdb_admin.access</span><span class="o">=</span><span class="s">1</span><span class="w"></span>
-<span class="na">master_admin.access</span><span class="o">=</span><span class="s">1</span><span class="w"></span>
+<span class="na">jacl2db_admin.access</span><span class="o">=</span><span class="s">1</span>
+<span class="na">jauthdb_admin.access</span><span class="o">=</span><span class="s">1</span>
+<span class="na">master_admin.access</span><span class="o">=</span><span class="s">1</span>
 
-<span class="na">saml.access</span><span class="o">=</span><span class="s">2</span><span class="w"></span>
-<span class="na">saml.installparam</span><span class="o">=</span><span class="s">&quot;localconfig;useradmin=mdouchin;emailadmin=mdouchin@3liz.com&quot;</span><span class="w"></span>
-<span class="na">saml.path</span><span class="o">=</span><span class="s">&quot;app:my-packages/vendor/jelix/saml-module/saml&quot;</span><span class="w"></span>
-<span class="na">gobs.access</span><span class="o">=</span><span class="s">2</span><span class="w"></span>
+<span class="na">saml.access</span><span class="o">=</span><span class="s">2</span>
+<span class="na">saml.installparam</span><span class="o">=</span><span class="s">&quot;localconfig</span><span class="c1">;useradmin=mdouchin;emailadmin=mdouchin@3liz.com&quot;</span>
+<span class="na">saml.path</span><span class="o">=</span><span class="s">&quot;app:my-packages/vendor/jelix/saml-module/saml&quot;</span>
+<span class="na">gobs.access</span><span class="o">=</span><span class="s">2</span>
 
-<span class="k">[coordplugin_auth]</span><span class="w"></span>
-<span class="c1">;; uncomment it if you want to use ldap for authentication</span><span class="w"></span>
-<span class="c1">;; see documentation to complete the ldap configuration</span><span class="w"></span>
-<span class="na">driver</span><span class="o">=</span><span class="s">saml</span><span class="w"></span>
+<span class="k">[coordplugin_auth]</span>
+<span class="c1">;; uncomment it if you want to use ldap for authentication</span>
+<span class="c1">;; see documentation to complete the ldap configuration</span>
+<span class="na">driver</span><span class="o">=</span><span class="s">saml</span>
 </code></pre></div></td></tr></table></div>
 <ul>
 <li>for the admin entrypoint:</li>
@@ -842,38 +842,38 @@ by editing their configuration files <code>lizmap/var/config/index/config.ini.ph
 <span class="normal">29</span>
 <span class="normal">30</span>
 <span class="normal">31</span>
-<span class="normal">32</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">;&lt;?php die(&#39;&#39;); ?&gt;</span><span class="w"></span>
-<span class="c1">;for security reasons , don&#39;t remove or modify the first line</span><span class="w"></span>
+<span class="normal">32</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">;&lt;?php die(&#39;&#39;); ?&gt;</span>
+<span class="c1">;for security reasons , don&#39;t remove or modify the first line</span>
 
-<span class="na">startModule</span><span class="o">=</span><span class="s">master_admin</span><span class="w"></span>
-<span class="na">startAction</span><span class="o">=</span><span class="s">&quot;default:index&quot;</span><span class="w"></span>
+<span class="na">startModule</span><span class="o">=</span><span class="s">master_admin</span>
+<span class="na">startAction</span><span class="o">=</span><span class="s">&quot;default:index&quot;</span>
 
-<span class="k">[responses]</span><span class="w"></span>
-<span class="na">html</span><span class="o">=</span><span class="s">adminHtmlResponse</span><span class="w"></span>
-<span class="na">htmlauth</span><span class="o">=</span><span class="s">adminLoginHtmlResponse</span><span class="w"></span>
+<span class="k">[responses]</span>
+<span class="na">html</span><span class="o">=</span><span class="s">adminHtmlResponse</span>
+<span class="na">htmlauth</span><span class="o">=</span><span class="s">adminLoginHtmlResponse</span>
 
-<span class="k">[modules]</span><span class="w"></span>
-<span class="na">admin.access</span><span class="o">=</span><span class="s">2</span><span class="w"></span>
-<span class="na">jauthdb_admin.access</span><span class="o">=</span><span class="s">2</span><span class="w"></span>
-<span class="na">jacl2db_admin.access</span><span class="o">=</span><span class="s">2</span><span class="w"></span>
-<span class="na">master_admin.access</span><span class="o">=</span><span class="s">2</span><span class="w"></span>
-<span class="na">jcommunity.access</span><span class="o">=</span><span class="s">2</span><span class="w"></span>
+<span class="k">[modules]</span>
+<span class="na">admin.access</span><span class="o">=</span><span class="s">2</span>
+<span class="na">jauthdb_admin.access</span><span class="o">=</span><span class="s">2</span>
+<span class="na">jacl2db_admin.access</span><span class="o">=</span><span class="s">2</span>
+<span class="na">master_admin.access</span><span class="o">=</span><span class="s">2</span>
+<span class="na">jcommunity.access</span><span class="o">=</span><span class="s">2</span>
 
-<span class="na">saml.access</span><span class="o">=</span><span class="s">2</span><span class="w"></span>
-<span class="na">saml.installparam</span><span class="o">=</span><span class="s">&quot;localconfig;useradmin=mdouchin;emailadmin=mdouchin@3liz.com&quot;</span><span class="w"></span>
-<span class="na">saml.path</span><span class="o">=</span><span class="s">&quot;app:my-packages/vendor/jelix/saml-module/saml&quot;</span><span class="w"></span>
-<span class="na">gobs.access</span><span class="o">=</span><span class="s">2</span><span class="w"></span>
+<span class="na">saml.access</span><span class="o">=</span><span class="s">2</span>
+<span class="na">saml.installparam</span><span class="o">=</span><span class="s">&quot;localconfig</span><span class="c1">;useradmin=mdouchin;emailadmin=mdouchin@3liz.com&quot;</span>
+<span class="na">saml.path</span><span class="o">=</span><span class="s">&quot;app:my-packages/vendor/jelix/saml-module/saml&quot;</span>
+<span class="na">gobs.access</span><span class="o">=</span><span class="s">2</span>
 
-<span class="k">[coordplugins]</span><span class="w"></span>
-<span class="na">jacl2</span><span class="o">=</span><span class="s">1</span><span class="w"></span>
+<span class="k">[coordplugins]</span>
+<span class="na">jacl2</span><span class="o">=</span><span class="s">1</span>
 
-<span class="na">saml</span><span class="o">=</span><span class="s">&quot;saml/saml.coord.ini.php&quot;</span><span class="w"></span>
-<span class="na">saml.name</span><span class="o">=</span><span class="s">auth</span><span class="w"></span>
+<span class="na">saml</span><span class="o">=</span><span class="s">&quot;saml/saml.coord.ini.php&quot;</span>
+<span class="na">saml.name</span><span class="o">=</span><span class="s">auth</span>
 
-<span class="k">[coordplugin_auth]</span><span class="w"></span>
-<span class="c1">;; uncomment it if you want to use ldap for authentication</span><span class="w"></span>
-<span class="c1">;; see documentation to complete the ldap configuration</span><span class="w"></span>
-<span class="na">driver</span><span class="o">=</span><span class="s">saml</span><span class="w"></span>
+<span class="k">[coordplugin_auth]</span>
+<span class="c1">;; uncomment it if you want to use ldap for authentication</span>
+<span class="c1">;; see documentation to complete the ldap configuration</span>
+<span class="na">driver</span><span class="o">=</span><span class="s">saml</span>
 </code></pre></div></td></tr></table></div>
 <ul>
 <li>for the gobsapi entrypoint:</li>
@@ -903,32 +903,32 @@ by editing their configuration files <code>lizmap/var/config/index/config.ini.ph
 <span class="normal">23</span>
 <span class="normal">24</span>
 <span class="normal">25</span>
-<span class="normal">26</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">[modules]</span><span class="w"></span>
-<span class="na">jelix.access</span><span class="o">=</span><span class="s">1</span><span class="w"></span>
-<span class="na">lizmap.access</span><span class="o">=</span><span class="s">1</span><span class="w"></span>
-<span class="na">view.access</span><span class="o">=</span><span class="s">1</span><span class="w"></span>
+<span class="normal">26</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">[modules]</span>
+<span class="na">jelix.access</span><span class="o">=</span><span class="s">1</span>
+<span class="na">lizmap.access</span><span class="o">=</span><span class="s">1</span>
+<span class="na">view.access</span><span class="o">=</span><span class="s">1</span>
 
-<span class="na">jacl2db_admin.access</span><span class="o">=</span><span class="s">1</span><span class="w"></span>
-<span class="na">jauthdb_admin.access</span><span class="o">=</span><span class="s">1</span><span class="w"></span>
-<span class="na">master_admin.access</span><span class="o">=</span><span class="s">1</span><span class="w"></span>
+<span class="na">jacl2db_admin.access</span><span class="o">=</span><span class="s">1</span>
+<span class="na">jauthdb_admin.access</span><span class="o">=</span><span class="s">1</span>
+<span class="na">master_admin.access</span><span class="o">=</span><span class="s">1</span>
 
-<span class="c1">;; on active le module gobsapi</span><span class="w"></span>
-<span class="na">gobsapi.access</span><span class="o">=</span><span class="s">2</span><span class="w"></span>
+<span class="c1">;; on active le module gobsapi</span>
+<span class="na">gobsapi.access</span><span class="o">=</span><span class="s">2</span>
 
-<span class="c1">;; et ldapdao</span><span class="w"></span>
-<span class="na">ldapdao.access</span><span class="o">=</span><span class="s">1</span><span class="w"></span>
-<span class="na">jacl2.access</span><span class="o">=</span><span class="s">1</span><span class="w"></span>
-<span class="na">jauth.access</span><span class="o">=</span><span class="s">1</span><span class="w"></span>
-<span class="na">jauthdb.access</span><span class="o">=</span><span class="s">1</span><span class="w"></span>
+<span class="c1">;; et ldapdao</span>
+<span class="na">ldapdao.access</span><span class="o">=</span><span class="s">1</span>
+<span class="na">jacl2.access</span><span class="o">=</span><span class="s">1</span>
+<span class="na">jauth.access</span><span class="o">=</span><span class="s">1</span>
+<span class="na">jauthdb.access</span><span class="o">=</span><span class="s">1</span>
 
-<span class="k">[coordplugins]</span><span class="w"></span>
-<span class="na">jacl2</span><span class="o">=</span><span class="s">1</span><span class="w"></span>
-<span class="na">auth</span><span class="o">=</span><span class="s">&quot;gobsapi/auth.coord.ini.php&quot;</span><span class="w"></span>
+<span class="k">[coordplugins]</span>
+<span class="na">jacl2</span><span class="o">=</span><span class="s">1</span>
+<span class="na">auth</span><span class="o">=</span><span class="s">&quot;gobsapi/auth.coord.ini.php&quot;</span>
 
-<span class="k">[coordplugin_jacl2]</span><span class="w"></span>
-<span class="na">on_error</span><span class="o">=</span><span class="s">2</span><span class="w"></span>
-<span class="na">error_message</span><span class="o">=</span><span class="s">&quot;jacl2~errors.action.right.needed&quot;</span><span class="w"></span>
-<span class="na">on_error_action</span><span class="o">=</span><span class="s">&quot;jelix~error:badright&quot;</span><span class="w"></span>
+<span class="k">[coordplugin_jacl2]</span>
+<span class="na">on_error</span><span class="o">=</span><span class="s">2</span>
+<span class="na">error_message</span><span class="o">=</span><span class="s">&quot;jacl2~errors.action.right.needed&quot;</span>
+<span class="na">on_error_action</span><span class="o">=</span><span class="s">&quot;jelix~error:badright&quot;</span>
 </code></pre></div></td></tr></table></div>
 <h2 id="test-the-api">Test the API<a class="headerlink" href="#test-the-api" title="Permanent link">#</a></h2>
 <p>Then you are ready to test. For example with curl (you need curl to pass JWT token in Authorization header).
@@ -948,7 +948,7 @@ Full API Documentation is available: <a href="https://docs.3liz.org/lizmap-gobsa
 <span class="normal">2</span>
 <span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># login</span>
 <span class="c1"># we get the authentication TOKEN variable by first log the user in</span>
-<span class="nv">TOKEN</span><span class="o">=</span><span class="k">$(</span>curl -s -X GET -H <span class="s1">&#39;Content-Type: application/json&#39;</span> <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">/user/login?username=gobsapi_writer&amp;password=al_password&quot;</span> <span class="p">|</span> jq -r <span class="s1">&#39;.token&#39;</span><span class="k">)</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="nv">$TOKEN</span>
+<span class="nv">TOKEN</span><span class="o">=</span><span class="k">$(</span>curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span>-H<span class="w"> </span><span class="s1">&#39;Content-Type: application/json&#39;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">/user/login?username=gobsapi_writer&amp;password=al_password&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s1">&#39;.token&#39;</span><span class="k">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="nv">$TOKEN</span>
 </code></pre></div></td></tr></table></div>
 <p>returns the token, for example</p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>dacf5135c6686417c3916a649adbd146
@@ -960,14 +960,14 @@ Full API Documentation is available: <a href="https://docs.3liz.org/lizmap-gobsa
 <span class="normal">2</span>
 <span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># User Projects</span>
 <span class="c1"># we use the $TOKEN variable in the Authorization header</span>
-<span class="nb">echo</span> <span class="k">$(</span>curl -X GET -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> <span class="nv">$BASEURL</span>/user/projects<span class="k">)</span>
+<span class="nb">echo</span><span class="w"> </span><span class="k">$(</span>curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span>-H<span class="w"> </span><span class="s1">&#39;Accept: application/json&#39;</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="nv">$BASEURL</span>/user/projects<span class="k">)</span>
 </code></pre></div></td></tr></table></div>
 <ul>
 <li>Log out</li>
 </ul>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># logUserOut</span>
-<span class="nb">echo</span> <span class="k">$(</span>curl -X GET -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> <span class="nv">$BASEURL</span>/user/logout<span class="k">)</span>
+<span class="nb">echo</span><span class="w"> </span><span class="k">$(</span>curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span>-H<span class="w"> </span><span class="s1">&#39;Accept: application/json&#39;</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="nv">$BASEURL</span>/user/logout<span class="k">)</span>
 </code></pre></div></td></tr></table></div>
 <h3 id="project">Project<a class="headerlink" href="#project" title="Permanent link">#</a></h3>
 <ul>
@@ -975,14 +975,14 @@ Full API Documentation is available: <a href="https://docs.3liz.org/lizmap-gobsa
 </ul>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># getProjectByKey</span>
-<span class="nb">echo</span> <span class="k">$(</span>curl -X GET -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> <span class="nv">$BASEURL</span>/project/gobsapi~gobsapi<span class="k">)</span>
+<span class="nb">echo</span><span class="w"> </span><span class="k">$(</span>curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span>-H<span class="w"> </span><span class="s1">&#39;Accept: application/json&#39;</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="nv">$BASEURL</span>/project/gobsapi~gobsapi<span class="k">)</span>
 </code></pre></div></td></tr></table></div>
 <ul>
 <li>Get the list of indicators</li>
 </ul>
 <p><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># getProjectIndicators</span>
-<span class="nb">echo</span> <span class="k">$(</span>curl -X GET -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> <span class="nv">$BASEURL</span>/project/gobsapi~gobsapi/indicators<span class="k">)</span>
+<span class="nb">echo</span><span class="w"> </span><span class="k">$(</span>curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span>-H<span class="w"> </span><span class="s1">&#39;Accept: application/json&#39;</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="nv">$BASEURL</span>/project/gobsapi~gobsapi/indicators<span class="k">)</span>
 </code></pre></div></td></tr></table></div>
 returns</p>
 <ul>
@@ -990,7 +990,7 @@ returns</p>
 </ul>
 <p><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># getProjectGeopackage</span>
-curl -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> -H <span class="s2">&quot;requestSyncDate: </span><span class="k">$(</span>date <span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span> <span class="nv">$BASEURL</span>/project/gobsapi~gobsapi/geopackage --output /tmp/test.gpkg
+curl<span class="w"> </span>-H<span class="w"> </span><span class="s1">&#39;Accept: application/json&#39;</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;requestSyncDate: </span><span class="k">$(</span>date<span class="w"> </span><span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="nv">$BASEURL</span>/project/gobsapi~gobsapi/geopackage<span class="w"> </span>--output<span class="w"> </span>/tmp/test.gpkg
 </code></pre></div></td></tr></table></div>
 returns the binary file and save it to <code>/tmp/test.gpkg</code></p>
 <h3 id="indicator">Indicator<a class="headerlink" href="#indicator" title="Permanent link">#</a></h3>
@@ -1000,7 +1000,7 @@ returns the binary file and save it to <code>/tmp/test.gpkg</code></p>
 *
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># getIndicatorByCode</span>
-<span class="nb">echo</span> <span class="k">$(</span>curl -X GET -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> <span class="nv">$BASEURL</span>/project/gobsapi~gobsapi/indicator/hiker_position<span class="k">)</span>
+<span class="nb">echo</span><span class="w"> </span><span class="k">$(</span>curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span>-H<span class="w"> </span><span class="s1">&#39;Accept: application/json&#39;</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="nv">$BASEURL</span>/project/gobsapi~gobsapi/indicator/hiker_position<span class="k">)</span>
 </code></pre></div></td></tr></table></div>
 `</p>
 </li>
@@ -1012,7 +1012,7 @@ returns the binary file and save it to <code>/tmp/test.gpkg</code></p>
 <span class="normal">2</span>
 <span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># getObservationsByIndicator</span>
 <span class="c1"># between seven days ago and now</span>
-<span class="nb">echo</span> <span class="k">$(</span>curl -X GET -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> -H <span class="s2">&quot;lastSyncDate: </span><span class="k">$(</span>date <span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span> -d <span class="s1">&#39;7 days ago&#39;</span><span class="k">)</span><span class="s2">&quot;</span> -H <span class="s2">&quot;requestSyncDate: </span><span class="k">$(</span>date <span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span> <span class="nv">$BASEURL</span>/project/gobsapi~gobsapi/indicator/hiker_position/observations<span class="k">)</span>
+<span class="nb">echo</span><span class="w"> </span><span class="k">$(</span>curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span>-H<span class="w"> </span><span class="s1">&#39;Accept: application/json&#39;</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;lastSyncDate: </span><span class="k">$(</span>date<span class="w"> </span><span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;7 days ago&#39;</span><span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;requestSyncDate: </span><span class="k">$(</span>date<span class="w"> </span><span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="nv">$BASEURL</span>/project/gobsapi~gobsapi/indicator/hiker_position/observations<span class="k">)</span>
 </code></pre></div></td></tr></table></div>
 <p>returns all the matching observations.</p>
 <ul>
@@ -1020,17 +1020,17 @@ returns the binary file and save it to <code>/tmp/test.gpkg</code></p>
 </ul>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># getDeletedObservationsByIndicator</span>
-<span class="nb">echo</span> <span class="k">$(</span>curl -X GET -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> -H <span class="s2">&quot;lastSyncDate: </span><span class="k">$(</span>date <span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span> -d <span class="s1">&#39;13 days ago&#39;</span><span class="k">)</span><span class="s2">&quot;</span> -H <span class="s2">&quot;requestSyncDate: </span><span class="k">$(</span>date <span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span> <span class="nv">$BASEURL</span>/project/gobsapi~gobsapi/indicator/hiker_position/deletedObservations<span class="k">)</span>
+<span class="nb">echo</span><span class="w"> </span><span class="k">$(</span>curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span>-H<span class="w"> </span><span class="s1">&#39;Accept: application/json&#39;</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;lastSyncDate: </span><span class="k">$(</span>date<span class="w"> </span><span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;13 days ago&#39;</span><span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;requestSyncDate: </span><span class="k">$(</span>date<span class="w"> </span><span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="nv">$BASEURL</span>/project/gobsapi~gobsapi/indicator/hiker_position/deletedObservations<span class="k">)</span>
 </code></pre></div></td></tr></table></div>
 <p>returns a list of the deleted observation uids</p>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">[</span><span class="s2">&quot;98020996-2dec-4cbe-93d7-c2ba1b43b871&quot;</span><span class="p">,</span><span class="s2">&quot;230d5b17-96b3-4bad-8c78-6379f1e9b1c6&quot;</span><span class="p">,</span><span class="s2">&quot;ced021b2-6eda-4a80-8903-b013291a6b2d&quot;</span><span class="p">,</span><span class="s2">&quot;2d198922-5cd0-4d0f-bc96-dfcc17c01ced&quot;</span><span class="p">,</span><span class="s2">&quot;1fc001b6-c147-49ef-ae6e-66f8ea5e0b39&quot;</span><span class="p">]</span><span class="w"></span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">[</span><span class="s2">&quot;98020996-2dec-4cbe-93d7-c2ba1b43b871&quot;</span><span class="p">,</span><span class="s2">&quot;230d5b17-96b3-4bad-8c78-6379f1e9b1c6&quot;</span><span class="p">,</span><span class="s2">&quot;ced021b2-6eda-4a80-8903-b013291a6b2d&quot;</span><span class="p">,</span><span class="s2">&quot;2d198922-5cd0-4d0f-bc96-dfcc17c01ced&quot;</span><span class="p">,</span><span class="s2">&quot;1fc001b6-c147-49ef-ae6e-66f8ea5e0b39&quot;</span><span class="p">]</span>
 </code></pre></div></td></tr></table></div>
 <ul>
 <li>Get the indicator documents</li>
 </ul>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># getIndicatorDocument</span>
-curl -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> -H <span class="s2">&quot;requestSyncDate: </span><span class="k">$(</span>date <span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span> <span class="nv">$BASEURL</span>/project/gobsapi~gobsapi/indicator/hiker_position/document/946fee64-e86c-40fa-a55e-8d9ad3579734 --output /tmp/test.jpeg
+curl<span class="w"> </span>-H<span class="w"> </span><span class="s1">&#39;Accept: application/json&#39;</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;requestSyncDate: </span><span class="k">$(</span>date<span class="w"> </span><span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="nv">$BASEURL</span>/project/gobsapi~gobsapi/indicator/hiker_position/document/946fee64-e86c-40fa-a55e-8d9ad3579734<span class="w"> </span>--output<span class="w"> </span>/tmp/test.jpeg
 </code></pre></div></td></tr></table></div>
 <h3 id="observation">Observation<a class="headerlink" href="#observation" title="Permanent link">#</a></h3>
 <ul>
@@ -1039,7 +1039,7 @@ curl -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span clas
 *
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># createObservation</span>
-<span class="nb">echo</span> <span class="k">$(</span>curl -X POST -H <span class="s2">&quot;Accept: application/json&quot;</span> -H <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> -H <span class="s2">&quot;requestSyncDate: </span><span class="k">$(</span>date <span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span> -H <span class="s2">&quot;Content-Type: application/json&quot;</span> -d <span class="s2">&quot;{\&quot;id\&quot;:null,\&quot;indicator\&quot;:\&quot;hiker_position\&quot;,\&quot;uuid\&quot;:null,\&quot;start_timestamp\&quot;:\&quot;2019-07-19 03:30:00\&quot;,\&quot;end_timestamp\&quot;:null,\&quot;coordinates\&quot;:{\&quot;x\&quot;:-3.785956510771293,\&quot;y\&quot;:48.4744332531894},\&quot;wkt\&quot;:\&quot;POINT(-3.78595651077129 48.4744332531894)\&quot;,\&quot;values\&quot;:[125],\&quot;photo\&quot;:null,\&quot;created_at\&quot;:null,\&quot;updated_at\&quot;:null}&quot;</span> <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">/project/gobsapi~gobsapi/indicator/hiker_position/observation&quot;</span><span class="k">)</span>
+<span class="nb">echo</span><span class="w"> </span><span class="k">$(</span>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Accept: application/json&quot;</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;requestSyncDate: </span><span class="k">$(</span>date<span class="w"> </span><span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span>-d<span class="w"> </span><span class="s2">&quot;{\&quot;id\&quot;:null,\&quot;indicator\&quot;:\&quot;hiker_position\&quot;,\&quot;uuid\&quot;:null,\&quot;start_timestamp\&quot;:\&quot;2019-07-19 03:30:00\&quot;,\&quot;end_timestamp\&quot;:null,\&quot;coordinates\&quot;:{\&quot;x\&quot;:-3.785956510771293,\&quot;y\&quot;:48.4744332531894},\&quot;wkt\&quot;:\&quot;POINT(-3.78595651077129 48.4744332531894)\&quot;,\&quot;values\&quot;:[125],\&quot;photo\&quot;:null,\&quot;created_at\&quot;:null,\&quot;updated_at\&quot;:null}&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">/project/gobsapi~gobsapi/indicator/hiker_position/observation&quot;</span><span class="k">)</span>
 </code></pre></div></td></tr></table></div></p>
 </li>
 <li>
@@ -1048,21 +1048,21 @@ curl -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span clas
 </ul>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># updateObservation</span>
-<span class="nb">echo</span> <span class="k">$(</span>curl -X PUT -H <span class="s2">&quot;Accept: application/json&quot;</span> -H <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> -H <span class="s2">&quot;requestSyncDate: </span><span class="k">$(</span>date <span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span> -H <span class="s2">&quot;Content-Type: application/json&quot;</span> -d <span class="s2">&quot;{\&quot;id\&quot;:1,\&quot;indicator\&quot;:\&quot;hiker_position\&quot;,\&quot;uuid\&quot;:\&quot;e8f0a46c-1d24-456a-925a-387740ade1c6\&quot;,\&quot;start_timestamp\&quot;:\&quot;2019-07-16 03:35:00\&quot;,\&quot;end_timestamp\&quot;:null,\&quot;coordinates\&quot;:{\&quot;x\&quot;:-3.785956510771293,\&quot;y\&quot;:48.4744332531894},\&quot;wkt\&quot;:\&quot;POINT(-3.78595651077999 48.4744332531999)\&quot;,\&quot;values\&quot;:[1.2],\&quot;photo\&quot;:null,\&quot;created_at\&quot;:\&quot;2020-12-03 15:04:40\&quot;,\&quot;updated_at\&quot;:\&quot;2020-12-03 17:55:59\&quot;}&quot;</span> <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">/project/gobsapi~gobsapi/indicator/hiker_position/observation&quot;</span><span class="k">)</span>
+<span class="nb">echo</span><span class="w"> </span><span class="k">$(</span>curl<span class="w"> </span>-X<span class="w"> </span>PUT<span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Accept: application/json&quot;</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;requestSyncDate: </span><span class="k">$(</span>date<span class="w"> </span><span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span>-d<span class="w"> </span><span class="s2">&quot;{\&quot;id\&quot;:1,\&quot;indicator\&quot;:\&quot;hiker_position\&quot;,\&quot;uuid\&quot;:\&quot;e8f0a46c-1d24-456a-925a-387740ade1c6\&quot;,\&quot;start_timestamp\&quot;:\&quot;2019-07-16 03:35:00\&quot;,\&quot;end_timestamp\&quot;:null,\&quot;coordinates\&quot;:{\&quot;x\&quot;:-3.785956510771293,\&quot;y\&quot;:48.4744332531894},\&quot;wkt\&quot;:\&quot;POINT(-3.78595651077999 48.4744332531999)\&quot;,\&quot;values\&quot;:[1.2],\&quot;photo\&quot;:null,\&quot;created_at\&quot;:\&quot;2020-12-03 15:04:40\&quot;,\&quot;updated_at\&quot;:\&quot;2020-12-03 17:55:59\&quot;}&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">/project/gobsapi~gobsapi/indicator/hiker_position/observation&quot;</span><span class="k">)</span>
 </code></pre></div></td></tr></table></div>
 <ul>
 <li>Get an observation data</li>
 </ul>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># getObservationById</span>
-<span class="nb">echo</span> <span class="k">$(</span>curl -X GET -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> -H <span class="s2">&quot;requestSyncDate: </span><span class="k">$(</span>date <span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span> <span class="nv">$BASEURL</span>/project/gobsapi~gobsapi/indicator/hiker_position/observation/e8f0a46c-1d24-456a-925a-387740ade1c6<span class="k">)</span>
+<span class="nb">echo</span><span class="w"> </span><span class="k">$(</span>curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span>-H<span class="w"> </span><span class="s1">&#39;Accept: application/json&#39;</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;requestSyncDate: </span><span class="k">$(</span>date<span class="w"> </span><span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="nv">$BASEURL</span>/project/gobsapi~gobsapi/indicator/hiker_position/observation/e8f0a46c-1d24-456a-925a-387740ade1c6<span class="k">)</span>
 </code></pre></div></td></tr></table></div>
 <ul>
 <li>Delete an observation</li>
 </ul>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># deleteObservationById</span>
-<span class="nb">echo</span> <span class="k">$(</span>curl -X DELETE -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> -H <span class="s2">&quot;requestSyncDate: </span><span class="k">$(</span>date <span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span> <span class="nv">$BASEURL</span>/project/gobsapi~gobsapi/indicator/hiker_position/observation/e8f0a46c-1d24-456a-925a-387740ade1c6<span class="k">)</span>
+<span class="nb">echo</span><span class="w"> </span><span class="k">$(</span>curl<span class="w"> </span>-X<span class="w"> </span>DELETE<span class="w"> </span>-H<span class="w"> </span><span class="s1">&#39;Accept: application/json&#39;</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;requestSyncDate: </span><span class="k">$(</span>date<span class="w"> </span><span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="nv">$BASEURL</span>/project/gobsapi~gobsapi/indicator/hiker_position/observation/e8f0a46c-1d24-456a-925a-387740ade1c6<span class="k">)</span>
 </code></pre></div></td></tr></table></div>
 <h3 id="observation-media">Observation media<a class="headerlink" href="#observation-media" title="Permanent link">#</a></h3>
 <ul>
@@ -1070,32 +1070,32 @@ curl -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span clas
 </ul>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># uploadObservationMedia</span>
-<span class="nb">echo</span> <span class="k">$(</span>curl -X POST -H  <span class="s2">&quot;Accept: application/json&quot;</span> -H  <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> -H <span class="s2">&quot;requestSyncDate: </span><span class="k">$(</span>date <span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span> -H  <span class="s2">&quot;Content-Type: multipart/form-data&quot;</span> -F <span class="s2">&quot;mediaFile=@/home/mdouchin/Documents/3liz/mdouchin_carre.jpeg;type=image/jpeg&quot;</span> <span class="nv">$BASEURL</span>/project/gobsapi~gobsapi/indicator/hiker_position/observation/e8f0a46c-1d24-456a-925a-387740ade1c6/uploadMedia<span class="k">)</span>
+<span class="nb">echo</span><span class="w"> </span><span class="k">$(</span>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>-H<span class="w">  </span><span class="s2">&quot;Accept: application/json&quot;</span><span class="w"> </span>-H<span class="w">  </span><span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;requestSyncDate: </span><span class="k">$(</span>date<span class="w"> </span><span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span>-H<span class="w">  </span><span class="s2">&quot;Content-Type: multipart/form-data&quot;</span><span class="w"> </span>-F<span class="w"> </span><span class="s2">&quot;mediaFile=@/home/mdouchin/Documents/3liz/mdouchin_carre.jpeg;type=image/jpeg&quot;</span><span class="w"> </span><span class="nv">$BASEURL</span>/project/gobsapi~gobsapi/indicator/hiker_position/observation/e8f0a46c-1d24-456a-925a-387740ade1c6/uploadMedia<span class="k">)</span>
 </code></pre></div></td></tr></table></div>
 <ul>
 <li>Delete an observation media</li>
 </ul>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># deleteObservationMedia</span>
-<span class="nb">echo</span> <span class="k">$(</span>curl -X DELETE -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> -H <span class="s2">&quot;requestSyncDate: </span><span class="k">$(</span>date <span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span> <span class="nv">$BASEURL</span>/project/gobsapi~gobsapi/indicator/hiker_position/observation/e8f0a46c-1d24-456a-925a-387740ade1c6/deleteMedia<span class="k">)</span>
+<span class="nb">echo</span><span class="w"> </span><span class="k">$(</span>curl<span class="w"> </span>-X<span class="w"> </span>DELETE<span class="w"> </span>-H<span class="w"> </span><span class="s1">&#39;Accept: application/json&#39;</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;requestSyncDate: </span><span class="k">$(</span>date<span class="w"> </span><span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="nv">$BASEURL</span>/project/gobsapi~gobsapi/indicator/hiker_position/observation/e8f0a46c-1d24-456a-925a-387740ade1c6/deleteMedia<span class="k">)</span>
 </code></pre></div></td></tr></table></div>
 <ul>
 <li>Download an observation media</li>
 </ul>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># getObservationMedia</span>
-curl -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> -H <span class="s2">&quot;requestSyncDate: </span><span class="k">$(</span>date <span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span> <span class="nv">$BASEURL</span>/project/gobsapi~gobsapi/indicator/hiker_position/observation/e8f0a46c-1d24-456a-925a-387740ade1c6/media --output /tmp/test.jpeg
+curl<span class="w"> </span>-H<span class="w"> </span><span class="s1">&#39;Accept: application/json&#39;</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;requestSyncDate: </span><span class="k">$(</span>date<span class="w"> </span><span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="nv">$BASEURL</span>/project/gobsapi~gobsapi/indicator/hiker_position/observation/e8f0a46c-1d24-456a-925a-387740ade1c6/media<span class="w"> </span>--output<span class="w"> </span>/tmp/test.jpeg
 </code></pre></div></td></tr></table></div>
 <p>returns the media file in binary and save it to <code>/tmp/test.jpeg</code></p>
 <h2 id="debug">Debug<a class="headerlink" href="#debug" title="Permanent link">#</a></h2>
 <p>You can activate the <strong>debug mode</strong> by manually editing the configuration file <code>lizmap/var/config/gobsapi.ini.php</code>
 and modify the variable <code>log_api_calls' with the</code>debug` value:</p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">[gobsapi]</span><span class="w"></span>
-<span class="na">log_api_calls</span><span class="o">=</span><span class="s">debug</span><span class="w"></span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">[gobsapi]</span>
+<span class="na">log_api_calls</span><span class="o">=</span><span class="s">debug</span>
 </code></pre></div></td></tr></table></div>
 <p>You will then be able to see the API calls log written in the file <code>lizmap/var/log/messages.log</code></p>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>tail -f lizmap/var/log/messages.log
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>tail<span class="w"> </span>-f<span class="w"> </span>lizmap/var/log/messages.log
 </code></pre></div></td></tr></table></div>
 <p>Messages will be like</p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
