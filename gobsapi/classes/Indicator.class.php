@@ -297,13 +297,14 @@ class Indicator
     }
 
     /**
-     * Create the needed G-Obs series
+     * Create the needed G-Obs series.
      *
      * If a spatial layer code is given, use this layer
      * and do not create a new spatial layer
      *
-     * @param null|string $spatial_layer_code The spatial layer code to use.
-     * @return integer $series_id The Series internal integer ID.
+     * @param null|string $spatial_layer_code the spatial layer code to use
+     *
+     * @return int $series_id the Series internal integer ID
      */
     public function getOrAddGobsSeries($spatial_layer_code = null)
     {
@@ -366,6 +367,8 @@ class Indicator
         }
 
         // spatial_layer
+        // We do not create a new spatial layer if its code has been given
+        // in the JSON body, but use the existing layer to create the needed series
         if ($spatial_layer_code === null) {
             $spatial_layer_code = 'g_events_'.$this->code;
         }
@@ -375,7 +378,7 @@ class Indicator
             array($spatial_layer_code),
             array(
                 'g_events_'.$this->code,
-                'Observation points for the indicator '.$this->code,
+                'Observation layer for the indicator '.$this->code,
                 'Automatically created spatial layer for G-Events indicator '.$this->code,
                 $sl_actor_id,
                 'point',
@@ -399,7 +402,6 @@ class Indicator
         if (!$actor_id) {
             return null;
         }
-
         // series
         $series_properties = array(
             $protocol_id,

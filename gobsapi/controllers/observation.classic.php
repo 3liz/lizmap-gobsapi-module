@@ -178,6 +178,21 @@ class observationCtrl extends apiController
             );
         }
 
+        // Create a new series and related items if needed
+        // Add series of observation for the authenticated user
+        $spatial_layer_code = null;
+        if ($gobs_observation->spatial_object !== null) {
+            $spatial_layer_code = $gobs_observation->spatial_object->sl_code;
+        }
+        $series_id = $this->indicator->getOrAddGobsSeries($spatial_layer_code);
+        if (!$series_id) {
+            return array(
+                '400',
+                'error',
+                'An error occurred while creating the needed series for this indicator and this user',
+            );
+        }
+
         // Check capabilities
         $context = 'create';
         if ($from != 'createObservation') {

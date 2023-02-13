@@ -35,6 +35,10 @@ class Observation
      */
     public $observation_valid = false;
 
+    // If the observation has a spatial object
+    // This property will be set with the spatial object database object
+    public $spatial_object;
+
     /**
      * @var json_data JSON G-Obs Representation of an observation
      */
@@ -54,10 +58,6 @@ class Observation
      * @var media allowed mime types
      */
     protected $media_mimes = array('jpg', 'jpeg', 'png', 'gif');
-
-    // If the observation has a spatial object
-    // This property will be set with the spatial object database object
-    protected $spatial_object = null;
 
     /**
      * constructor.
@@ -477,17 +477,17 @@ class Observation
     /**
      * Check that a given spatial object exists
      * for a given layer and is compatible with the observation
-     * indicator
+     * indicator.
      *
      * @param string $spatialObjectUniqueId The unique id. Ex: 34090
-     * @param string $spatialLayerCode The spatial layer code. Ex: brittany-cities
+     * @param string $spatialLayerCode      The spatial layer code. Ex: brittany-cities
      *
      * @return null|object the spatial object data
      */
     private function getSpatialObjectFromCodeAndLayer($spatialObjectUniqueId, $spatialLayerCode)
     {
         // First check that the object exists
-        $sql = "
+        $sql = '
         WITH obj AS (
             SELECT
                 so.id, so.so_unique_id,
@@ -502,7 +502,7 @@ class Observation
         )
         SELECT row_to_json(obj.*) AS object_json
         FROM obj
-        ";
+        ';
         $params = array($spatialObjectUniqueId, $spatialLayerCode);
 
         // Query
@@ -516,9 +516,9 @@ class Observation
 
         if (!empty($json)) {
             return json_decode($json);
-        } else {
-            return null;
         }
+
+            return null;
     }
 
     // Return the SQL for the creation of an observation
@@ -841,21 +841,6 @@ class Observation
         // Get SQL
         $sql = $this->getSql($action);
 
-        // Create a new series and related items if needed
-        // Add series of observation for the authenticated user
-        $spatial_layer_code = null;
-        if ($this->spatial_object !== null) {
-            $spatial_layer_code = $this->spatial_object->sl_code;
-        }
-        $series_id = $this->indicator->getOrAddGobsSeries($spatial_layer_code);
-        if (!$series_id) {
-            return array(
-                '400',
-                'error',
-                'An error occurred while creating the needed series for this indicator and this user',
-            );
-        }
-
         // Set parameters
         $params = array();
         if ($action == 'insert') {
@@ -1011,10 +996,9 @@ class Observation
         if ($this->spatial_object !== null) {
             // Create observation with WKT
             return $this->runDatabaseAction('insert_with_spatial_object');
-        } else {
-            // Create observation with Spatial object reference
-            return $this->runDatabaseAction('insert');
         }
+        // Create observation with Spatial object reference
+        return $this->runDatabaseAction('insert');
     }
 
     // Update the observation
