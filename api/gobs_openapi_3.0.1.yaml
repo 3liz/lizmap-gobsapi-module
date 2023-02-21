@@ -250,6 +250,23 @@ components:
           example: "2010-01-15 13:15:38"          
       xml:
         name: Indicator
+          
+    ObservationSpatialObjectValue:
+      required:
+        - layer_code
+        - unique_id
+      type: object
+      properties:
+        layer_code:
+          type: string
+          description: Code of the spatial layer for the given spatial object unique ID
+          example: "brittany-cities"
+        unique_id:
+          type: string
+          description: Unique ID of the spatial object to attach the observation to.
+          example: "29007"
+      xml:
+        name: ObservationSpatialObjectValue
         
     Observation:
       required:
@@ -285,6 +302,8 @@ components:
           example: "2020-01-31 20:10:30"
         coordinates:
           $ref: '#/components/schemas/PointGeometryValue'
+        spatial_object:
+          $ref: '#/components/schemas/ObservationSpatialObjectValue'
         wkt:
           type: string
           description: WKT representation of the observation geometry
