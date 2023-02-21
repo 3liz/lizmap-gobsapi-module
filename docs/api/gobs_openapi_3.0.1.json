@@ -336,6 +336,28 @@
           "name": "Indicator"
         }
       },
+      "ObservationSpatialObjectValue": {
+        "required": [
+          "layer_code",
+          "unique_id"
+        ],
+        "type": "object",
+        "properties": {
+          "layer_code": {
+            "type": "string",
+            "description": "Code of the spatial layer for the given spatial object unique ID",
+            "example": "brittany-cities"
+          },
+          "unique_id": {
+            "type": "string",
+            "description": "Unique ID of the spatial object to attach the observation to.",
+            "example": "29007"
+          }
+        },
+        "xml": {
+          "name": "ObservationSpatialObjectValue"
+        }
+      },
       "Observation": {
         "required": [
           "uuid",
@@ -376,6 +398,9 @@
           },
           "coordinates": {
             "$ref": "#/components/schemas/PointGeometryValue"
+          },
+          "spatial_object": {
+            "$ref": "#/components/schemas/ObservationSpatialObjectValue"
           },
           "wkt": {
             "type": "string",

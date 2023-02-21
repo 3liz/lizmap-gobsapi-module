@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+## 0.5.1 - 2023-02-21
+
+### Added
+
+* Observation - Allow to create an observation by passing a spatial object reference
+  The API will not create a new dedicated spatial object to reference the observation
+  but will use the given spatial object
+
+
 ## 0.5.0 - 2022-11-02
 
 ### Added
