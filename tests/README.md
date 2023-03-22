@@ -60,6 +60,15 @@ or
 psql service=lizmap-gobsapi -f tests/sql/test_data.sql
 ```
 
+If you have modified your test data suite (for example after upgrading to a new version)
+please run :
+
+```bash
+make export-data
+``
+
+and add the modified file `tests/sql/test_data.sql` to your pull request.
+
 ### Lizmap Web Client groups, users and rights
 
 Before running manual or automatic tests, you also need to add some Lizmap groups, users and rights

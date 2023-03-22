@@ -124,49 +124,43 @@ class Indicator
     // Create G-Obs project object from Lizmap project
     private function buildGobsIndicator()
     {
+        // NEW SQL, with the dimension table
+        // Since 6.0.0
         $sql = "
-        WITH decompose_values AS (
+        WITH ind AS (
             SELECT
-                i.*,
-                array_position(id_value_code, unnest(id_value_code)) AS value_position
-            FROM gobs.indicator AS i
-            WHERE id_code = $1
-        ),
-        ind AS (
-            SELECT
-            decompose_values.id AS id,
-            id_code AS code,
-            id_label AS label,
-            id_description AS description,
-            id_category AS category,
-            id_date_format AS date_format,
+            id.id AS id,
+            id.id_code AS code,
+            id.id_label AS label,
+            id.id_description AS description,
+            id.id_category AS category,
+            id.id_date_format AS date_format,
 
             -- values
             jsonb_agg(jsonb_build_object(
-                'code', id_value_code[value_position],
-                'name', id_value_name[value_position],
-                'type', id_value_type[value_position],
-                'unit', id_value_unit[value_position]
+                'code', d.di_code,
+                'name', d.di_label,
+                'type', d.di_type,
+                'unit', d.di_unit
             )) AS values,
 
-            decompose_values.created_at,
-            decompose_values.updated_at
+            id.created_at,
+            id.updated_at
 
-            FROM decompose_values
+            FROM gobs.indicator AS id
+            INNER JOIN gobs.dimension AS d
+                ON d.fk_id_indicator = id.id
+            WHERE id_code = $1
             GROUP BY
-            decompose_values.id,
+            id.id,
             id_code,
             id_label,
             id_description,
-            id_date_format,
-            id_value_code,
-            id_value_name,
-            id_value_type,
-            id_value_unit,
             id_category,
-            decompose_values.created_at,
-            decompose_values.updated_at
-            ORDER BY id
+            id_date_format,
+            id.created_at,
+            id.updated_at
+            ORDER BY id.id
         ),
         consolidated AS (
             SELECT ind.*,
@@ -216,6 +210,116 @@ class Indicator
             row_to_json(last.*) AS object_json
         FROM last
         ";
+
+
+        // Check database structure version
+        jClasses::inc('gobsapi~Utils');
+        $utils = new Utils();
+        $databaseVersion = $utils->getDatabaseStructureVersion($this->connection_profile);
+        if (empty($databaseVersion)) {
+            return;
+        }
+        $versions = explode('.', $databaseVersion);
+        // OLD SQL, ie before 6.0.0
+        // with indicator dimensions stored
+        // in id_value_xxx columns
+        // TODO: to be removed after some time
+        if (count($versions) > 0 && (int) $versions[0] < 6) {
+            $sql = "
+            WITH decompose_values AS (
+                SELECT
+                    i.*,
+                    array_position(id_value_code, unnest(id_value_code)) AS value_position
+                FROM gobs.indicator AS i
+                WHERE id_code = $1
+            ),
+            ind AS (
+                SELECT
+                decompose_values.id AS id,
+                id_code AS code,
+                id_label AS label,
+                id_description AS description,
+                id_category AS category,
+                id_date_format AS date_format,
+
+                -- values
+                jsonb_agg(jsonb_build_object(
+                    'code', id_value_code[value_position],
+                    'name', id_value_name[value_position],
+                    'type', id_value_type[value_position],
+                    'unit', id_value_unit[value_position]
+                )) AS values,
+
+                decompose_values.created_at,
+                decompose_values.updated_at
+
+                FROM decompose_values
+                GROUP BY
+                decompose_values.id,
+                id_code,
+                id_label,
+                id_description,
+                id_date_format,
+                id_value_code,
+                id_value_name,
+                id_value_type,
+                id_value_unit,
+                id_category,
+                decompose_values.created_at,
+                decompose_values.updated_at
+                ORDER BY id
+            ),
+            consolidated AS (
+                SELECT ind.*,
+
+                -- documents
+                json_agg(
+                CASE
+                    WHEN d.id IS NOT NULL THEN json_build_object(
+                        'id', d.id,
+                        'uid', d.do_uid,
+                        'indicator', ind.code,
+                        'label', d.do_label,
+                        'description', d.do_description,
+                        'type', d.do_type,
+                        'url', d.do_path,
+                        'created_at', d.created_at,
+                        'updated_at', d.updated_at
+                    )
+                    ELSE NULL
+                END)  AS documents
+                FROM ind
+                LEFT JOIN gobs.document AS d
+                    ON d.fk_id_indicator = ind.id
+                GROUP BY
+                ind.id,
+                ind.code,
+                ind.label,
+                ind.description,
+                ind.date_format,
+                ind.values,
+                ind.category,
+                ind.created_at,
+                ind.updated_at
+
+            ),
+            last AS (
+                SELECT
+                    id, code, label, description, category, date_format,
+                    values, documents,
+                    NULL AS preview,
+                    NULL AS icon,
+                    created_at,
+                    updated_at
+                FROM consolidated
+            )
+            SELECT
+                row_to_json(last.*) AS object_json
+            FROM last
+            ";
+
+        }
+
         $cnx = jDb::getConnection($this->connection_profile);
         $resultset = $cnx->prepare($sql);
         $resultset->execute(array($this->code));

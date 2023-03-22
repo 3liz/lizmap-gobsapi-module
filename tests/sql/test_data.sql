@@ -3,7 +3,7 @@
 --
 
 -- Dumped from database version 11.13 (Debian 11.13-1.pgdg100+1)
--- Dumped by pg_dump version 13.7 (Ubuntu 13.7-1.pgdg20.04+1)
+-- Dumped by pg_dump version 14.7 (Ubuntu 14.7-0ubuntu0.22.04.1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -681,6 +681,82 @@ COMMENT ON COLUMN gobs.deleted_data_log.de_timestamp IS 'Timestamp of the deleti
 
 
 --
+-- Name: dimension; Type: TABLE; Schema: gobs; Owner: -
+--
+
+CREATE TABLE gobs.dimension (
+    id integer NOT NULL,
+    fk_id_indicator integer,
+    di_code text NOT NULL,
+    di_label text NOT NULL,
+    di_type text NOT NULL,
+    di_unit text
+);
+
+
+--
+-- Name: TABLE dimension; Type: COMMENT; Schema: gobs; Owner: -
+--
+
+COMMENT ON TABLE gobs.dimension IS 'Stores the different dimensions characteristics of an indicator';
+
+
+--
+-- Name: COLUMN dimension.fk_id_indicator; Type: COMMENT; Schema: gobs; Owner: -
+--
+
+COMMENT ON COLUMN gobs.dimension.fk_id_indicator IS 'Id of the corresponding indicator.';
+
+
+--
+-- Name: COLUMN dimension.di_code; Type: COMMENT; Schema: gobs; Owner: -
+--
+
+COMMENT ON COLUMN gobs.dimension.di_code IS 'Code of the vector dimension. Ex: ''pop_h'' or ''pop_f''';
+
+
+--
+-- Name: COLUMN dimension.di_label; Type: COMMENT; Schema: gobs; Owner: -
+--
+
+COMMENT ON COLUMN gobs.dimension.di_label IS 'Label of the vector dimensions. Ex: ''population homme'' or ''population femme''';
+
+
+--
+-- Name: COLUMN dimension.di_type; Type: COMMENT; Schema: gobs; Owner: -
+--
+
+COMMENT ON COLUMN gobs.dimension.di_type IS 'Type of the stored values. Ex: ''integer'' or ''real''';
+
+
+--
+-- Name: COLUMN dimension.di_unit; Type: COMMENT; Schema: gobs; Owner: -
+--
+
+COMMENT ON COLUMN gobs.dimension.di_unit IS 'Unit ot the store values. Ex: ''inhabitants'' or ''°C''';
+
+
+--
+-- Name: dimension_id_seq; Type: SEQUENCE; Schema: gobs; Owner: -
+--
+
+CREATE SEQUENCE gobs.dimension_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: dimension_id_seq; Type: SEQUENCE OWNED BY; Schema: gobs; Owner: -
+--
+
+ALTER SEQUENCE gobs.dimension_id_seq OWNED BY gobs.dimension.id;
+
+
+--
 -- Name: document; Type: TABLE; Schema: gobs; Owner: -
 --
 
@@ -994,10 +1070,6 @@ CREATE TABLE gobs.indicator (
     id_label text NOT NULL,
     id_description text NOT NULL,
     id_date_format text DEFAULT 'day'::text NOT NULL,
-    id_value_code text[] NOT NULL,
-    id_value_name text[] NOT NULL,
-    id_value_type text[] NOT NULL,
-    id_value_unit text[] NOT NULL,
     id_paths text,
     id_category text,
     created_at timestamp without time zone DEFAULT now() NOT NULL,
@@ -1045,34 +1117,6 @@ COMMENT ON COLUMN gobs.indicator.id_description IS 'Describes the indicator rega
 --
 
 COMMENT ON COLUMN gobs.indicator.id_date_format IS 'Help to know what is the format for the date. Example : ‘year’';
-
-
---
--- Name: COLUMN indicator.id_value_code; Type: COMMENT; Schema: gobs; Owner: -
---
-
-COMMENT ON COLUMN gobs.indicator.id_value_code IS 'List of the codes of the vector dimensions. Ex : [‘pop_h’, ‘pop_f’]';
-
-
---
--- Name: COLUMN indicator.id_value_name; Type: COMMENT; Schema: gobs; Owner: -
---
-
-COMMENT ON COLUMN gobs.indicator.id_value_name IS 'List of the names of the vector dimensions. Ex : [‘population homme’, ‘population femme’]';
-
-
---
--- Name: COLUMN indicator.id_value_type; Type: COMMENT; Schema: gobs; Owner: -
---
-
-COMMENT ON COLUMN gobs.indicator.id_value_type IS 'Type of the stored values. Ex : ‘integer’ or ‘real’';
-
-
---
--- Name: COLUMN indicator.id_value_unit; Type: COMMENT; Schema: gobs; Owner: -
---
-
-COMMENT ON COLUMN gobs.indicator.id_value_unit IS 'Unit ot the store values. Ex : ‘inhabitants’ or ‘°C’';
 
 
 --
@@ -1935,6 +1979,13 @@ ALTER TABLE ONLY gobs.application ALTER COLUMN id SET DEFAULT nextval('gobs.appl
 
 
 --
+-- Name: dimension id; Type: DEFAULT; Schema: gobs; Owner: -
+--
+
+ALTER TABLE ONLY gobs.dimension ALTER COLUMN id SET DEFAULT nextval('gobs.dimension_id_seq'::regclass);
+
+
+--
 -- Name: document id; Type: DEFAULT; Schema: gobs; Owner: -
 --
 
@@ -2038,6 +2089,7 @@ COPY gobs.actor (id, a_label, a_description, a_email, id_category, a_login) FROM
 6	John	John J.	jon@jon.jon	3	john
 7	Mike	Mike M.	mik@mik.mik	3	mike
 8	Phil	Phil P.	phi@phi.phi	3	phil
+9		Automatically created actor for G-Events: 	al@al.al	4	gobsapi_writer
 \.
 
 
@@ -2049,6 +2101,7 @@ COPY gobs.actor_category (id, ac_label, ac_description) FROM stdin;
 1	Public organizations	Public organizations and stakeholders
 2	Research centers	Public or private research centers
 3	Individuals	Persons acting as a single individual
+4	G-Events	Automatically created category of actors for G-Events
 \.
 
 
@@ -2065,6 +2118,19 @@ COPY gobs.application (id, ap_code, ap_label, ap_description, ap_default_values)
 --
 
 COPY gobs.deleted_data_log (de_table, de_uid, de_timestamp) FROM stdin;
+\.
+
+
+--
+-- Data for Name: dimension; Type: TABLE DATA; Schema: gobs; Owner: -
+--
+
+COPY gobs.dimension (id, fk_id_indicator, di_code, di_label, di_type, di_unit) FROM stdin;
+1	1	pluviometry	Pluviometry	real	mm
+2	2	population	Population	integer	people
+3	3	altitude	Altitude	integer	m
+4	4	number	Number of individuals	integer	ind
+5	4	species	Observed species	text	sp
 \.
 
 
@@ -2151,11 +2217,11 @@ COPY gobs.import (id, im_timestamp, fk_id_series, im_status) FROM stdin;
 -- Data for Name: indicator; Type: TABLE DATA; Schema: gobs; Owner: -
 --
 
-COPY gobs.indicator (id, id_code, id_label, id_description, id_date_format, id_value_code, id_value_name, id_value_type, id_value_unit, id_paths, id_category, created_at, updated_at) FROM stdin;
-1	pluviometry	Hourly pluviometry 	Hourly rainfall pluviometry in millimetre	hour	{pluviometry}	{Pluviometry}	{real}	{mm}	Environment / Water / Data | Physical and chemical conditions / Water 	Water	2022-10-05 16:03:24.479396	2022-10-05 16:03:24.479396
-2	population	Population 	Number of inhabitants for city	year	{population}	{Population}	{integer}	{people}	Socio-eco / Demography / Population 	Population	2022-10-05 16:03:24.479396	2022-10-05 16:03:24.479396
-3	hiker_position	Hikers position	Position and altitude of hikers	second	{altitude}	{Altitude}	{integer}	{m}	Hiking / Tracks	Tracks	2022-10-05 16:03:24.479396	2022-10-05 16:03:24.479396
-4	observation	Observations	Faunal observations in the field	second	{number,species}	{"Number of individuals","Observed species"}	{integer,text}	{ind,sp}	Environment / Fauna / Species	Species	2022-10-05 16:03:24.479396	2022-10-05 16:03:24.479396
+COPY gobs.indicator (id, id_code, id_label, id_description, id_date_format, id_paths, id_category, created_at, updated_at) FROM stdin;
+1	pluviometry	Hourly pluviometry 	Hourly rainfall pluviometry in millimetre	hour	Environment / Water / Data | Physical and chemical conditions / Water 	Water	2022-10-05 16:03:24.479396	2022-10-05 16:03:24.479396
+2	population	Population 	Number of inhabitants for city	year	Socio-eco / Demography / Population 	Population	2022-10-05 16:03:24.479396	2022-10-05 16:03:24.479396
+3	hiker_position	Hikers position	Position and altitude of hikers	second	Hiking / Tracks	Tracks	2022-10-05 16:03:24.479396	2022-10-05 16:03:24.479396
+4	observation	Observations	Faunal observations in the field	second	Environment / Fauna / Species	Species	2022-10-05 16:03:24.479396	2022-10-05 16:03:24.479396
 \.
 
 
@@ -2164,7 +2230,7 @@ COPY gobs.indicator (id, id_code, id_label, id_description, id_date_format, id_v
 --
 
 COPY gobs.metadata (id, me_version, me_version_date, me_status) FROM stdin;
-1	6.0.0	2022-10-05	1
+1	6.0.0	2023-03-22	1
 \.
 
 
@@ -7065,14 +7131,14 @@ COPY public.spatial_ref_sys (srid, auth_name, auth_srid, srtext, proj4text) FROM
 -- Name: actor_category_id_seq; Type: SEQUENCE SET; Schema: gobs; Owner: -
 --
 
-SELECT pg_catalog.setval('gobs.actor_category_id_seq', 3, true);
+SELECT pg_catalog.setval('gobs.actor_category_id_seq', 4, true);
 
 
 --
 -- Name: actor_id_seq; Type: SEQUENCE SET; Schema: gobs; Owner: -
 --
 
-SELECT pg_catalog.setval('gobs.actor_id_seq', 8, true);
+SELECT pg_catalog.setval('gobs.actor_id_seq', 9, true);
 
 
 --
@@ -7080,6 +7146,13 @@ SELECT pg_catalog.setval('gobs.actor_id_seq', 8, true);
 --
 
 SELECT pg_catalog.setval('gobs.application_id_seq', 1, false);
+
+
+--
+-- Name: dimension_id_seq; Type: SEQUENCE SET; Schema: gobs; Owner: -
+--
+
+SELECT pg_catalog.setval('gobs.dimension_id_seq', 5, true);
 
 
 --
@@ -7219,6 +7292,22 @@ ALTER TABLE ONLY gobs.application
 
 ALTER TABLE ONLY gobs.deleted_data_log
     ADD CONSTRAINT deleted_data_log_pkey PRIMARY KEY (de_table, de_uid);
+
+
+--
+-- Name: dimension dimension_fk_id_indicator_di_code_key; Type: CONSTRAINT; Schema: gobs; Owner: -
+--
+
+ALTER TABLE ONLY gobs.dimension
+    ADD CONSTRAINT dimension_fk_id_indicator_di_code_key UNIQUE (fk_id_indicator, di_code);
+
+
+--
+-- Name: dimension dimension_pkey; Type: CONSTRAINT; Schema: gobs; Owner: -
+--
+
+ALTER TABLE ONLY gobs.dimension
+    ADD CONSTRAINT dimension_pkey PRIMARY KEY (id);
 
 
 --
@@ -7596,6 +7685,14 @@ ALTER TABLE ONLY gobs.actor
 
 
 --
+-- Name: dimension dimension_fk_id_indicator_fkey; Type: FK CONSTRAINT; Schema: gobs; Owner: -
+--
+
+ALTER TABLE ONLY gobs.dimension
+    ADD CONSTRAINT dimension_fk_id_indicator_fkey FOREIGN KEY (fk_id_indicator) REFERENCES gobs.indicator(id);
+
+
+--
 -- Name: document document_fk_id_indicator_fkey; Type: FK CONSTRAINT; Schema: gobs; Owner: -
 --
 
@@ -7718,3 +7815,4 @@ ALTER TABLE ONLY gobs.spatial_object
 --
 -- PostgreSQL database dump complete
 --
+

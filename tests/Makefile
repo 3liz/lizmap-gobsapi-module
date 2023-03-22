@@ -98,6 +98,9 @@ install-plugins: dirs
 		    qgis-plugin-manager update; \
 		    qgis-plugin-manager install 'Lizmap server'"
 
+export-data:
+	export PGPASSWORD=lizmap1234!; pg_dump -h localhost -U lizmap -d lizmap -p 9097 --no-acl --no-owner -Fp -f sql/test_data.sql
+
 import-data:
 	export PGPASSWORD=lizmap1234!; psql -h localhost -U lizmap -d lizmap -p 9097 -c 'DROP SCHEMA IF EXISTS gobs CASCADE;'
 	export PGPASSWORD=lizmap1234!; psql -h localhost -U lizmap -d lizmap -p 9097 -f sql/test_data.sql
