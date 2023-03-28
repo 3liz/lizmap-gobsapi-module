@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 0.6.0 - 2023-03-27
+
+### Changed
+
+* Indicator - Move the dimensions characteristics into a new dedicated table `dimension`
+
 ## 0.5.1 - 2023-02-21
 
 ### Added
