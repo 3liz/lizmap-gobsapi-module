@@ -152,14 +152,15 @@ class Utils
 
     /**
      * Get the version of G-Obs structure as written
-     * in the database metadata table
+     * in the database metadata table.
      *
      * @param string $connection_profile Profile
+     *
      * @return string $version Version of the database structure
      */
     public function getDatabaseStructureVersion($connection_profile)
     {
-        $sql = "SELECT me_version FROM gobs.metadata";
+        $sql = 'SELECT me_version FROM gobs.metadata';
         $data = $this->query($connection_profile, $sql, array());
         if (!is_array($data)) {
             return null;

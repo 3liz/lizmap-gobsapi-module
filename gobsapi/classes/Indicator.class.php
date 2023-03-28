@@ -211,7 +211,6 @@ class Indicator
         FROM last
         ";
 
-
         // Check database structure version
         jClasses::inc('gobsapi~Utils');
         $utils = new Utils();
@@ -317,7 +316,6 @@ class Indicator
                 row_to_json(last.*) AS object_json
             FROM last
             ";
-
         }
 
         $cnx = jDb::getConnection($this->connection_profile);
