@@ -183,6 +183,7 @@ class projectCtrl extends apiController
                 $filePath = $media_file_path;
                 $outputFileName = $data['key'].'.'.$extension;
                 $mimeType = 'image/'.$extension;
+
                 break;
             }
         }

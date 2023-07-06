@@ -43,6 +43,7 @@ return $config
               'standardize_not_equals' => true,
               'standardize_increment' => true,
               'whitespace_after_comma_in_array' => true,
+              'escape_implicit_backslashes' => false,
               'yoda_style'=>array(
                     'always_move_variable' => false,
                     'equal' => false,

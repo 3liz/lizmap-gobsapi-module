@@ -96,6 +96,7 @@ class Utils
     {
         $cnx = jDb::getConnection($connection_profile);
         $cnx->beginTransaction();
+
         try {
             $resultset = $cnx->prepare($sql);
             $resultset->execute($params);
@@ -174,16 +175,14 @@ class Utils
     }
 
     /**
-     * Get the Lizmap media root directory
+     * Get the Lizmap media root directory.
      *
      * @return string Path of Lizmap project root folder
      */
     public function getMediaRootDirectory()
     {
         $lizmapRootDirectory = lizmap::getServices()->getRootRepositories();
-        $mediaRootDirectory = realpath($lizmapRootDirectory.'/media/');
 
-        return $mediaRootDirectory;
+        return realpath($lizmapRootDirectory.'/media/');
     }
-
 }

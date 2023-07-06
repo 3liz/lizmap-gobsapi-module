@@ -23,7 +23,7 @@ class Project
     /**
      * @var data: G-Obs Representation of a project
      */
-    protected $data = null;
+    protected $data;
 
     /**
      * @var array Array of project indicator codes
@@ -60,12 +60,11 @@ class Project
      */
     protected $userGroups;
 
-
-
     /**
      * constructor.
      *
      * @param string $project_key
+     * @param mixed  $login
      */
     public function __construct($project_key, $login)
     {
@@ -84,7 +83,6 @@ class Project
         // Get indicators: do it before building Gobs project
         // to check if the project contains indicators
         if ($this->connectionValid) {
-
             // Get project properties
             $this->properties = $this->getProjectPropertiesFromDatabase();
 
@@ -96,7 +94,6 @@ class Project
         } else {
             jLog::log('Project "'.$project_key.'" connection name is not valid: "'.$this->connectionName.'"');
         }
-
     }
 
     /**
@@ -125,7 +122,7 @@ class Project
         }
 
         // The project key does not exists in the ini file
-        if (!array_key_exists($this->project_key, $ini) || !array_key_exists('connection_name', $ini[$this->project_key]) ) {
+        if (!array_key_exists($this->project_key, $ini) || !array_key_exists('connection_name', $ini[$this->project_key])) {
             return false;
         }
 
@@ -138,7 +135,6 @@ class Project
         // Set the project connection name
         $this->connectionName = $connectionName;
         $this->connectionProfile = $this->getConnectionProfile();
-
 
         return true;
     }
@@ -209,10 +205,10 @@ class Project
     /**
      * Get the project properties from the database.
      *
-     *
      * @return null|array The project properties or null
      */
-    public function getProjectPropertiesFromDatabase() {
+    public function getProjectPropertiesFromDatabase()
+    {
         $project = null;
 
         $cnx = jDb::getConnection($this->connectionProfile);
@@ -241,7 +237,6 @@ class Project
                     ST_AsEWKT(ST_Union(geom)) AS geom
                 FROM proj, gobs.project_view AS pv
                 WHERE fk_id_project = proj.id
-                AND pv_type != 'global'
                 AND regexp_split_to_array(pv_groups, '[\s,;]+')
                     && regexp_split_to_array($2, '@@')
                 GROUP BY fk_id_project
@@ -268,6 +263,7 @@ class Project
             $this->project_key,
             implode('@@', $this->userGroups),
         );
+
         try {
             $resultset = $cnx->prepare($sql);
             $resultset->execute($params);
@@ -285,8 +281,8 @@ class Project
                 $data['xmax'] = $record->xmax;
                 $data['ymax'] = $record->ymax;
             }
-            return $data;
 
+            return $data;
         } catch (Exception $e) {
             $msg = $e->getMessage();
             jLog::log('An error occured while requesting the properties for the project "'.$this->project_key.'"', 'error');
@@ -299,14 +295,14 @@ class Project
     }
 
     /**
-     * Check that the authenticated user has access to this project
+     * Check that the authenticated user has access to this project.
      *
-     * @return boolean $hasAccess True if the user can access this project
+     * @return bool $hasAccess True if the user can access this project
      */
-    public function checkAcl() {
-        return ($this->properties !== null && count($this->properties) > 0);
+    public function checkAcl()
+    {
+        return $this->properties !== null && count($this->properties) > 0;
     }
-
 
     // Create G-Obs project object from Lizmap project
     private function buildGobsProject()
@@ -334,7 +330,7 @@ class Project
         $root_dir = $utils->getMediaRootDirectory();
         $media_dir = '/gobsapi/illustration/'.$this->project_key;
         $extensions = array('jpg', 'jpeg', 'png');
-        $media_url = Null;
+        $media_url = null;
         foreach ($extensions as $extension) {
             $media_file_path = $root_dir.$media_dir.'.'.$extension;
             if (file_exists($media_file_path)) {
@@ -346,6 +342,7 @@ class Project
                     'gobsapi.php/project/'.$this->project_key.'/illustration',
                     $media_url
                 );
+
                 break;
             }
         }
@@ -367,7 +364,7 @@ class Project
     }
 
     /**
-     *  Get Gobs representation of a project object
+     *  Get Gobs representation of a project object.
      *
      * @return array The Gobs project data expected by the API
      */
@@ -377,7 +374,7 @@ class Project
     }
 
     /**
-     *  Get Gobs project key
+     *  Get Gobs project key.
      *
      * @return string $project_key The project key
      */
@@ -387,7 +384,7 @@ class Project
     }
 
     /**
-     *  Get Gobs project internal properties
+     *  Get Gobs project internal properties.
      *
      * @return array $properties The project properties
      */
@@ -397,7 +394,7 @@ class Project
     }
 
     /**
-     * Get Gobs project indicators
+     * Get Gobs project indicators.
      *
      * @return null|array The project indicators
      */
@@ -418,5 +415,4 @@ class Project
 
         return $indicators;
     }
-
 }

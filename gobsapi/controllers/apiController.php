@@ -17,10 +17,10 @@ class apiController extends jController
         '500' => 'Internal Server Error',
     );
 
-    /** @var object $user */
+    /** @var object */
     protected $user;
 
-    /** @var Project $gobs_project */
+    /** @var Project */
     protected $gobs_project;
 
     protected $indicator;
@@ -100,7 +100,7 @@ class apiController extends jController
             return array(
                 '404',
                 'error',
-                'The given project does not have a valid corresponding PostgreSQL connection',
+                'The given project key does not refer to a known project',
             );
         }
 

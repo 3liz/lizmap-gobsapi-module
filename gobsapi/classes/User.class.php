@@ -81,7 +81,7 @@ class User
         }
 
         $projects = array();
-        foreach ($ini as $project_key=>$project_config) {
+        foreach ($ini as $project_key => $project_config) {
             // Get project instance
             jClasses::inc('gobsapi~Project');
             $gobs_project = new Project($project_key, $this->login);

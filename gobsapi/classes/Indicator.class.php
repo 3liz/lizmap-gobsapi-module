@@ -54,10 +54,10 @@ class Indicator
     /**
      * constructor.
      *
-     * @param mixed         $user                Gobs user instance
-     * @param string        $code:               the code of the indicator
-     * @param string        $project_key:        the project code of the indicator
-     * @param string        $connection_profile: the QGIS project corresponding jDb connection profile name
+     * @param mixed  $user                Gobs user instance
+     * @param string $code:               the code of the indicator
+     * @param string $project_key:        the project code of the indicator
+     * @param string $connection_profile: the QGIS project corresponding jDb connection profile name
      */
     public function __construct($user, $code, $project_key, $connection_profile)
     {

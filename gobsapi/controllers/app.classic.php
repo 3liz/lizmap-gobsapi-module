@@ -6,10 +6,9 @@ class appCtrl extends apiController
 {
     /**
      * Get the Lizmap Web Client metadata
-     * and send it back to the requester
+     * and send it back to the requester.
      *
      * @httpmethod GET
-     *
      *
      * @return jResponseJson Full LWC metadata:
      */
@@ -45,6 +44,4 @@ class appCtrl extends apiController
 
         return $rep;
     }
-
 }
-?>
