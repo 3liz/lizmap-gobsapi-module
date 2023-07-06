@@ -17,6 +17,8 @@ checkAppOpened();
 
 // mapping of url to basic url (/module/controller/method)
 $mapping = array(
+    '/lizmap/metadata' => '/gobsapi/app/metadata',
+
     '/user/login' => '/gobsapi/user/logUserIn',
     '/user/logout' => '/gobsapi/user/logUserOut',
     '/user/projects' => '/gobsapi/user/getUserProjects',
