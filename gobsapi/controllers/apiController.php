@@ -17,10 +17,10 @@ class apiController extends jController
         '500' => 'Internal Server Error',
     );
 
+    /** @var object $user */
     protected $user;
 
-    protected $lizmap_project;
-
+    /** @var Project $gobs_project */
     protected $gobs_project;
 
     protected $indicator;
@@ -90,45 +90,28 @@ class apiController extends jController
                 'The projectKey parameter is mandatory',
             );
         }
-        // Check project is valid
-        try {
-            $lizmap_project = lizmap::getProject($project_key);
-            if (!$lizmap_project) {
-                return array(
-                    '404',
-                    'error',
-                    'The given project key does not refer to a known project',
-                );
-            }
-        } catch (UnknownLizmapProjectException $e) {
-            return array(
-                '404',
-                'error',
-                'The given project key does not refer to a known project',
-            );
-        } catch (Exception $e) {
-            return array(
-                '404',
-                'error',
-                'The given project key does not refer to a known project',
-            );
-        }
-
-        // Check the authenticated user can access to the project
-        if (!$lizmap_project->checkAcl($this->user->login)) {
-            return array(
-                '403',
-                'error',
-                jLocale::get('view~default.repository.access.denied'),
-            );
-        }
-
-        // Set lizmap project property
-        $this->lizmap_project = $lizmap_project;
 
         // Get gobs project manager
         jClasses::inc('gobsapi~Project');
-        $gobs_project = new Project($lizmap_project);
+        $gobs_project = new Project($project_key, $this->user->login);
+
+        // Check the project corresponds to a valid PostgreSQL connection
+        if (!$gobs_project->connectionValid) {
+            return array(
+                '404',
+                'error',
+                'The given project does not have a valid corresponding PostgreSQL connection',
+            );
+        }
+
+        // Check the project can be accessed
+        if ($gobs_project->getIndicators() === null) {
+            return array(
+                '404',
+                'error',
+                'The project is not a valid G-Osb project : no indicators found, or there is no corresponding project views for the authenticated user',
+            );
+        }
 
         // Create the corresponding actor in G-Obs database if needed
         $connection_profile = $gobs_project->getConnectionProfile();
@@ -138,16 +121,6 @@ class apiController extends jController
                 '404',
                 'error',
                 'ERROR - G-Obs Actor in database cannot be found nor created !',
-            );
-        }
-
-        // Test if project has and indicator
-        $indicators = $gobs_project->getIndicators();
-        if (empty($indicators)) {
-            return array(
-                '404',
-                'error',
-                'The given project key does not refer to a G-Obs project',
             );
         }
 
@@ -174,7 +147,8 @@ class apiController extends jController
         // Get indicator
         jClasses::inc('gobsapi~Indicator');
         $connection_profile = $this->gobs_project->getConnectionProfile();
-        $gobs_indicator = new Indicator($this->user, $indicator_code, $this->lizmap_project, $connection_profile);
+        $project_key = $this->gobs_project->getKey();
+        $gobs_indicator = new Indicator($this->user, $indicator_code, $project_key, $connection_profile);
 
         // Check indicatorKey is valid
         if (!$gobs_indicator->checkCode()) {
@@ -309,6 +283,7 @@ class apiController extends jController
     protected function getMedia($filePath, $outputFileName, $mimeType = null, $doDownload = true)
     {
         // Return binary geopackage file
+        /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
         $rep->doDownload = $doDownload;
 
@@ -382,7 +357,6 @@ class apiController extends jController
 
         // Add logged user to the prefix
         // to facilitate grepping the log
-        $login = null;
         if ($this->user && $this->user->login) {
             $prefix .= ' / '.$this->user->login;
         }

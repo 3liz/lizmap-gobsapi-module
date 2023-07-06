@@ -3,7 +3,7 @@
 --
 
 -- Dumped from database version 11.13 (Debian 11.13-1.pgdg100+1)
--- Dumped by pg_dump version 14.7 (Ubuntu 14.7-0ubuntu0.22.04.1)
+-- Dumped by pg_dump version 14.8 (Ubuntu 14.8-0ubuntu0.22.04.1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -1237,9 +1237,9 @@ ALTER SEQUENCE gobs.metadata_id_seq OWNED BY gobs.metadata.id;
 --
 
 CREATE TABLE gobs.observation (
-    id bigint NOT NULL,
+    id integer NOT NULL,
     fk_id_series integer NOT NULL,
-    fk_id_spatial_object bigint NOT NULL,
+    fk_id_spatial_object integer NOT NULL,
     fk_id_import integer NOT NULL,
     ob_value jsonb NOT NULL,
     ob_start_timestamp timestamp without time zone NOT NULL,
@@ -1364,12 +1364,7 @@ CREATE TABLE gobs.project (
     pt_lizmap_project_key text,
     pt_label text NOT NULL,
     pt_description text,
-    pt_indicator_codes text[],
-    pt_groups text,
-    pt_xmin real,
-    pt_ymin real,
-    pt_xmax real,
-    pt_ymax real
+    pt_indicator_codes text[]
 );
 
 
@@ -1423,41 +1418,6 @@ COMMENT ON COLUMN gobs.project.pt_indicator_codes IS 'List of indicator codes av
 
 
 --
--- Name: COLUMN project.pt_groups; Type: COMMENT; Schema: gobs; Owner: -
---
-
-COMMENT ON COLUMN gobs.project.pt_groups IS 'List of groups of users which have access to the project and its indicators, separated by coma.';
-
-
---
--- Name: COLUMN project.pt_xmin; Type: COMMENT; Schema: gobs; Owner: -
---
-
-COMMENT ON COLUMN gobs.project.pt_xmin IS 'Minimum longitude (X min) in EPSG:4326';
-
-
---
--- Name: COLUMN project.pt_ymin; Type: COMMENT; Schema: gobs; Owner: -
---
-
-COMMENT ON COLUMN gobs.project.pt_ymin IS 'Minimum latitude (Y min) in EPSG:4326';
-
-
---
--- Name: COLUMN project.pt_xmax; Type: COMMENT; Schema: gobs; Owner: -
---
-
-COMMENT ON COLUMN gobs.project.pt_xmax IS 'Maximum longitude (X max) in EPSG:4326';
-
-
---
--- Name: COLUMN project.pt_ymax; Type: COMMENT; Schema: gobs; Owner: -
---
-
-COMMENT ON COLUMN gobs.project.pt_ymax IS 'Maximum latitude (Y max) in EPSG:4326';
-
-
---
 -- Name: project_id_seq; Type: SEQUENCE; Schema: gobs; Owner: -
 --
 
@@ -1485,8 +1445,8 @@ CREATE TABLE gobs.project_view (
     pv_label text NOT NULL,
     fk_id_project integer NOT NULL,
     pv_groups text,
-    fk_id_spatial_layer integer,
-    fk_so_unique_id text
+    pv_type text DEFAULT 'global'::text NOT NULL,
+    geom public.geometry(MultiPolygon,4326) NOT NULL
 );
 
 
@@ -1494,7 +1454,8 @@ CREATE TABLE gobs.project_view (
 -- Name: TABLE project_view; Type: COMMENT; Schema: gobs; Owner: -
 --
 
-COMMENT ON TABLE gobs.project_view IS 'Allow to filter the access on projects and relative data (indicators, observations, etc.) with a spatial object for a given list of user groups';
+COMMENT ON TABLE gobs.project_view IS 'Allow to filter the access on projects and relative data (indicators, observations, etc.) with a spatial object for a given list of user groups.
+There must be at least one project view for the project, of type global. The other views must be of type filter.';
 
 
 --
@@ -1526,17 +1487,17 @@ COMMENT ON COLUMN gobs.project_view.pv_groups IS 'List of user groups allowed to
 
 
 --
--- Name: COLUMN project_view.fk_id_spatial_layer; Type: COMMENT; Schema: gobs; Owner: -
+-- Name: COLUMN project_view.pv_type; Type: COMMENT; Schema: gobs; Owner: -
 --
 
-COMMENT ON COLUMN gobs.project_view.fk_id_spatial_layer IS 'Spatial layer id (foreign key)';
+COMMENT ON COLUMN gobs.project_view.pv_type IS 'Type of the project view : "global" for the unique global view, and "filter" for the view made for spatial filter purpose';
 
 
 --
--- Name: COLUMN project_view.fk_so_unique_id; Type: COMMENT; Schema: gobs; Owner: -
+-- Name: COLUMN project_view.geom; Type: COMMENT; Schema: gobs; Owner: -
 --
 
-COMMENT ON COLUMN gobs.project_view.fk_so_unique_id IS 'Spatial object unique id (foreign key). Ex: AB1234. This references the object unique code, not the object integer id field';
+COMMENT ON COLUMN gobs.project_view.geom IS 'Geometry of the project view: no observation can be created outside the project views geometries accessible from the authenticated user.';
 
 
 --
@@ -1848,7 +1809,7 @@ ALTER SEQUENCE gobs.spatial_layer_id_seq OWNED BY gobs.spatial_layer.id;
 --
 
 CREATE TABLE gobs.spatial_object (
-    id bigint NOT NULL,
+    id integer NOT NULL,
     so_unique_id text NOT NULL,
     so_unique_label text NOT NULL,
     geom public.geometry(Geometry,4326) NOT NULL,
@@ -6060,7 +6021,8 @@ COPY gobs.observation (id, fk_id_series, fk_id_spatial_object, fk_id_import, ob_
 -- Data for Name: project; Type: TABLE DATA; Schema: gobs; Owner: -
 --
 
-COPY gobs.project (id, pt_code, pt_lizmap_project_key, pt_label, pt_description, pt_indicator_codes, pt_groups, pt_xmin, pt_ymin, pt_xmax, pt_ymax) FROM stdin;
+COPY gobs.project (id, pt_code, pt_lizmap_project_key, pt_label, pt_description, pt_indicator_codes) FROM stdin;
+1	test_project_a	\N	GobsAPI test project a	Test project a	{pluviometry,population,hiker_position}
 \.
 
 
@@ -6068,7 +6030,9 @@ COPY gobs.project (id, pt_code, pt_lizmap_project_key, pt_label, pt_description,
 -- Data for Name: project_view; Type: TABLE DATA; Schema: gobs; Owner: -
 --
 
-COPY gobs.project_view (id, pv_label, fk_id_project, pv_groups, fk_id_spatial_layer, fk_so_unique_id) FROM stdin;
+COPY gobs.project_view (id, pv_label, fk_id_project, pv_groups, pv_type, geom) FROM stdin;
+2	Test project a filtered view	1	gobsapi_filtered_group	filter	0106000020E610000001000000010300000001000000050000008665340C16030FC010711006313248408665340C16030FC0E9801CA8FA414840D02AB7EDD9680DC0E9801CA8FA414840D02AB7EDD9680DC010711006313248408665340C16030FC01071100631324840
+1	Test project a global view	1	gobsapi_global_group, gobs_api_other_global	global	0106000020E61000000100000001030000000100000005000000287E5FEC7A980FC08E7BCD956E2B4840287E5FEC7A980FC031FC7496694948408DB1470419CF0CC031FC7496694948408DB1470419CF0CC08E7BCD956E2B4840287E5FEC7A980FC08E7BCD956E2B4840
 \.
 
 
@@ -7208,14 +7172,14 @@ SELECT pg_catalog.setval('gobs.observation_id_seq', 3814, true);
 -- Name: project_id_seq; Type: SEQUENCE SET; Schema: gobs; Owner: -
 --
 
-SELECT pg_catalog.setval('gobs.project_id_seq', 1, false);
+SELECT pg_catalog.setval('gobs.project_id_seq', 1, true);
 
 
 --
 -- Name: project_view_id_seq; Type: SEQUENCE SET; Schema: gobs; Owner: -
 --
 
-SELECT pg_catalog.setval('gobs.project_view_id_seq', 1, false);
+SELECT pg_catalog.setval('gobs.project_view_id_seq', 2, true);
 
 
 --
@@ -7420,14 +7384,6 @@ ALTER TABLE ONLY gobs.project
 
 ALTER TABLE ONLY gobs.project
     ADD CONSTRAINT project_pt_label_key UNIQUE (pt_label);
-
-
---
--- Name: project_view project_view_fk_id_project_fk_id_spatial_layer_fk_so_unique_key; Type: CONSTRAINT; Schema: gobs; Owner: -
---
-
-ALTER TABLE ONLY gobs.project_view
-    ADD CONSTRAINT project_view_fk_id_project_fk_id_spatial_layer_fk_so_unique_key UNIQUE (fk_id_project, fk_id_spatial_layer, fk_so_unique_id);
 
 
 --
@@ -7738,14 +7694,6 @@ ALTER TABLE ONLY gobs.observation
 
 ALTER TABLE ONLY gobs.project_view
     ADD CONSTRAINT project_view_fk_id_project_fkey FOREIGN KEY (fk_id_project) REFERENCES gobs.project(id) ON DELETE CASCADE;
-
-
---
--- Name: project_view project_view_fk_id_spatial_layer_fkey; Type: FK CONSTRAINT; Schema: gobs; Owner: -
---
-
-ALTER TABLE ONLY gobs.project_view
-    ADD CONSTRAINT project_view_fk_id_spatial_layer_fkey FOREIGN KEY (fk_id_spatial_layer) REFERENCES gobs.spatial_layer(id) ON DELETE SET NULL;
 
 
 --

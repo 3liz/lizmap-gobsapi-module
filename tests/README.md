@@ -78,19 +78,29 @@ make import-lizmap-acl
 ```
 
 Create group:
-* `gobsapi`, label `GobsAPI group`
+* `gobsapi_group`, label `GobsAPI group`
+* `gobsapi_global_group`, label `GobsAPI global group`
+* `gobsapi_filtered_group`, label `GobsAPI filtered group`
 
 Created users (all inside `gobsapi` group):
 * `gobsapi_writer`, with
   * email `al@al.al`
   * password `al_password`
   * which corresponds to the Gobs actor `Al A.`
+  * it belongs to the groups `gobsapi_group` & `gobsapi_global_group`
   * it can get, create, update and delete observations.
 * `gobsapi_reader`, with:
   * email `bob@bob.bob`
   * password `bob_password`
   * which corresponds to the Gobs actor `Bob B.`
-  * it has only read access
+  * it belongs to the groups `gobsapi_group` & `gobsapi_global_group`
+  * it has only read access but can see all data of the test project
+* `gobsapi_writer_filtered`, with:
+  * email `md@md.md`
+  * password `md_password`
+  * which corresponds to the Gobs actor `Md M.`
+  * it belongs to the groups `gobsapi_group` & `gobsapi_filtered_group`
+  * it has read & write access but can only view & edit data filtered inside by the project view geometry
 
 They can both access the [Lizmap test map](http://localhost:9095/index.php/view/map/?repository=gobsapi&project=gobsapi).
 

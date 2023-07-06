@@ -232,7 +232,7 @@ class TestRequests(unittest.TestCase):
 
     def test_project_details(self):
         """ Get details of the gobsapi project """
-        project_key = 'gobsapi~gobsapi'
+        project_key = 'test_project_a'
         self.api_call(
             entry_point=f'/project/{project_key}',
             test_file='data/output_project_details.json',
@@ -241,7 +241,7 @@ class TestRequests(unittest.TestCase):
 
     def test_project_indicators(self):
         """ Get the project indicators """
-        project_key = 'gobsapi~gobsapi'
+        project_key = 'test_project_a'
         self.api_call(
             entry_point=f'/project/{project_key}/indicators',
             test_file='data/output_project_indicators.json',
@@ -250,7 +250,7 @@ class TestRequests(unittest.TestCase):
 
     def test_project_geopackage(self):
         """ Get the Geopackage of a project """
-        project_key = 'gobsapi~gobsapi'
+        project_key = 'test_project_a'
         self.api_call(
             entry_point=f'/project/{project_key}/geopackage',
             test_file='data/output_project_geopackage.gpkg',
@@ -259,7 +259,7 @@ class TestRequests(unittest.TestCase):
 
     def test_indicator_details(self):
         """ Get details of the indicator """
-        project_key = 'gobsapi~gobsapi'
+        project_key = 'test_project_a'
         indicator_key = 'hiker_position'
         self.api_call(
             entry_point=f'/project/{project_key}/indicator/{indicator_key}',
@@ -272,7 +272,7 @@ class TestRequests(unittest.TestCase):
         # So that we can do it manually
         # Since the result of the call contains dynamically generated data
         # such as id, created_at, update_at, etc.
-        project_key = 'gobsapi~gobsapi'
+        project_key = 'test_project_a'
         indicator_key = 'hiker_position'
         response = self.api_call(
             entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation',
@@ -335,7 +335,7 @@ class TestRequests(unittest.TestCase):
         )
 
         # Delete this observation to be idempotent
-        project_key = 'gobsapi~gobsapi'
+        project_key = 'test_project_a'
         indicator_key = 'hiker_position'
         self.api_call(
             entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation/{observation_uuid}',
@@ -372,7 +372,7 @@ class TestRequests(unittest.TestCase):
         Create an obs without coordinates or wkt
         but with an existing spatial object and spatial layer
         """
-        project_key = 'gobsapi~gobsapi'
+        project_key = 'test_project_a'
         indicator_key = 'population'
         response = self.api_call(
             entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation',
@@ -399,7 +399,7 @@ class TestRequests(unittest.TestCase):
         self.assertTrue(self.is_valid_uuid(observation_uuid))
 
         # Delete this observation to be idempotent
-        project_key = 'gobsapi~gobsapi'
+        project_key = 'test_project_a'
         indicator_key = 'population'
         self.api_call(
             entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation/{observation_uuid}',
@@ -410,7 +410,7 @@ class TestRequests(unittest.TestCase):
 
     def test_indicator_document(self):
         """ Get an indicator document by uid """
-        project_key = 'gobsapi~gobsapi'
+        project_key = 'test_project_a'
         indicator_key = 'hiker_position'
         document_uid = '1a7f7323-6b18-46ed-a9fe-9efbe1f006a2'
         self.api_call(
@@ -421,7 +421,7 @@ class TestRequests(unittest.TestCase):
 
     def test_indicator_preview(self):
         """ Get an indicator document by uid """
-        project_key = 'gobsapi~gobsapi'
+        project_key = 'test_project_a'
         indicator_key = 'hiker_position'
         document_uid = '542aa72f-d1de-4810-97bb-208f2388698b'
         self.api_call(
@@ -432,7 +432,7 @@ class TestRequests(unittest.TestCase):
 
     def test_indicator_observations_all(self):
         """ Get observations of the indicator population """
-        project_key = 'gobsapi~gobsapi'
+        project_key = 'test_project_a'
         indicator_key = 'population'
         response = self.api_call(
             entry_point=f'/project/{project_key}/indicator/{indicator_key}/observations',
@@ -444,7 +444,7 @@ class TestRequests(unittest.TestCase):
 
     def test_indicator_observation_detail(self):
         """ Get an observation of the indicator hiker_position """
-        project_key = 'gobsapi~gobsapi'
+        project_key = 'test_project_a'
         indicator_key = 'hiker_position'
         observation_uuid = '1adae0cf-0f3b-4af5-bf26-e72c7fde24f2'
         self.api_call(
@@ -456,7 +456,7 @@ class TestRequests(unittest.TestCase):
     def test_observation_update(self):
         """ Create an observation & test media upload, download, deletion """
         # Create a new observation
-        project_key = 'gobsapi~gobsapi'
+        project_key = 'test_project_a'
         indicator_key = 'hiker_position'
         response = self.api_call(
             entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation',
@@ -523,7 +523,7 @@ class TestRequests(unittest.TestCase):
     def test_observation_media_actions(self):
         """ Create an observation & test media upload, download, deletion """
         # Create a new observation
-        project_key = 'gobsapi~gobsapi'
+        project_key = 'test_project_a'
         indicator_key = 'hiker_position'
         response = self.api_call(
             entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation',

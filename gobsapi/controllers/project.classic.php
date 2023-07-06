@@ -95,9 +95,10 @@ class projectCtrl extends apiController
         // Get indicators
         $indicators = array();
         jClasses::inc('gobsapi~Indicator');
+        $project_key = $this->gobs_project->getKey();
         foreach ($indicator_codes as $code) {
             $connection_profile = $this->gobs_project->getConnectionProfile();
-            $gobs_indicator = new Indicator($this->user, $code, $this->lizmap_project, $connection_profile);
+            $gobs_indicator = new Indicator($this->user, $code, $project_key, $connection_profile);
             $indicator = $gobs_indicator->get('publication');
             $indicators[] = $indicator;
         }
@@ -126,9 +127,65 @@ class projectCtrl extends apiController
         // Get gobs project object
         $data = $this->gobs_project->get();
 
-        $filePath = $this->lizmap_project->getQgisPath().'.gpkg';
+        jClasses::inc('gobsapi~Utils');
+        $utils = new Utils();
+        $root_dir = $utils->getMediaRootDirectory();
+        $project_key = $this->param('projectKey');
+        $gpkg_dir = '/gobsapi/geopackage/'.$project_key.'.gpkg';
+        $filePath = $root_dir.$gpkg_dir;
         $outputFileName = $data['key'].'.gpkg';
         $mimeType = 'application/geopackage+vnd.sqlite3';
+        $doDownload = true;
+
+        // Return binary geopackage file
+        return $this->getMedia($filePath, $outputFileName, $mimeType, $doDownload);
+    }
+
+    /**
+     * Get project illustration image.
+     */
+    public function getProjectIllustration()
+    {
+        // Check resource can be accessed and is valid
+        list($code, $status, $message) = $this->check();
+        if ($status == 'error') {
+            return $this->apiResponse(
+                $code,
+                $status,
+                $message,
+                'getProjectIllustration',
+                null,
+                null
+            );
+        }
+
+        // Get gobs project object
+        $data = $this->gobs_project->get();
+
+        jClasses::inc('gobsapi~Utils');
+        $utils = new Utils();
+        $root_dir = $utils->getMediaRootDirectory();
+        $project_key = $this->param('projectKey');
+
+        $root_dir = $utils->getMediaRootDirectory();
+        $media_dir = '/gobsapi/illustration/'.$project_key;
+
+        // default image
+        $filePath = jApp::wwwPath('img/lizmap_mappemonde.jpg');
+        $outputFileName = 'default.png';
+        $mimeType = 'image/png';
+
+        // Search for illustration for each allowed extensions
+        $extensions = array('jpg', 'jpeg', 'png');
+        foreach ($extensions as $extension) {
+            $media_file_path = $root_dir.$media_dir.'.'.$extension;
+            if (file_exists($media_file_path)) {
+                $filePath = $media_file_path;
+                $outputFileName = $data['key'].'.'.$extension;
+                $mimeType = 'image/'.$extension;
+                break;
+            }
+        }
         $doDownload = true;
 
         // Return binary geopackage file

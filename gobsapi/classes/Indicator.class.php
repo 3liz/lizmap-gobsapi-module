@@ -20,12 +20,12 @@ class Indicator
     protected $user;
 
     /**
-     * @var lizmapProject: Indicator lizMap project
+     * @var project_key: Indicator project
      */
-    protected $lizmap_project;
+    protected $project_key;
 
     /**
-     * @var string: Indicator lizMap project
+     * @var string: Database connection profile
      */
     protected $connection_profile;
 
@@ -56,14 +56,14 @@ class Indicator
      *
      * @param mixed         $user                Gobs user instance
      * @param string        $code:               the code of the indicator
-     * @param lizmapProject $lizmap_project:     the lizMap project of the indicator
+     * @param string        $project_key:        the project code of the indicator
      * @param string        $connection_profile: the QGIS project corresponding jDb connection profile name
      */
-    public function __construct($user, $code, $lizmap_project, $connection_profile)
+    public function __construct($user, $code, $project_key, $connection_profile)
     {
         $this->code = $code;
         $this->user = $user;
-        $this->lizmap_project = $lizmap_project;
+        $this->project_key = $project_key;
         $this->connection_profile = $connection_profile;
 
         // Create Gobs projet expected data
@@ -82,10 +82,10 @@ class Indicator
         return $this->code;
     }
 
-    // Get indicator lizmap project
-    public function getLizmapProject()
+    // Get indicator project code
+    public function getProjectKey()
     {
-        return $this->lizmap_project;
+        return $this->project_key;
     }
 
     // Get the connection profile
@@ -121,7 +121,7 @@ class Indicator
         return true;
     }
 
-    // Create G-Obs project object from Lizmap project
+    // Create a JSON representation of the G-Obs project
     private function buildGobsIndicator()
     {
         // NEW SQL, with the dimension table
@@ -349,7 +349,7 @@ class Indicator
         $data = $this->raw_data;
 
         if (!empty($data)) {
-            // Transform document paths into lizmap media URL
+            // Transform document paths into URL
             $docs = array();
             if (count($data->documents) == 1 && !$data->documents[0]) {
                 $docs = array();
@@ -375,24 +375,6 @@ class Indicator
                 }
             }
             $data->documents = $docs;
-        }
-
-        return $data;
-    }
-
-    // Query database and return json data
-    private function query($sql, $params)
-    {
-        $cnx = jDb::getConnection($this->connection_profile);
-
-        try {
-            $resultset = $cnx->prepare($sql);
-            $resultset->execute($params);
-            $data = $resultset->fetchAll();
-            $cnx->commit();
-        } catch (Exception $e) {
-            $cnx->rollback();
-            $data = null;
         }
 
         return $data;
@@ -531,12 +513,13 @@ class Indicator
     public function setDocumentDirectory()
     {
         $this->document_root_directory = null;
-        $repository_dir = $this->lizmap_project->getRepository()->getPath();
-        $root_dir = realpath($repository_dir.'../media/');
+        jClasses::inc('gobsapi~Utils');
+        $utils = new Utils();
+        $root_dir = $utils->getMediaRootDirectory();
         if (is_dir($root_dir)) {
-            $document_dir = '/../media/gobsapi/documents/';
-            $dest_dir = $repository_dir.$document_dir;
-            $create_dir = jFile::createDir($dest_dir);
+            $document_dir = '/gobsapi/documents/';
+            $dest_dir = $root_dir.$document_dir;
+            jFile::createDir($dest_dir);
             if (is_dir($dest_dir)) {
                 $this->document_root_directory = realpath($dest_dir);
             }
@@ -547,12 +530,13 @@ class Indicator
     public function setMediaDirectory()
     {
         $this->observation_media_directory = null;
-        $repository_dir = $this->lizmap_project->getRepository()->getPath();
-        $root_dir = realpath($repository_dir.'../media/');
+        jClasses::inc('gobsapi~Utils');
+        $utils = new Utils();
+        $root_dir = $utils->getMediaRootDirectory();
         if (is_dir($root_dir) && is_writable($root_dir)) {
-            $observation_dir = '/../media/gobsapi/observations/';
-            $dest_dir = $repository_dir.$observation_dir;
-            $create_dir = jFile::createDir($dest_dir);
+            $observation_dir = '/gobsapi/observations/';
+            $dest_dir = $root_dir.$observation_dir;
+            jFile::createDir($dest_dir);
             if (is_dir($dest_dir)) {
                 $this->observation_media_directory = realpath($dest_dir);
             }
@@ -715,7 +699,7 @@ class Indicator
         return $file_path;
     }
 
-    // Transform the indicator document file path into a public lizMap media URL
+    // Transform the indicator document file path into a public URL
     public function setDocumentUrl($document)
     {
         $document_url = null;
@@ -725,10 +709,9 @@ class Indicator
             $document_url = jUrl::getFull(
                 'gobsapi~indicator:getIndicatorDocument'
             );
-            $pkey = $this->lizmap_project->getData('repository').'~'.$this->lizmap_project->getData('id');
             $document_url = str_replace(
                 'index.php/gobsapi/indicator/getIndicatorDocument',
-                'gobsapi.php/project/'.$pkey.'/indicator/'.$this->code.'/document/'.$document->uid,
+                'gobsapi.php/project/'.$this->project_key.'/indicator/'.$this->code.'/document/'.$document->uid,
                 $document_url
             );
         }
@@ -736,7 +719,7 @@ class Indicator
         return $document_url;
     }
 
-    // Transform the observation media file path into a public lizMap media URL
+    // Transform the observation media file path into a public URL
     public function setObservationMediaUrl($uid)
     {
         $media_url = null;
@@ -755,10 +738,9 @@ class Indicator
                 $media_url = jUrl::getFull(
                     'gobsapi~observation:getObservationMedia'
                 );
-                $pkey = $this->lizmap_project->getData('repository').'~'.$this->lizmap_project->getData('id');
                 $media_url = str_replace(
                     'index.php/gobsapi/observation/getObservationMedia',
-                    'gobsapi.php/project/'.$pkey.'/indicator/'.$this->code.'/observation/'.$uid.'/media',
+                    'gobsapi.php/project/'.$this->project_key.'/indicator/'.$this->code.'/observation/'.$uid.'/media',
                     $media_url
                 );
 

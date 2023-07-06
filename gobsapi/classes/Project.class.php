@@ -11,9 +11,9 @@
 class Project
 {
     /**
-     * @var lizmap_project: Lizmap project instance
+     * @var project_key: Gobs project key
      */
-    protected $lizmap_project;
+    protected $project_key;
 
     /**
      * @var SimpleXMLElement QGIS project XML
@@ -23,7 +23,7 @@ class Project
     /**
      * @var data: G-Obs Representation of a project
      */
-    protected $data;
+    protected $data = null;
 
     /**
      * @var array Array of project indicator codes
@@ -31,9 +31,9 @@ class Project
     protected $indicators = array();
 
     /**
-     * @var array QGIS Project custom variables
+     * @var array G-Obs Project properties read from database
      */
-    protected $variables = array();
+    protected $properties = array();
 
     /**
      * @var string Name of the PostgreSQL connection
@@ -51,199 +51,126 @@ class Project
     protected $connectionProfile;
 
     /**
+     * @var string Authenticated user login
+     */
+    protected $login;
+
+    /**
+     * @var array Authenticated user groups
+     */
+    protected $userGroups;
+
+
+
+    /**
      * constructor.
      *
-     * @param mixed $lizmap_project
+     * @param string $project_key
      */
-    public function __construct($lizmap_project)
+    public function __construct($project_key, $login)
     {
-        $this->lizmap_project = $lizmap_project;
+        $this->project_key = $project_key;
+        $this->login = $login;
 
-        // Get simpleXmlElement representation
-        $this->setProjectXml();
-
-        // Get QGIS project custom variables
-        $this->variables = $this->readCustomProjectVariables($this->xml);
+        // Get the authenticated user groups
+        $this->userGroups = jAcl2DbUserGroup::getGroupsIdByUser($this->login);
 
         // Get the project connection name and profile
         $this->setConnection();
 
-        // Check connection
-        $connectionName = $this->connectionName;
+        // Check connection to PostgreSQL database
         $this->connectionValid = $this->checkConnection();
 
         // Get indicators: do it before building Gobs project
         // to check if the project contains indicators
         if ($this->connectionValid) {
-            $this->setIndicators();
+
+            // Get project properties
+            $this->properties = $this->getProjectPropertiesFromDatabase();
 
             // Create Gobs projet expected data
             // only if there are some indicators
-            if (!empty($this->indicators)) {
+            if ($this->properties !== null) {
                 $this->buildGobsProject();
             }
         } else {
-            $key = $this->lizmap_project->getData('repository').'~'.$this->lizmap_project->getData('id');
-            jLog::log('Project "'.$key.'" connection name is not valid: "'.$connectionName.'"');
-        }
-    }
-
-    // Create G-Obs project object from Lizmap project
-    private function buildGobsProject()
-    {
-        // Project key
-        $key = $this->lizmap_project->getData('repository').'~'.$this->lizmap_project->getData('id');
-
-        // Compute bbox
-        $extent = array(
-            'xmin' => -180,
-            'ymin' => -90,
-            'xmax' => 180,
-            'ymax' => 90,
-        );
-        $bbox = $this->lizmap_project->getData('bbox');
-        $bbox_exp = explode(', ', $bbox);
-        $proj = $this->lizmap_project->getData('proj');
-        $srid = explode(':', $proj)[1];
-        $sql = "
-            WITH a AS (
-                SELECT ST_Transform(
-                    ST_SetSRID('Box(
-                        ".$bbox_exp[0].' '.$bbox_exp[1].',
-                        '.$bbox_exp[2].' '.$bbox_exp[3]."
-                    )'::box2d, ".$srid.'), 4326) AS b
-            )
-            SELECT
-            ST_xmin(b) xmin,
-            ST_ymin(b) ymin,
-            ST_xmax(b) xmax,
-            ST_ymax(b) ymax
-            FROM a;
-        ';
-        $cnx = jDb::getConnection($this->connectionProfile);
-
-        try {
-            $resultset = $cnx->query($sql);
-            $data = array();
-            foreach ($resultset->fetchAll() as $record) {
-                $extent = array(
-                    'xmin' => $record->xmin,
-                    'ymin' => $record->ymin,
-                    'xmax' => $record->xmax,
-                    'ymax' => $record->ymax,
-                );
-            }
-        } catch (Exception $e) {
-            $msg = $e->getMessage();
-            jLog::log('Erreur de récupération des données du projet "'.$key.'"', 'error');
-            jLog::log($msg, 'error');
+            jLog::log('Project "'.$project_key.'" connection name is not valid: "'.$this->connectionName.'"');
         }
 
-        // Add geopackage url if a file is present
-        $gpkg_url = null;
-        $gpkg_file_path = $this->lizmap_project->getQgisPath().'.gpkg';
-        if (file_exists($gpkg_file_path)) {
-            $gpkg_url = jUrl::getFull(
-                'gobsapi~project:getProjectGeopackage',
-                // array(
-                // 'projectKey' => $key,
-                // )
-            );
-            $gpkg_url = str_replace(
-                'index.php/gobsapi/project/getProjectGeopackage',
-                'gobsapi.php/project/'.$key.'/geopackage',
-                $gpkg_url
-            );
-        }
-
-        // Media URL
-        $media_url = jUrl::getFull(
-            'view~media:illustration',
-            array(
-                'repository' => $this->lizmap_project->getData('repository'),
-                'project' => $this->lizmap_project->getData('id'),
-            )
-        );
-
-        // Build data
-        $this->data = array(
-            'key' => $key,
-            'label' => $this->lizmap_project->getData('title'),
-            'description' => $this->lizmap_project->getData('abstract'),
-            'media_url' => $media_url,
-            'geopackage_url' => $gpkg_url,
-            'extent' => $extent,
-        );
-    }
-
-    // Get Gobs representation of a project object
-    public function get()
-    {
-        return $this->data;
-    }
-
-    /* Get QGIS project XML
-     *
-     * @param object $project Lizmap project
-     *
-     * @return XML of the QGIS project
-     */
-    private function setProjectXml()
-    {
-        $qgs_path = $this->lizmap_project->getQgisPath();
-        if (
-            !file_exists($qgs_path)
-            || !file_exists($qgs_path.'.cfg')
-        ) {
-            throw new Error('Files of project '.$this->key.' does not exists');
-        }
-        $xml = simplexml_load_file($qgs_path);
-        if ($xml === false) {
-            throw new Exception('Qgs File of project '.$this->key.' has invalid content');
-        }
-
-        $this->xml = $xml;
-    }
-
-    /**
-     * @param \SimpleXMLElement $xml
-     *
-     * @return null|array[] array of custom variable name => variable value
-     */
-    protected function readCustomProjectVariables($xml)
-    {
-        $xmlCustomProjectVariables = $xml->xpath('//properties/Variables');
-        $customProjectVariables = array();
-
-        if ($xmlCustomProjectVariables && count($xmlCustomProjectVariables) === 1) {
-            $variableIndex = 0;
-            foreach ($xmlCustomProjectVariables[0]->variableNames->value as $variableName) {
-                $customProjectVariables[(string) $variableName] = (string) $xmlCustomProjectVariables[0]->variableValues->value[$variableIndex];
-                ++$variableIndex;
-            }
-
-            return $customProjectVariables;
-        }
-
-        return null;
     }
 
     /**
      * Set the connection name and profile.
+     *
+     * @return bool False if no connection has been found
      */
     private function setConnection()
     {
-        $status = '';
-        if (!empty($this->variables) && array_key_exists('gobs_connection_name', $this->variables)) {
-            $connectionName = trim($this->variables['gobs_connection_name']);
-            if (!empty($connectionName)) {
-                $this->connectionName = $connectionName;
-                $this->connectionProfile = $this->getConnectionProfile();
-                $status = true;
-            }
+        // Get the ini file containing the projects connections
+        jClasses::inc('gobsapi~Utils');
+        $utils = new Utils();
+        $root_dir = $utils->getMediaRootDirectory();
+        $projects_connections_file = '/gobsapi/projects_connections.ini';
+        $projects_connections_file_path = $root_dir.$projects_connections_file;
+
+        // No file
+        if (!file_exists($projects_connections_file_path)) {
+            return false;
+        }
+        $ini = parse_ini_file($projects_connections_file_path, true);
+
+        // No content
+        if (!$ini) {
+            return false;
         }
 
-        return $status;
+        // The project key does not exists in the ini file
+        if (!array_key_exists($this->project_key, $ini) || !array_key_exists('connection_name', $ini[$this->project_key]) ) {
+            return false;
+        }
+
+        // The project connection is not empty
+        $connectionName = trim($ini[$this->project_key]['connection_name']);
+        if (empty($connectionName)) {
+            return false;
+        }
+
+        // Set the project connection name
+        $this->connectionName = $connectionName;
+        $this->connectionProfile = $this->getConnectionProfile();
+
+
+        return true;
+    }
+
+    /**
+     * Get the connection virtual profile.
+     */
+    public function getConnectionProfile()
+    {
+        if (empty($this->connectionName)) {
+            return null;
+        }
+
+        // Profile parameters
+        $jdbParams = array(
+            'driver' => 'pgsql',
+            'service' => $this->connectionName,
+        );
+        $dbProfile = 'gobs_api_profile_'.sha1(json_encode($jdbParams));
+
+        try {
+            // try to get the profile, it may be already created for an other layer
+            \jProfiles::get('jdb', $dbProfile, true);
+        } catch (Exception $e) {
+            // create the profile
+            \jProfiles::createVirtualProfile('jdb', $dbProfile, $jdbParams);
+        }
+
+        // Set the project property
+        $this->connectionProfile = $dbProfile;
+
+        return $dbProfile;
     }
 
     /**
@@ -280,63 +207,216 @@ class Project
     }
 
     /**
-     * Get the connection virtual profile.
+     * Get the project properties from the database.
+     *
+     *
+     * @return null|array The project properties or null
      */
-    public function getConnectionProfile()
-    {
-        if (empty($this->connectionName)) {
+    public function getProjectPropertiesFromDatabase() {
+        $project = null;
+
+        $cnx = jDb::getConnection($this->connectionProfile);
+        $sql = "
+            WITH
+            proj AS (
+                SELECT id
+                FROM gobs.project
+                WHERE pt_code = $1
+                LIMIT 1
+            ),
+            global_view AS (
+                SELECT
+                    fk_id_project,
+                    geom
+                FROM gobs.project_view AS pv,
+                proj
+                WHERE fk_id_project = proj.id
+                AND pv_type = 'global'
+                LIMIT 1
+            ),
+            merged_views AS (
+                SELECT
+                    fk_id_project,
+                    string_agg(pv_label, ',') AS labels,
+                    ST_AsEWKT(ST_Union(geom)) AS geom
+                FROM proj, gobs.project_view AS pv
+                WHERE fk_id_project = proj.id
+                AND pv_type != 'global'
+                AND regexp_split_to_array(pv_groups, '[\s,;]+')
+                    && regexp_split_to_array($2, '@@')
+                GROUP BY fk_id_project
+            )
+            SELECT
+                p.id, p.pt_code, p.pt_lizmap_project_key,
+                p.pt_label, p.pt_description,
+                array_to_string(p.pt_indicator_codes, ',') AS pt_indicator_codes,
+                pv.geom AS allowed_polygon,
+                ST_xmin(gv.geom) AS xmin,
+                ST_ymin(gv.geom) AS ymin,
+                ST_xmax(gv.geom) AS xmax,
+                ST_ymax(gv.geom) AS ymax
+            FROM gobs.project AS p
+            INNER JOIN global_view AS gv
+                ON gv.fk_id_project = p.id
+            INNER JOIN merged_views AS pv
+                ON pv.fk_id_project = p.id
+
+            WHERE p.pt_code = $1
+            LIMIT 1
+        ";
+        $params = array(
+            $this->project_key,
+            implode('@@', $this->userGroups),
+        );
+        try {
+            $resultset = $cnx->prepare($sql);
+            $resultset->execute($params);
+            $data = array();
+            foreach ($resultset->fetchAll() as $record) {
+                $data['id'] = $record->id;
+                $data['code'] = $record->pt_code;
+                $data['lizmap_project_key'] = $record->pt_lizmap_project_key;
+                $data['label'] = $record->pt_label;
+                $data['description'] = $record->pt_description;
+                $data['indicator_codes'] = $record->pt_indicator_codes;
+                $data['allowed_polygon'] = $record->allowed_polygon;
+                $data['xmin'] = $record->xmin;
+                $data['ymin'] = $record->ymin;
+                $data['xmax'] = $record->xmax;
+                $data['ymax'] = $record->ymax;
+            }
+            return $data;
+
+        } catch (Exception $e) {
+            $msg = $e->getMessage();
+            jLog::log('An error occured while requesting the properties for the project "'.$this->project_key.'"', 'error');
+            jLog::log($msg, 'error');
+
             return null;
         }
 
-        // Profile parameters
-        $jdbParams = array(
-            'driver' => 'pgsql',
-            'service' => $this->connectionName,
-        );
-        $dbProfile = 'gobs_api_profile_'.sha1(json_encode($jdbParams));
-
-        try {
-            // try to get the profile, it may be already created for an other layer
-            \jProfiles::get('jdb', $dbProfile, true);
-        } catch (Exception $e) {
-            // create the profile
-            \jProfiles::createVirtualProfile('jdb', $dbProfile, $jdbParams);
-        }
-
-        // Set the project property
-        $this->connectionProfile = $dbProfile;
-
-        return $dbProfile;
+        return null;
     }
 
     /**
-     * Set project gobs indicators from the QGIS project variable
-     * gobs_indicators.
+     * Check that the authenticated user has access to this project
+     *
+     * @return boolean $hasAccess True if the user can access this project
      */
-    private function setIndicators()
-    {
-        // Get Gobs special project variable gobs_indicators
-        // The QGIS project needs to have a project variable, like
-        // gobs_indicators -> gobs_indicators:indicator_a,indicator_b
-        // TODO: no need to use the prefix "gobs_indicators:" anymore since
-        // the use of the new method readCustomProjectVariables
-        $status = false;
+    public function checkAcl() {
+        return ($this->properties !== null && count($this->properties) > 0);
+    }
 
-        if (!empty($this->variables) && array_key_exists('gobs_indicators', $this->variables)) {
-            $indicators = str_replace('gobs_indicators:', '', trim($this->variables['gobs_indicators']));
-            $indicators = array_map('trim', explode(',', $indicators));
-            if (!empty($indicators)) {
-                $this->indicators = $indicators;
-                $status = true;
+
+    // Create G-Obs project object from Lizmap project
+    private function buildGobsProject()
+    {
+        jClasses::inc('gobsapi~Utils');
+        $utils = new Utils();
+
+        // Add geopackage url if a file is present
+        $gpkg_url = null;
+        $root_dir = $utils->getMediaRootDirectory();
+        $gpkg_dir = '/gobsapi/geopackage/'.$this->project_key.'.gpkg';
+        $gpkg_file_path = $root_dir.$gpkg_dir;
+        if (file_exists($gpkg_file_path)) {
+            $gpkg_url = jUrl::getFull(
+                'gobsapi~project:getProjectGeopackage',
+            );
+            $gpkg_url = str_replace(
+                'index.php/gobsapi/project/getProjectGeopackage',
+                'gobsapi.php/project/'.$this->project_key.'/geopackage',
+                $gpkg_url
+            );
+        }
+
+        // Project illustration
+        $root_dir = $utils->getMediaRootDirectory();
+        $media_dir = '/gobsapi/illustration/'.$this->project_key;
+        $extensions = array('jpg', 'jpeg', 'png');
+        $media_url = Null;
+        foreach ($extensions as $extension) {
+            $media_file_path = $root_dir.$media_dir.'.'.$extension;
+            if (file_exists($media_file_path)) {
+                $media_url = jUrl::getFull(
+                    'gobsapi~project:getProjectIllustration',
+                );
+                $media_url = str_replace(
+                    'index.php/gobsapi/project/getProjectIllustration',
+                    'gobsapi.php/project/'.$this->project_key.'/illustration',
+                    $media_url
+                );
+                break;
             }
         }
 
-        return $status;
+        // Build data
+        $this->data = array(
+            'key' => $this->project_key,
+            'label' => $this->properties['label'],
+            'description' => $this->properties['description'],
+            'media_url' => $media_url,
+            'geopackage_url' => $gpkg_url,
+            'extent' => array(
+                'xmin' => $this->properties['xmin'],
+                'ymin' => $this->properties['ymin'],
+                'xmax' => $this->properties['xmax'],
+                'ymax' => $this->properties['ymax'],
+            ),
+        );
     }
 
-    // Get Gobs project indicators
+    /**
+     *  Get Gobs representation of a project object
+     *
+     * @return array The Gobs project data expected by the API
+     */
+    public function get()
+    {
+        return $this->data;
+    }
+
+    /**
+     *  Get Gobs project key
+     *
+     * @return string $project_key The project key
+     */
+    public function getKey()
+    {
+        return $this->project_key;
+    }
+
+    /**
+     *  Get Gobs project internal properties
+     *
+     * @return array $properties The project properties
+     */
+    public function getProperties()
+    {
+        return $this->properties;
+    }
+
+    /**
+     * Get Gobs project indicators
+     *
+     * @return null|array The project indicators
+     */
     public function getIndicators()
     {
-        return $this->indicators;
+        $indicators = null;
+
+        if (is_array($this->properties) && array_key_exists('indicator_codes', $this->properties)
+            && !empty($this->properties['indicator_codes'])
+        ) {
+            $indicators = array_map('trim', explode(',', $this->properties['indicator_codes']));
+            if (count($indicators) == 0) {
+                $indicators = null;
+            }
+        }
+
+        $this->indicators = $indicators;
+
+        return $indicators;
     }
+
 }

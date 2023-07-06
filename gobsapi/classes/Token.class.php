@@ -46,7 +46,7 @@ class Token
      * @param string token Token passed in Authentication header
      * @param mixed $token
      *
-     * @return array User object containing login
+     * @return object User object containing login
      */
     public function getUserFromToken($token)
     {

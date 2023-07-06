@@ -52,30 +52,43 @@ class User
      */
     public function getProjects()
     {
-        $repositories = lizmap::getRepositoryList();
+        // Utils
+        jClasses::inc('gobsapi~Utils');
+        $utils = new Utils();
+
+        // Get the list of projects
+        // At present, we must loop for each listed project
+        // in the ini file, which is not very optimized.
+        // We should create a new concept of "database" or "instance"
+        // which will help to know which database to connect to
+
+        // Get the ini file containing the projects connections
+        jClasses::inc('gobsapi~Utils');
+        $utils = new Utils();
+        $root_dir = $utils->getMediaRootDirectory();
+        $projects_connections_file = '/gobsapi/projects_connections.ini';
+        $projects_connections_file_path = $root_dir.$projects_connections_file;
+
+        // No file
+        if (!file_exists($projects_connections_file_path)) {
+            return array();
+        }
+        $ini = parse_ini_file($projects_connections_file_path, true);
+
+        // No content
+        if (!$ini) {
+            return array();
+        }
+
         $projects = array();
-        foreach ($repositories as $repository) {
-            // Check rights
-            if (!jAcl2::check('lizmap.repositories.view', $repository)) {
-                continue;
-            }
+        foreach ($ini as $project_key=>$project_config) {
+            // Get project instance
+            jClasses::inc('gobsapi~Project');
+            $gobs_project = new Project($project_key, $this->login);
 
-            // Get repository and related projects
-            $lizmap_repository = lizmap::getRepository($repository);
-            $get_projects = $lizmap_repository->getProjects();
-            foreach ($get_projects as $project) {
-                // Check rights
-                if (!$project->checkAcl($this->login)) {
-                    continue;
-                }
-
-                // Get project instance from Lizmap project
-                jClasses::inc('gobsapi~Project');
-                $gobs_project = new Project($project);
-                // Add it only if project has a valid connection && contains gobs indicators
-                if (!empty($gobs_project->connectionName) && !empty($gobs_project->getIndicators())) {
-                    $projects[] = $gobs_project->get();
-                }
+            // Add it only if project has a valid connection && contains gobs indicators
+            if ($gobs_project->connectionValid && !empty($gobs_project->getIndicators())) {
+                $projects[] = $gobs_project->get();
             }
         }
 

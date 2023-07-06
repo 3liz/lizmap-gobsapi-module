@@ -26,9 +26,9 @@ class Observation
     protected $indicator;
 
     /**
-     * @var lizmap_project: Lizmap project
+     * @var \Project G-Obs project
      */
-    protected $lizmap_project;
+    protected $project_code;
 
     /**
      * @var observation_valid: Boolean telling the observation is valid or not
@@ -95,10 +95,6 @@ class Observation
         if ($body_data) {
             // Do nothing
         }
-
-        // Set Lizmap project from indicator
-        $lizmap_project = $indicator->getLizmapProject();
-        $this->lizmap_project = $lizmap_project;
 
         // Set observation media directory
         $this->observation_media_directory = $indicator->observation_media_directory;

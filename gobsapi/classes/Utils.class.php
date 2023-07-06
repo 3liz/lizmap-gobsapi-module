@@ -92,10 +92,10 @@ class Utils
     );
 
     // Query database and return json data
-    private function query($connection_profile, $sql, $params)
+    public function query($connection_profile, $sql, $params)
     {
         $cnx = jDb::getConnection($connection_profile);
-
+        $cnx->beginTransaction();
         try {
             $resultset = $cnx->prepare($sql);
             $resultset->execute($params);
@@ -172,4 +172,18 @@ class Utils
 
         return $version;
     }
+
+    /**
+     * Get the Lizmap media root directory
+     *
+     * @return string Path of Lizmap project root folder
+     */
+    public function getMediaRootDirectory()
+    {
+        $lizmapRootDirectory = lizmap::getServices()->getRootRepositories();
+        $mediaRootDirectory = realpath($lizmapRootDirectory.'/media/');
+
+        return $mediaRootDirectory;
+    }
+
 }
