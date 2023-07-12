@@ -81,6 +81,9 @@ pull:
 shell:
 	docker compose exec -u ${LIZMAP_USER_ID} lizmap /bin/sh -l
 
+shellpg:
+	docker compose exec -u ${LIZMAP_USER_ID} pgsql /bin/sh -l
+
 install-plugins: dirs
 	@echo "Install QGIS server plugins"
 	docker run \

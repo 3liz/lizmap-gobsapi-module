@@ -5,10 +5,10 @@
     "start_timestamp": "2022-07-22 03:30:00",
     "end_timestamp": null,
     "coordinates": {
-        "x": -3.785,
-        "y": 48.15
+        "x": -3.892,
+        "y": 48.4225
     },
-    "wkt": "POINT(-3.785 48.15)",
+    "wkt": "POINT(-3.892 48.4225)",
     "values": [
         40
     ],

@@ -234,7 +234,7 @@ class Project
                 SELECT
                     fk_id_project,
                     string_agg(pv_label, ',') AS labels,
-                    ST_AsEWKT(ST_Union(geom)) AS geom
+                    ST_multi(ST_Union(geom))::geometry(MULTIPOLYGON, 4326) AS geom
                 FROM proj, gobs.project_view AS pv
                 WHERE fk_id_project = proj.id
                 AND regexp_split_to_array(pv_groups, '[\s,;]+')
@@ -245,7 +245,7 @@ class Project
                 p.id, p.pt_code, p.pt_lizmap_project_key,
                 p.pt_label, p.pt_description,
                 array_to_string(p.pt_indicator_codes, ',') AS pt_indicator_codes,
-                pv.geom AS allowed_polygon,
+                ST_AsText(mv.geom) AS allowed_polygon_wkt,
                 ST_xmin(gv.geom) AS xmin,
                 ST_ymin(gv.geom) AS ymin,
                 ST_xmax(gv.geom) AS xmax,
@@ -253,8 +253,8 @@ class Project
             FROM gobs.project AS p
             INNER JOIN global_view AS gv
                 ON gv.fk_id_project = p.id
-            INNER JOIN merged_views AS pv
-                ON pv.fk_id_project = p.id
+            INNER JOIN merged_views AS mv
+                ON mv.fk_id_project = p.id
 
             WHERE p.pt_code = $1
             LIMIT 1
@@ -275,7 +275,7 @@ class Project
                 $data['label'] = $record->pt_label;
                 $data['description'] = $record->pt_description;
                 $data['indicator_codes'] = $record->pt_indicator_codes;
-                $data['allowed_polygon'] = $record->allowed_polygon;
+                $data['allowed_polygon_wkt'] = $record->allowed_polygon_wkt;
                 $data['xmin'] = $record->xmin;
                 $data['ymin'] = $record->ymin;
                 $data['xmax'] = $record->xmax;
@@ -384,13 +384,29 @@ class Project
     }
 
     /**
-     *  Get Gobs project internal properties.
+     * Get Gobs project internal properties.
      *
-     * @return array $properties The project properties
+     * @return null|array $properties The project properties
      */
     public function getProperties()
     {
         return $this->properties;
+    }
+
+    /**
+     * Get Gobs project allowed polygon for the authenticated user
+     * based on the accessible project views.
+     *
+     * @return null|string $wkt The WKT representing the allowed polygon.
+     */
+    public function getAllowedPolygon()
+    {
+        $allowedPolygon = null;
+        if (is_array($this->properties) && array_key_exists('allowed_polygon_wkt', $this->properties)) {
+            $allowedPolygon = $this->properties['allowed_polygon_wkt'];
+        }
+
+        return $allowedPolygon;
     }
 
     /**

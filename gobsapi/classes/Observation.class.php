@@ -26,9 +26,9 @@ class Observation
     protected $indicator;
 
     /**
-     * @var \Project G-Obs project
+     * @var string Allowed project polygon in WKT for the authenticated user based on the indicator project view
      */
-    protected $project_code;
+    protected $allowed_polygon_wkt;
 
     /**
      * @var observation_valid: Boolean telling the observation is valid or not
@@ -40,7 +40,7 @@ class Observation
     public $spatial_object;
 
     /**
-     * @var json_data JSON G-Obs Representation of an observation
+     * @var string JSON G-Obs Representation of an observation
      */
     protected $json_data;
 
@@ -62,10 +62,10 @@ class Observation
     /**
      * constructor.
      *
-     * @param mixed      $user            Gobs Authenticated user instance
-     * @param mixed      $indicator       Instance of G-Obs Indicator
-     * @param mixed      $observation_uid Uid of the observation
-     * @param mixed      $data            JSON data of the observation given as request body
+     * @param objet      $user            Gobs Authenticated user instance
+     * @param \Indicator $indicator       Instance of G-Obs Indicator
+     * @param string     $observation_uid Uid of the observation
+     * @param string     $data            JSON data of the observation given as request body
      * @param null|mixed $body_data
      */
     public function __construct($user, $indicator, $observation_uid = null, $body_data = null)
@@ -75,6 +75,7 @@ class Observation
         $this->raw_data = null;
         $this->user = $user;
         $this->indicator = $indicator;
+        $this->allowed_polygon_wkt = $indicator->getAllowedPolygon();
 
         // Get data from database if uid is given
         if (!empty($observation_uid)) {
@@ -161,12 +162,48 @@ class Observation
         return preg_match($regex, trim($wkt));
     }
 
+
+    /**
+     * Check the observation wkt intersects a given polygon
+     *
+     * This is mainly used to check if the observation can
+     * be viewed or edited against the user project views polygon.
+     *
+     * @param string $observation_wkt WKT representation of the observation geometry
+     * @param string $polygon_wkt     WKT representation of the polygon geometry
+     *
+     * @return bool
+     */
+    public function checkWktIntersectsPolygonWkt($observation_wkt, $polygon_wkt)
+    {
+        $sql = "
+            SELECT
+                (CASE
+                    WHEN ST_Intersects(
+                        ST_SetSRID(ST_GeomFromText($1), 4326),
+                        ST_SetSRID(ST_GeomFromText($2), 4326)
+                    ) THEN 'yes'
+                    ELSE 'no'
+                END)::text AS test
+        ";
+        $cnx = jDb::getConnection($this->indicator->getConnectionProfile());
+        $resultset = $cnx->prepare($sql);
+        $params = array($observation_wkt, $polygon_wkt);
+        $resultset->execute($params);
+        $intersects = false;
+        foreach ($resultset->fetchAll() as $record) {
+            $intersects = ($record->test == 'yes');
+        }
+
+        return $intersects;
+    }
+
     /**
      * Check observation JSON data.
      *
      * @param string $action create or update
      *
-     * @return bool
+     * @return Array Array containing the error status, code & message
      */
     public function checkObservationBodyJSONFormat($action = 'create')
     {
@@ -176,6 +213,7 @@ class Observation
 
             return array(
                 'error',
+                '400',
                 'Observation JSON data is empty',
             );
         }
@@ -189,6 +227,7 @@ class Observation
 
             return array(
                 'error',
+                '400',
                 'Observation JSON data must have a valid indicator',
             );
         }
@@ -200,6 +239,7 @@ class Observation
 
             return array(
                 'error',
+                '400',
                 'Observation JSON data must have a valid start_timestamp',
             );
         }
@@ -210,6 +250,7 @@ class Observation
 
             return array(
                 'error',
+                '400',
                 'Observation JSON data must have a valid end_timestamp',
             );
         }
@@ -241,11 +282,39 @@ class Observation
         }
         $hasSpatialDefinition = ($hasValidWkt || $hasSpatialObject);
         if (!$hasSpatialDefinition) {
+            $this->observation_valid = false;
+
             return array(
                 'error',
+                '400',
                 'Observation JSON data must have a valid wkt or a valid spatial object reference',
             );
+        }
+
+        // Check that the observation geometry is inside the project views
+        // accessible to the authenticated user
+        $intersectsViews = false;
+        if ($hasValidWkt) {
+            $intersectsViews = $this->checkWktIntersectsPolygonWkt(
+                $body_data->wkt,
+                $this->allowed_polygon_wkt
+            );
+        }
+        if ($hasSpatialObject) {
+            $intersectsViews = $this->checkWktIntersectsPolygonWkt(
+                $this->spatial_object->wkt,
+                $this->allowed_polygon_wkt
+            );
+        }
+
+        if (!$intersectsViews) {
             $this->observation_valid = false;
+
+            return array(
+                'error',
+                '401',
+                'Observation geometry must intersect the geometry of the authenticated user accessible project views',
+            );
         }
 
         if ($action == 'update') {
@@ -256,6 +325,7 @@ class Observation
             if (!$this->observation_valid) {
                 return array(
                     'error',
+                    '404',
                     'Observation JSON data does not correspond to an existing observation',
                 );
             }
@@ -267,6 +337,7 @@ class Observation
 
                 return array(
                     'error',
+                    '400',
                     'Observation JSON data must have a valid indicator',
                 );
             }
@@ -307,6 +378,7 @@ class Observation
 
                     return array(
                         'error',
+                        '400',
                         'Observation cannot be created: given UID already exists.',
                     );
                 }
@@ -327,6 +399,7 @@ class Observation
 
         return array(
             'success',
+            '200',
             'Observation JSON data is valid',
         );
     }
@@ -487,7 +560,8 @@ class Observation
         WITH obj AS (
             SELECT
                 so.id, so.so_unique_id,
-                sl.sl_code, sl.sl_label, sl.sl_geometry_type
+                sl.sl_code, sl.sl_label, sl.sl_geometry_type,
+                ST_AsText(so.geom) AS wkt
             FROM gobs.spatial_object AS so
             INNER JOIN gobs.spatial_layer AS sl
                 ON sl.id = so.fk_id_spatial_layer
@@ -514,7 +588,7 @@ class Observation
             return json_decode($json);
         }
 
-            return null;
+        return null;
     }
 
     // Return the SQL for the creation of an observation

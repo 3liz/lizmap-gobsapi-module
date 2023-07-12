@@ -69,6 +69,7 @@ class TestRequests(unittest.TestCase):
 
     def login(self, username: str = 'admin', password: str = 'admin') -> None:
         """ Login and get token """
+        # Login
         url = 'user/login'
         params = {
             'username': username,
@@ -92,7 +93,8 @@ class TestRequests(unittest.TestCase):
         params: dict = None, data_file: str = None,
         expected_format: ExpectedType = ExpectedType.Dict, expected_status_code: int = 200,
         content_type: str = None, token_required: bool = True,
-        request_sync_date: str = None, last_sync_date: str = None
+        request_sync_date: str = None, last_sync_date: str = None,
+
     ):
         """
         Wrapper which test an api call against test data
@@ -442,6 +444,25 @@ class TestRequests(unittest.TestCase):
         json_response = json.loads(response.text)
         self.assertEqual(len(json_response), 44)
 
+    def test_indicator_observations_filtered_by_project_view(self):
+
+        """ Get observations of the indicator population """
+        # Log in as filtered user
+        self.login('gobsapi_writer_filtered', 'md_password')
+
+        project_key = 'test_project_a'
+        indicator_key = 'population'
+        response = self.api_call(
+            entry_point=f'/project/{project_key}/indicator/{indicator_key}/observations',
+            test_file=None,
+            expected_format=ExpectedType.List,
+        )
+        json_response = json.loads(response.text)
+        self.assertEqual(len(json_response), 36)
+
+        # Re log as admin
+        self.login('gobsapi_writer', 'al_password')
+
     def test_indicator_observation_detail(self):
         """ Get an observation of the indicator hiker_position """
         project_key = 'test_project_a'
@@ -505,8 +526,8 @@ class TestRequests(unittest.TestCase):
         observation = json.loads(response.text)
 
         # Check modified data are OK
-        self.assertDictEqual(observation['coordinates'], {"x": -3.791, "y": 48.33})
-        self.assertEqual(observation['wkt'], 'POINT(-3.791 48.33)')
+        self.assertDictEqual(observation['coordinates'], {"x": -3.906, "y": 48.446})
+        self.assertEqual(observation['wkt'], 'POINT(-3.906 48.446)')
         self.assertListEqual(observation['values'], [45])
 
         # Delete file
@@ -519,6 +540,40 @@ class TestRequests(unittest.TestCase):
             method=HttpMethod.Delete,
             expected_format=ExpectedType.Dict
         )
+
+    def test_observation_create_with_geometry_outside_project(self):
+        """ Create an observation with a geometry outside the project extent"""
+        # Create a new observation
+        project_key = 'test_project_a'
+        indicator_key = 'hiker_position'
+        self.api_call(
+            entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation',
+            method=HttpMethod.Post,
+            content_type='application/json',
+            data_file='data/input_observation_create_outside_project.json',
+            test_file=None,
+            expected_status_code=401,
+        )
+
+    def test_observation_create_with_geometry_outside_allowed_polygon(self):
+        """ Create an observation with a geometry outside the authorized project views polygons """
+        # Login a a filtered user
+        self.login('gobsapi_writer_filtered', 'md_password')
+
+        # Create a new observation
+        project_key = 'test_project_a'
+        indicator_key = 'hiker_position'
+        self.api_call(
+            entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation',
+            method=HttpMethod.Post,
+            content_type='application/json',
+            data_file='data/input_observation_create_outside_allowed_polygon.json',
+            test_file=None,
+            expected_status_code=401,
+        )
+
+        # Log back in as writer
+        self.login('gobsapi_writer', 'al_password')
 
     def test_observation_media_actions(self):
         """ Create an observation & test media upload, download, deletion """

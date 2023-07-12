@@ -20,9 +20,10 @@ class apiController extends jController
     /** @var object */
     protected $user;
 
-    /** @var Project */
+    /** @var \Project */
     protected $gobs_project;
 
+    /** @var \Indicator */
     protected $indicator;
 
     protected $requestSyncDate;
@@ -148,7 +149,11 @@ class apiController extends jController
         jClasses::inc('gobsapi~Indicator');
         $connection_profile = $this->gobs_project->getConnectionProfile();
         $project_key = $this->gobs_project->getKey();
-        $gobs_indicator = new Indicator($this->user, $indicator_code, $project_key, $connection_profile);
+        $gobs_indicator = new Indicator(
+            $this->user, $indicator_code,
+            $project_key, $connection_profile,
+            $this->gobs_project->getAllowedPolygon()
+        );
 
         // Check indicatorKey is valid
         if (!$gobs_indicator->checkCode()) {

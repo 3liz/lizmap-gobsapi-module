@@ -160,10 +160,10 @@ class observationCtrl extends apiController
         if ($from == 'updateObservation') {
             $action = 'update';
         }
-        list($check_status, $check_message) = $gobs_observation->checkObservationBodyJSONFormat($action);
+        list($check_status, $check_code, $check_message) = $gobs_observation->checkObservationBodyJSONFormat($action);
         if ($check_status == 'error') {
             return array(
-                '400',
+                $check_code,
                 'error',
                 $check_message,
             );

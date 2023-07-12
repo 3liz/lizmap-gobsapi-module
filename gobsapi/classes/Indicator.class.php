@@ -49,17 +49,23 @@ class Indicator
      */
     protected $media_mimes = array('jpg', 'jpeg', 'png', 'gif');
 
+    /**
+     * @var string Allowed polygon in WKT
+     */
+    protected $allowed_polygon_wkt = null;
+
     // Todo: Indicator - Ajouter nouvelle catégorie de document = icon
 
     /**
      * constructor.
      *
-     * @param mixed  $user                Gobs user instance
-     * @param string $code:               the code of the indicator
-     * @param string $project_key:        the project code of the indicator
-     * @param string $connection_profile: the QGIS project corresponding jDb connection profile name
+     * @param mixed  $user                 Gobs user instance
+     * @param string $code:                the code of the indicator
+     * @param string $project_key:         the project code of the indicator
+     * @param string $connection_profile:  the QGIS project corresponding jDb connection profile name
+     * @param string $allowed_polygon_wkt: The WKT representing the allowed polygone for the user
      */
-    public function __construct($user, $code, $project_key, $connection_profile)
+    public function __construct($user, $code, $project_key, $connection_profile, $allowed_polygon_wkt)
     {
         $this->code = $code;
         $this->user = $user;
@@ -74,6 +80,9 @@ class Indicator
         // Set document and observation media directories
         $this->setDocumentDirectory();
         $this->setMediaDirectory();
+
+        // set allowed polygon for accessible views
+        $this->allowed_polygon_wkt = $allowed_polygon_wkt;
     }
 
     // Get indicator code
@@ -86,6 +95,26 @@ class Indicator
     public function getProjectKey()
     {
         return $this->project_key;
+    }
+
+    /**
+     * Get indicator project instance
+     *
+     * @return \Project G-Obs project instance
+     */
+    public function getProject()
+    {
+        // Get gobs project manager
+        jClasses::inc('gobsapi~Project');
+        $gobs_project = new Project($this->project_key, $this->user->login);
+
+        return $gobs_project;
+    }
+
+    // Get the allowed polygon in WKT
+    public function getAllowedPolygon()
+    {
+        return $this->allowed_polygon_wkt;
     }
 
     // Get the connection profile
@@ -586,15 +615,21 @@ class Indicator
             )
         ";
 
+        // Filter based on the project views allowed polygon
+        $sql .= '
+            AND ( ST_Intersects(so.geom, ST_SetSRID(ST_GeomFromText($2), 4326)) )
+        ';
+
         // Filter between last sync date & request sync date
         if ($requestSyncDate && $lastSyncDate) {
             // updated_at is always set (=created_at or last time object has been modified)
             $sql .= '
             AND (
-                o.updated_at > $2 AND o.updated_at <= $3
+                o.updated_at > $3 AND o.updated_at <= $4
             )
             ';
         }
+
 
         // Filter for given observation uids
         if (!empty($uids)) {
@@ -624,7 +659,10 @@ class Indicator
         // jLog::log($sql, 'error');
         $cnx = jDb::getConnection($this->connection_profile);
         $resultset = $cnx->prepare($sql);
-        $params = array($this->code);
+        $params = array(
+            $this->code,
+            $this->allowed_polygon_wkt,
+        );
         if ($requestSyncDate && $lastSyncDate) {
             $params[] = $lastSyncDate;
             $params[] = $requestSyncDate;
