@@ -99,8 +99,10 @@ class projectCtrl extends apiController
         foreach ($indicator_codes as $code) {
             $connection_profile = $this->gobs_project->getConnectionProfile();
             $gobs_indicator = new Indicator(
-                $this->user, $code,
-                $project_key, $connection_profile,
+                $this->user,
+                $code,
+                $project_key,
+                $connection_profile,
                 $this->gobs_project->getAllowedPolygon()
             );
             $indicator = $gobs_indicator->get('publication');

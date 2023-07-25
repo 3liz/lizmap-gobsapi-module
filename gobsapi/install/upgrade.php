@@ -31,7 +31,7 @@ class gobsapiModuleUpgrader extends jInstallerModule
 
     /**
      * Update the entry point (overwrite the file
-     * and adapt application init file
+     * and adapt application init file.
      *
      * @param string $entryPointFile Entry point file
      */

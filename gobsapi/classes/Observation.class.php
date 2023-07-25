@@ -162,9 +162,8 @@ class Observation
         return preg_match($regex, trim($wkt));
     }
 
-
     /**
-     * Check the observation wkt intersects a given polygon
+     * Check the observation wkt intersects a given polygon.
      *
      * This is mainly used to check if the observation can
      * be viewed or edited against the user project views polygon.
@@ -203,7 +202,7 @@ class Observation
      *
      * @param string $action create or update
      *
-     * @return Array Array containing the error status, code & message
+     * @return array Array containing the error status, code & message
      */
     public function checkObservationBodyJSONFormat($action = 'create')
     {

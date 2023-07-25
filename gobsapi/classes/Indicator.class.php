@@ -52,7 +52,7 @@ class Indicator
     /**
      * @var string Allowed polygon in WKT
      */
-    protected $allowed_polygon_wkt = null;
+    protected $allowed_polygon_wkt;
 
     // Todo: Indicator - Ajouter nouvelle catégorie de document = icon
 
@@ -98,7 +98,7 @@ class Indicator
     }
 
     /**
-     * Get indicator project instance
+     * Get indicator project instance.
      *
      * @return \Project G-Obs project instance
      */
@@ -106,9 +106,8 @@ class Indicator
     {
         // Get gobs project manager
         jClasses::inc('gobsapi~Project');
-        $gobs_project = new Project($this->project_key, $this->user->login);
 
-        return $gobs_project;
+        return new Project($this->project_key, $this->user->login);
     }
 
     // Get the allowed polygon in WKT
@@ -629,7 +628,6 @@ class Indicator
             )
             ';
         }
-
 
         // Filter for given observation uids
         if (!empty($uids)) {

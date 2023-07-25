@@ -150,8 +150,10 @@ class apiController extends jController
         $connection_profile = $this->gobs_project->getConnectionProfile();
         $project_key = $this->gobs_project->getKey();
         $gobs_indicator = new Indicator(
-            $this->user, $indicator_code,
-            $project_key, $connection_profile,
+            $this->user,
+            $indicator_code,
+            $project_key,
+            $connection_profile,
             $this->gobs_project->getAllowedPolygon()
         );
 

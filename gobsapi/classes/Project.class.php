@@ -397,7 +397,7 @@ class Project
      * Get Gobs project allowed polygon for the authenticated user
      * based on the accessible project views.
      *
-     * @return null|string $wkt The WKT representing the allowed polygon.
+     * @return null|string $wkt the WKT representing the allowed polygon
      */
     public function getAllowedPolygon()
     {
