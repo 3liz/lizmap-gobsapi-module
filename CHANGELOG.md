@@ -2,6 +2,21 @@
 
 ## Unreleased
 
+## 0.7.0 - 2023-07-25
+
+### Changed
+
+* Projects - remove the link between Lizmap projects and G-Obs project & use the project table
+* Observations - Restrict read & write access based on the user accessible project views
+
+### Added
+
+* Plugin Lizmap compatibility - Add a way to get Lizmap Web Client metadata from G-Obs API
+
+### Fixed
+
+* Ensure the entry point `gobsapi.php` is overwritten on each version upgrade
+
 ## 0.6.0 - 2023-03-27
 
 ### Changed
