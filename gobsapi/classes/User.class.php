@@ -33,7 +33,6 @@ class User
     /**
      * constructor.
      *
-     * @param mixed $user       Jelix authenticated user
      * @param mixed $jelix_user
      */
     public function __construct($jelix_user)

@@ -65,7 +65,6 @@ class Observation
      * @param objet      $user            Gobs Authenticated user instance
      * @param \Indicator $indicator       Instance of G-Obs Indicator
      * @param string     $observation_uid Uid of the observation
-     * @param string     $data            JSON data of the observation given as request body
      * @param null|mixed $body_data
      */
     public function __construct($user, $indicator, $observation_uid = null, $body_data = null)

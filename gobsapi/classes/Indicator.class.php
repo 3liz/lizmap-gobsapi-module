@@ -59,11 +59,11 @@ class Indicator
     /**
      * constructor.
      *
-     * @param mixed  $user                 Gobs user instance
-     * @param string $code:                the code of the indicator
-     * @param string $project_key:         the project code of the indicator
-     * @param string $connection_profile:  the QGIS project corresponding jDb connection profile name
-     * @param string $allowed_polygon_wkt: The WKT representing the allowed polygone for the user
+     * @param mixed  $user                Gobs user instance
+     * @param string $code                the code of the indicator
+     * @param string $project_key         the project code of the indicator
+     * @param string $connection_profile  the QGIS project corresponding jDb connection profile name
+     * @param string $allowed_polygon_wkt The WKT representing the allowed polygone for the user
      */
     public function __construct($user, $code, $project_key, $connection_profile, $allowed_polygon_wkt)
     {
@@ -129,8 +129,7 @@ class Indicator
 
         return
             preg_match('/^[a-zA-Z0-9_\-]+$/', $i)
-            and strlen($i) > 2
-        ;
+            and strlen($i) > 2;
     }
 
     /**
