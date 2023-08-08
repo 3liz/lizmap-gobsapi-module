@@ -1,0 +1,8 @@
+.gitattributes export-ignore
+.gitignore export-ignore
+.github export-ignore
+tests export-ignore
+.php_cs_dist.php export-ignore
+Makefile  export-ignore
+mkdocs.yml  export-ignore
+php-stan.neon  export-ignore
