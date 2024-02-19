@@ -29,6 +29,7 @@ main:
 			shell: open a shell in Lizmap web container
 			install-plugins: install QGIS Server plugins
 			import-data: import test data inside the PostgreSQL database
+			export-data: export test data from the PostgreSQL database
 
 			Note: Un fichier d'environment pour docker compose
 			est crée à chaque invocation de 'run'.
