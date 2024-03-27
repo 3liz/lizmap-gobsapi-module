@@ -19,9 +19,15 @@ class userCtrl extends apiController
     {
         $rep = $this->getResponse('json');
 
-        // Parameters
-        $username = $this->param('username');
-        $password = $this->param('password');
+        // Connect from auth basic if necessary
+        if (isset($_SERVER['PHP_AUTH_USER'])) {
+            $username = $_SERVER['PHP_AUTH_USER'];
+            $password = $_SERVER['PHP_AUTH_PW'];
+        } else {
+            // Parameters
+            $username = $this->param('username');
+            $password = $this->param('password');
+        }
 
         // Log the user
         $log_user = jAuth::login($username, $password);
