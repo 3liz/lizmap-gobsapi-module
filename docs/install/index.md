@@ -231,6 +231,9 @@ BASEURL="http://lizmap.localhost/gobsapi.php"
 # login
 # we get the authentication TOKEN variable by first log the user in
 TOKEN=$(curl -s -X GET -H 'Content-Type: application/json' "$BASEURL/user/login?username=gobsapi_writer&password=al_password" | jq -r '.token') && echo $TOKEN
+# OR
+# we can use Basic authentication to avoid using username & password in the URL
+TOKEN=$(curl -s -X GET -H 'Content-Type: application/json' -u "gobsapi_writer:al_password" "$BASEURL/user/login" | jq -r '.token') && echo $TOKEN
 ```
 
 returns the token, for example

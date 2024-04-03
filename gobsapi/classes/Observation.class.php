@@ -489,19 +489,28 @@ class Observation
     {
         $cnx = jDb::getConnection($this->indicator->getConnectionProfile());
         $json = null;
+        $resultset = null;
         $cnx->beginTransaction();
 
         try {
             $resultset = $cnx->prepare($sql);
-            $resultset->execute($params);
-            foreach ($resultset->fetchAll() as $record) {
-                $json = $record->object_json;
+            $execute = $resultset->execute($params);
+            if ($resultset && $resultset->id() === false) {
+                $errorCode = $cnx->errorCode();
+
+                throw new Exception($errorCode);
             }
             $cnx->commit();
         } catch (Exception $e) {
             $cnx->rollback();
 
-            throw $e;
+            throw new Exception($e->getMessage());
+        }
+
+        if ($resultset !== null) {
+            foreach ($resultset->fetchAll() as $record) {
+                $json = $record->object_json;
+            }
         }
 
         return $json;

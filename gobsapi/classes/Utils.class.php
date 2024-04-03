@@ -100,6 +100,13 @@ class Utils
         try {
             $resultset = $cnx->prepare($sql);
             $resultset->execute($params);
+            if ($resultset && $resultset->id() === false) {
+                $cnx->rollback();
+                $errorCode = $cnx->errorCode();
+                \jLog::log($errorCode, 'error');
+
+                return null;
+            }
             $data = $resultset->fetchAll();
             $cnx->commit();
         } catch (Exception $e) {

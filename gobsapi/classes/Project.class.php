@@ -182,9 +182,16 @@ class Project
 
         try {
             $cnx = jDb::getConnection($this->connectionProfile);
-            $resultset = $cnx->query($sql);
-            foreach ($resultset->fetchAll() as $record) {
-                $status = true;
+            $query = $cnx->query($sql);
+            if ($query) {
+                foreach ($query->fetchAll() as $record) {
+                    $status = true;
+                }
+            } else {
+                $errorCode = $cnx->errorCode();
+                jLog::log('Connection to the PostgreSQL service "'.$this->connectionName.'" failed', 'error');
+                jLog::log($errorCode, 'error');
+                $status = false;
             }
         } catch (Exception $e) {
             $msg = $e->getMessage();
@@ -237,7 +244,7 @@ class Project
                     ST_multi(ST_Union(geom))::geometry(MULTIPOLYGON, 4326) AS geom
                 FROM proj, gobs.project_view AS pv
                 WHERE fk_id_project = proj.id
-                AND regexp_split_to_array(pv_groups, '[\s,;]+')
+                AND regexp_split_to_array(pv_groups, '[\\s,;]+')
                     && regexp_split_to_array($2, '@@')
                 GROUP BY fk_id_project
             )
