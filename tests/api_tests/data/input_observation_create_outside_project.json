@@ -1,0 +1,19 @@
+{
+    "id": null,
+    "indicator": "hiker_position",
+    "uuid": null,
+    "start_timestamp": "2022-07-22 03:30:00",
+    "end_timestamp": null,
+    "coordinates": {
+        "x": -3.785,
+        "y": 48.15
+    },
+    "wkt": "POINT(-3.785 48.15)",
+    "values": [
+        40
+    ],
+    "media_url": null,
+    "created_at": null,
+    "updated_at": null
+}
+    

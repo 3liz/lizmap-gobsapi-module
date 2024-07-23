@@ -92,7 +92,7 @@ class Project
                 $this->buildGobsProject();
             }
         } else {
-            jLog::log('Project "'.$project_key.'" connection name is not valid: "'.$this->connectionName.'"');
+            \jLog::log('Project "'.$project_key.'" connection name is not valid: "'.$this->connectionName.'"');
         }
     }
 
@@ -189,14 +189,14 @@ class Project
                 }
             } else {
                 $errorCode = $cnx->errorCode();
-                jLog::log('Connection to the PostgreSQL service "'.$this->connectionName.'" failed', 'error');
-                jLog::log($errorCode, 'error');
+                \jLog::log('Connection to the PostgreSQL service "'.$this->connectionName.'" failed', 'error');
+                \jLog::log($errorCode, 'error');
                 $status = false;
             }
         } catch (Exception $e) {
             $msg = $e->getMessage();
-            jLog::log('Connection to the PostgreSQL service "'.$this->connectionName.'" failed', 'error');
-            jLog::log($msg, 'error');
+            \jLog::log('Connection to the PostgreSQL service "'.$this->connectionName.'" failed', 'error');
+            \jLog::log($msg, 'error');
             $status = false;
         }
 
@@ -217,14 +217,15 @@ class Project
     public function getProjectPropertiesFromDatabase()
     {
         $project = null;
-
         $cnx = jDb::getConnection($this->connectionProfile);
+        $projectCode = $this->project_key;
+        $groups = implode('@@', $this->userGroups);
         $sql = "
             WITH
             proj AS (
                 SELECT id
                 FROM gobs.project
-                WHERE pt_code = $1
+                WHERE pt_code = ".$cnx->quote($projectCode)."
                 LIMIT 1
             ),
             global_view AS (
@@ -241,11 +242,11 @@ class Project
                 SELECT
                     fk_id_project,
                     string_agg(pv_label, ',') AS labels,
-                    ST_multi(ST_Union(geom))::geometry(MULTIPOLYGON, 4326) AS geom
+                    CAST( ST_multi(ST_Union(geom)) AS geometry(MULTIPOLYGON, 4326) ) AS geom
                 FROM proj, gobs.project_view AS pv
                 WHERE fk_id_project = proj.id
                 AND regexp_split_to_array(pv_groups, '[\\s,;]+')
-                    && regexp_split_to_array($2, '@@')
+                    && regexp_split_to_array(".$cnx->quote($groups).", '@@')
                 GROUP BY fk_id_project
             )
             SELECT
@@ -263,37 +264,45 @@ class Project
             INNER JOIN merged_views AS mv
                 ON mv.fk_id_project = p.id
 
-            WHERE p.pt_code = $1
+            WHERE p.pt_code = ".$cnx->quote($projectCode)."
             LIMIT 1
         ";
-        $params = array(
-            $this->project_key,
-            implode('@@', $this->userGroups),
-        );
 
+        $resultset = null;
         try {
+
             $resultset = $cnx->prepare($sql);
-            $resultset->execute($params);
+            // We do not used prepared statement anymore because this feature seems broken
+            $execute = $resultset->execute();
+
             $data = array();
-            foreach ($resultset->fetchAll() as $record) {
-                $data['id'] = $record->id;
-                $data['code'] = $record->pt_code;
-                $data['lizmap_project_key'] = $record->pt_lizmap_project_key;
-                $data['label'] = $record->pt_label;
-                $data['description'] = $record->pt_description;
-                $data['indicator_codes'] = $record->pt_indicator_codes;
-                $data['allowed_polygon_wkt'] = $record->allowed_polygon_wkt;
-                $data['xmin'] = $record->xmin;
-                $data['ymin'] = $record->ymin;
-                $data['xmax'] = $record->xmax;
-                $data['ymax'] = $record->ymax;
+            if ($resultset && $resultset->id() === false) {
+                $errorCode = $cnx->errorCode();
+
+                throw new Exception($errorCode);
+            }
+
+            if ($resultset !== null) {
+                foreach ($resultset->fetchAll() as $record) {
+                    $data['id'] = $record->id;
+                    $data['code'] = $record->pt_code;
+                    $data['lizmap_project_key'] = $record->pt_lizmap_project_key;
+                    $data['label'] = $record->pt_label;
+                    $data['description'] = $record->pt_description;
+                    $data['indicator_codes'] = $record->pt_indicator_codes;
+                    $data['allowed_polygon_wkt'] = $record->allowed_polygon_wkt;
+                    $data['xmin'] = $record->xmin;
+                    $data['ymin'] = $record->ymin;
+                    $data['xmax'] = $record->xmax;
+                    $data['ymax'] = $record->ymax;
+                }
             }
 
             return $data;
         } catch (Exception $e) {
             $msg = $e->getMessage();
-            jLog::log('An error occured while requesting the properties for the project "'.$this->project_key.'"', 'error');
-            jLog::log($msg, 'error');
+            \jLog::log('An error occurred while requesting the properties for the project "'.$this->project_key.'"', 'error');
+            \jLog::log($msg, 'error');
 
             return null;
         }
@@ -327,7 +336,7 @@ class Project
                 'gobsapi~project:getProjectGeopackage',
             );
             $gpkg_url = str_replace(
-                'index.php/gobsapi/project/getProjectGeopackage',
+                'gobsapi.php/gobsapi/project/getProjectGeopackage',
                 'gobsapi.php/project/'.$this->project_key.'/geopackage',
                 $gpkg_url
             );
@@ -345,7 +354,7 @@ class Project
                     'gobsapi~project:getProjectIllustration',
                 );
                 $media_url = str_replace(
-                    'index.php/gobsapi/project/getProjectIllustration',
+                    'gobsapi.php/gobsapi/project/getProjectIllustration',
                     'gobsapi.php/project/'.$this->project_key.'/illustration',
                     $media_url
                 );

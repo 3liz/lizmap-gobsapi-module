@@ -1,8 +1,8 @@
-// Lizmap url configuration
 [services]
 lizmapPluginAPIURL="http://map:8080/lizmap/"
+appName="Lizmap GobsApi tests"
 
-[repository:gobsapi]
-label=gobsapi
-path="/srv/projects/gobsapi/"
+[repository:tests]
+label=tests
+path="/srv/projects/tests"
 allowUserDefinedThemes=1

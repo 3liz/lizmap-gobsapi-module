@@ -152,8 +152,17 @@ class observationCtrl extends apiController
     {
         // Parameters
         $body = $this->request->readHttpBody();
+        // Since Jelix 1.7, the body is given as an array and not as a string anymore.
+        // Gobs Observation class expects it as a JSON string
+        if (is_array($body)) {
+            // For new versions, we must re-encode it as JSON
+            $bodyString = json_encode($body);
+        } else {
+            $bodyString = $body;
+        }
+
         $observation_uid = null;
-        $gobs_observation = new Observation($this->user, $this->indicator, $observation_uid, $body);
+        $gobs_observation = new Observation($this->user, $this->indicator, $observation_uid, $bodyString);
 
         // Check observation JSON
         $action = 'create';

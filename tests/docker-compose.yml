@@ -1,4 +1,3 @@
-version: '3'
 services:
   pgsql:
     image: 3liz/postgis:${POSTGIS_VERSION_TAG}
@@ -30,10 +29,11 @@ services:
       - ${LIZMAP_DIR}/var/lizmap-log:/www/lizmap/var/log
       - ${LIZMAP_DIR}/var/lizmap-temp:/www/temp/lizmap/
       - ${LIZMAP_DIR}/etc:/srv/etc:ro
-      - ${GOBSAPI_MODULE_SRC}/gobsapi:/www/lizmap/lizmap-modules/gobsapi
+      - ${MODULE_SRC}/gobsapi:/www/lizmap/lizmap-modules/gobsapi
+      - ${LIZMAP_DIR}/var/nginx-cache:/var/cache/nginx
+      - ${LIZMAP_DIR}/etc/additional-config.ini:/etc/php7/conf.d/additional-config.ini
     command:
       - php-fpm
-    restart: unless-stopped
     depends_on:
       - pgsql
   map:
@@ -88,13 +88,13 @@ services:
       PIP_CACHE_DIR: "/.cache"
     volumes:
       # Python test folder
-      - ${GOBSAPI_MODULE_SRC}/tests/api_tests/:/usr/src/gobsapi/tests/api_tests
+      - ${MODULE_SRC}/tests/api_tests/:/usr/src/gobsapi/tests/api_tests
       # Module folder
-      - ${GOBSAPI_MODULE_SRC}/gobsapi:/usr/src/gobsapi/gobsapi
+      - ${MODULE_SRC}/gobsapi:/usr/src/gobsapi/gobsapi
       # Cache
       - ${LIZMAP_DIR}/local-python:/.local
       - ${LIZMAP_DIR}/cache-python:/.cache
-      - ${GOBSAPI_MODULE_SRC}/tests/api_tests/.pytest_cache:/usr/src/gobsapi/tests/api_tests/.pytest_cache
+      - ${MODULE_SRC}/tests/api_tests/.pytest_cache:/usr/src/gobsapi/tests/api_tests/.pytest_cache
     depends_on:
       - pgsql
 volumes:

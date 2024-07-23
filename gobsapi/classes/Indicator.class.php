@@ -745,7 +745,7 @@ class Indicator
                 'gobsapi~indicator:getIndicatorDocument'
             );
             $document_url = str_replace(
-                'index.php/gobsapi/indicator/getIndicatorDocument',
+                'gobsapi.php/gobsapi/indicator/getIndicatorDocument',
                 'gobsapi.php/project/'.$this->project_key.'/indicator/'.$this->code.'/document/'.$document->uid,
                 $document_url
             );
@@ -774,7 +774,7 @@ class Indicator
                     'gobsapi~observation:getObservationMedia'
                 );
                 $media_url = str_replace(
-                    'index.php/gobsapi/observation/getObservationMedia',
+                    'gobsapi.php/gobsapi/observation/getObservationMedia',
                     'gobsapi.php/project/'.$this->project_key.'/indicator/'.$this->code.'/observation/'.$uid.'/media',
                     $media_url
                 );

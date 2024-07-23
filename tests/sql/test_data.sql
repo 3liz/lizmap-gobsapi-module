@@ -3,7 +3,7 @@
 --
 
 -- Dumped from database version 11.13 (Debian 11.13-1.pgdg100+1)
--- Dumped by pg_dump version 14.8 (Ubuntu 14.8-0ubuntu0.22.04.1)
+-- Dumped by pg_dump version 11.13 (Debian 11.13-1.pgdg100+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -21,34 +21,6 @@ SET row_security = off;
 --
 
 CREATE SCHEMA gobs;
-
-
---
--- Name: postgis; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS postgis WITH SCHEMA public;
-
-
---
--- Name: EXTENSION postgis; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON EXTENSION postgis IS 'PostGIS geometry, geography, and raster spatial types and functions';
-
-
---
--- Name: uuid-ossp; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public;
-
-
---
--- Name: EXTENSION "uuid-ossp"; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON EXTENSION "uuid-ossp" IS 'generate universally unique identifiers (UUIDs)';
 
 
 --
@@ -425,6 +397,8 @@ $$;
 
 
 SET default_tablespace = '';
+
+SET default_with_oids = false;
 
 --
 -- Name: actor; Type: TABLE; Schema: gobs; Owner: -
@@ -7080,14 +7054,6 @@ COPY gobs.spatial_object (id, so_unique_id, so_unique_label, geom, fk_id_spatial
 1009	949	John	0101000020E61000000D75C0C360620DC0440986C50F394840	3	2017-10-31	\N	c0ddd927-cffb-4c4e-a69d-6c1ba08bc579	2022-10-05 16:03:24.49695	2022-10-05 16:03:24.49695
 1010	950	John	0101000020E610000062366968AF620DC06ED0EA360F394840	3	2017-10-31	\N	7c85a78b-c982-4a46-8143-f35a95b6abf6	2022-10-05 16:03:24.49695	2022-10-05 16:03:24.49695
 1011	951	John	0101000020E6100000A64CD24ACD620DC063567B2A0E394840	3	2017-10-31	\N	61c7a9ed-a29e-4296-a7ce-f6cc9e1e365e	2022-10-05 16:03:24.49695	2022-10-05 16:03:24.49695
-\.
-
-
---
--- Data for Name: spatial_ref_sys; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public.spatial_ref_sys (srid, auth_name, auth_srid, srtext, proj4text) FROM stdin;
 \.
 
 
