@@ -220,12 +220,12 @@ class Project
         $cnx = jDb::getConnection($this->connectionProfile);
         $projectCode = $this->project_key;
         $groups = implode('@@', $this->userGroups);
-        $sql = "
+        $sql = '
             WITH
             proj AS (
                 SELECT id
                 FROM gobs.project
-                WHERE pt_code = ".$cnx->quote($projectCode)."
+                WHERE pt_code = '.$cnx->quote($projectCode)."
                 LIMIT 1
             ),
             global_view AS (
@@ -264,11 +264,12 @@ class Project
             INNER JOIN merged_views AS mv
                 ON mv.fk_id_project = p.id
 
-            WHERE p.pt_code = ".$cnx->quote($projectCode)."
+            WHERE p.pt_code = ".$cnx->quote($projectCode).'
             LIMIT 1
-        ";
+        ';
 
         $resultset = null;
+
         try {
 
             $resultset = $cnx->prepare($sql);

@@ -2,6 +2,25 @@
 
 ## Unreleased
 
+
+## 0.8.0 - 2024-07-25
+
+### Changed
+
+* Compatibility for Lizmap Web Client 3.6 & 3.7 - Remove compatibility for Lizmap Web Client 3.5
+* Exclude some files from the Composer package
+
+### Added
+
+* User authentication - Allow the use of Basic authentication for /user/login endpoint
+* When using SAML authentication protocol, add synchronization of Roles and SI 
+  (feature taken from the old deprecated module gobs)
+
+### Fixed
+
+* Tools - Better errors catchment when executing SQL queries
+
+
 ## 0.7.0 - 2023-07-25
 
 ### Changed

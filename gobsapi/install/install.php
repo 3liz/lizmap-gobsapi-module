@@ -7,7 +7,7 @@
  *
  * @license    GPL 3
  */
-class gobsapiModuleInstaller extends  \Jelix\Installer\Module\Installer
+class gobsapiModuleInstaller extends \Jelix\Installer\Module\Installer
 {
     public function install(Jelix\Installer\Module\API\InstallHelpers $helpers)
     {

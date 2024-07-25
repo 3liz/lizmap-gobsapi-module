@@ -1,19 +1,19 @@
 <?php
 /**
- * @package   lizmap
- * @subpackage gobsapi
  * @author    3liz
  * @copyright 2020 3liz
- * @link      http://3liz.com
+ *
+ * @see      http://3liz.com
+ *
  * @license   All rights reserved
  */
-
-class gobsapiListenerListener  extends \jEventListener {
-
+class gobsapiListenerListener extends \jEventListener
+{
     /**
      * @param \jEvent $event
      */
-    function onAuthLogin($event) {
+    public function onAuthLogin($event)
+    {
         /** @var samlAuthDriver $driver */
         $driver = \jAuth::getDriver();
         if (get_class($driver) != 'samlAuthDriver') {
@@ -21,11 +21,10 @@ class gobsapiListenerListener  extends \jEventListener {
         }
 
         $attributes = $driver->getSAMLAttributes();
-        \jLog::dump($attributes, "onAuthLogin: SAML attributes");
-
+        \jLog::dump($attributes, 'onAuthLogin: SAML attributes');
 
         $allGroups = array();
-        foreach(jAcl2DbUserGroup::getGroupList() as $group) {
+        foreach (jAcl2DbUserGroup::getGroupList() as $group) {
             $allGroups[$group->id_aclgrp] = $group;
         }
 
@@ -53,9 +52,9 @@ class gobsapiListenerListener  extends \jEventListener {
             $groupsOfUser = array_merge($groupsOfUser, $this->registerGroups($allGroups, $attributes['GOBS_SI'], 'GOBS_SI'));
         }
 
-        \jLog::dump(array_keys($groupsOfUser), "onAuthLogin: Groupes de l'utilisateur $login");
+        \jLog::dump(array_keys($groupsOfUser), "onAuthLogin: Groupes de l'utilisateur {$login}");
         $groupToRemove = array();
-        foreach(jAcl2DbUserGroup::getGroupList($login) as $group) {
+        foreach (jAcl2DbUserGroup::getGroupList($login) as $group) {
             if ($group->grouptype == 2) {
                 // private group, let's ignore
                 continue;
@@ -63,8 +62,7 @@ class gobsapiListenerListener  extends \jEventListener {
             if (isset($groupsOfUser[$group->id_aclgrp])) {
                 // the user is already in the group
                 unset($groupsOfUser[$group->id_aclgrp]);
-            }
-            else {
+            } else {
                 // the user is in a group that is not listed in roles given by SAML
                 // let's remove him from it
                 $groupToRemove[] = $group->id_aclgrp;
@@ -72,14 +70,14 @@ class gobsapiListenerListener  extends \jEventListener {
         }
 
         $hasChanges = false;
-        foreach($groupToRemove as $grpId) {
-            \jLog::log("onAuthLogin: Remove $login from $grpId");
+        foreach ($groupToRemove as $grpId) {
+            \jLog::log("onAuthLogin: Remove {$login} from {$grpId}");
             \jAcl2DbUserGroup::removeUserFromGroup($login, $grpId);
             $hasChanges = true;
         }
 
-        foreach($groupsOfUser as $grpId => $ok) {
-            \jLog::log("onAuthLogin: Add $login into $grpId");
+        foreach ($groupsOfUser as $grpId => $ok) {
+            \jLog::log("onAuthLogin: Add {$login} into {$grpId}");
             \jAcl2DbUserGroup::addUserToGroup($login, $grpId);
             $hasChanges = true;
         }
@@ -89,7 +87,8 @@ class gobsapiListenerListener  extends \jEventListener {
         }
     }
 
-    protected function registerGroups(&$allGroups, $samlGroups, $rolesName) {
+    protected function registerGroups(&$allGroups, $samlGroups, $rolesName)
+    {
         $groupsOfUser = array();
         $adminGroup = array();
         if (isset(jApp::config()->gobsapi['adminSAMLGobsRoleName'])) {
@@ -99,21 +98,22 @@ class gobsapiListenerListener  extends \jEventListener {
             }
         }
 
-        foreach($samlGroups as $roleAsJson) {
+        foreach ($samlGroups as $roleAsJson) {
             $role = @json_decode($roleAsJson, true);
             if (!$role || !isset($role['code']) || $role['code'] == '') {
                 \jLog::log('gobs login: bad role value into '.$rolesName.', not a json or code property missing: '.$roleAsJson, 'error');
+
                 continue;
             }
             $idGrp = $role['code'];
-            $name = isset($role['label']) ? $role['label']: $idGrp;
+            $name = isset($role['label']) ? $role['label'] : $idGrp;
             if ($name == '') {
                 $name = $idGrp;
             }
             if (!isset($allGroups[$idGrp])) {
                 \jAcl2DbUserGroup::createGroup($name, $idGrp);
                 if (in_array($idGrp, $adminGroup)) {
-                    foreach(jAcl2DbManager::$ACL_ADMIN_RIGHTS as $role)  {
+                    foreach (jAcl2DbManager::$ACL_ADMIN_RIGHTS as $role) {
                         \jAcl2DbManager::addRight($idGrp, $role);
                     }
                     \jAcl2DbManager::addRight($idGrp, 'acl.group.create');
@@ -137,7 +137,7 @@ class gobsapiListenerListener  extends \jEventListener {
 
             $groupsOfUser[$idGrp] = true;
         }
+
         return $groupsOfUser;
     }
-
 }

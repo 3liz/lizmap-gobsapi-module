@@ -8,14 +8,14 @@
  * @license    GPL 3
  */
 
-use \jelix\Routing\UrlMapping\EntryPointUrlModifier;
-use \Jelix\Routing\UrlMapping\MapEntry\MapInclude;
+use jelix\Routing\UrlMapping\EntryPointUrlModifier;
+use Jelix\Routing\UrlMapping\MapEntry\MapInclude;
 
 /**
- * Configurator for Lizmap 3.6+/Jelix 1.8+
+ * Configurator for Lizmap 3.6+/Jelix 1.8+.
  */
-class gobsapiModuleConfigurator extends \Jelix\Installer\Module\Configurator {
-
+class gobsapiModuleConfigurator extends \Jelix\Installer\Module\Configurator
+{
     public function getDefaultParameters()
     {
         return array();
@@ -26,10 +26,9 @@ class gobsapiModuleConfigurator extends \Jelix\Installer\Module\Configurator {
         $registerOnEntryPoint->havingName(
             'gobsapi',
             array(
-                new MapInclude('urls.xml')
+                new MapInclude('urls.xml'),
             )
-        )
-        ;
+        );
     }
 
     public function getEntryPointsToCreate()
@@ -40,12 +39,11 @@ class gobsapiModuleConfigurator extends \Jelix\Installer\Module\Configurator {
                 'gobsapi/config.ini.php',
                 'gobsapi.php',
                 'config/config.ini.php'
-            )
+            ),
         );
     }
 
-
-    function configure(\Jelix\Installer\Module\API\ConfigurationHelpers $helpers)
+    public function configure(Jelix\Installer\Module\API\ConfigurationHelpers $helpers)
     {
         // Copy configuration file for user defined options
         // TODO: This file should be editable by the admin user in LWC admin panel
@@ -57,13 +55,13 @@ class gobsapiModuleConfigurator extends \Jelix\Installer\Module\Configurator {
         // Adapt SAML configuration it is exists
         $authConfigfile = \jApp::varConfigPath('saml/saml.coord.ini.php');
         if (file_exists($authConfigfile)) {
-            $authConfig =  new \Jelix\IniFile\IniModifier($authConfigfile);
-            $authConfig->setValue('userform', "lizmap~account", 'saml');
+            $authConfig = new \Jelix\IniFile\IniModifier($authConfigfile);
+            $authConfig->setValue('userform', 'lizmap~account', 'saml');
             $authConfig->save();
         }
 
         $localConfigFile = \jApp::varConfigPath('localconfig.ini.php');
-        $localConfig =  new \Jelix\IniFile\IniModifier($localConfigFile);
+        $localConfig = new \Jelix\IniFile\IniModifier($localConfigFile);
         if (!isset(jApp::config()->gobsapi['adminSAMLGobsRoleName'])) {
             $localConfig->setValue('adminSAMLGobsRoleName', 'ROLE_GOBS_ADMIN', 'gobsapi', '');
             $localConfig->setValue('adminSAMLGobsRoleName', 'GOBS_ADMIN', 'gobsapi', '');
