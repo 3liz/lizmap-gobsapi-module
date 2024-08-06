@@ -55,6 +55,10 @@ class gobsapiListenerListener extends \jEventListener
         \jLog::dump(array_keys($groupsOfUser), "onAuthLogin: Groupes de l'utilisateur {$login}");
         $groupToRemove = array();
         foreach (jAcl2DbUserGroup::getGroupList($login) as $group) {
+            if ($group->id_aclgrp == 'admins') {
+                // admins group, let's ignore
+                continue;
+            }
             if ($group->grouptype == 2) {
                 // private group, let's ignore
                 continue;

@@ -1,13 +1,19 @@
 [modules]
-jelix.access=1
-lizmap.access=1
-view.access=1
 
-jacl2db_admin.access=1
-jauthdb_admin.access=1
-master_admin.access=1
+ldapdao.enabled=on
+ldapdao.localconf=1
+multiauth.enabled=off
 
-gobsapi.access=2
+saml.enabled=off
+samladmin.enabled=off
+saml.localconf=1
+samladmin.localconf=1
+
+gobsapi.enabled=on
+gobsapi.localconf=1
+
+[coordplugin_auth]
+driver=ldapdao
 
 [coordplugins]
 jacl2=1
