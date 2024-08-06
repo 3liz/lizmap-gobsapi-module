@@ -358,22 +358,42 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#for-lizmap-web-client-34x" class="md-nav__link">
-    For Lizmap Web Client &lt;= 3.4.x
+  <a href="#for-lizmap-web-client-37x" class="md-nav__link">
+    For Lizmap Web Client &gt;= 3.7.x
+  </a>
+  
+    <nav class="md-nav" aria-label="For Lizmap Web Client &gt;= 3.7.x">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#saml" class="md-nav__link">
+    SAML
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#for-lizmap-web-client-35x" class="md-nav__link">
-    For Lizmap Web Client &gt;= 3.5.x
+  <a href="#ldapdao" class="md-nav__link">
+    LDAPDAO
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#run-the-lizmap-web-client-installer" class="md-nav__link">
-    Run the Lizmap Web Client installer
+  <a href="#gobsapi" class="md-nav__link">
+    GOBSAPI
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-the-installer-script" class="md-nav__link">
+    Run the installer script
   </a>
   
 </li>
@@ -532,22 +552,42 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#for-lizmap-web-client-34x" class="md-nav__link">
-    For Lizmap Web Client &lt;= 3.4.x
+  <a href="#for-lizmap-web-client-37x" class="md-nav__link">
+    For Lizmap Web Client &gt;= 3.7.x
+  </a>
+  
+    <nav class="md-nav" aria-label="For Lizmap Web Client &gt;= 3.7.x">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#saml" class="md-nav__link">
+    SAML
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#for-lizmap-web-client-35x" class="md-nav__link">
-    For Lizmap Web Client &gt;= 3.5.x
+  <a href="#ldapdao" class="md-nav__link">
+    LDAPDAO
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#run-the-lizmap-web-client-installer" class="md-nav__link">
-    Run the Lizmap Web Client installer
+  <a href="#gobsapi" class="md-nav__link">
+    GOBSAPI
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-the-installer-script" class="md-nav__link">
+    Run the installer script
   </a>
   
 </li>
@@ -638,59 +678,47 @@
                 
                 <h1 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">#</a></h1>
 <h2 id="lizmap-web-client-gobsapi-module">Lizmap Web Client gobsapi module<a class="headerlink" href="#lizmap-web-client-gobsapi-module" title="Permanent link">#</a></h2>
-<p>NB: all the path given are relative to your Lizmap Web Client instance folder.</p>
-<ul>
-<li>
-<p>Copy the <code>gobsapi</code> directory inside the <code>lizmap/lizmap-modules/</code> of a working
-  Lizmap Web Client instance to have a new <code>lizmap/lizmap-modules/gobsapi/</code> folder
-  containing the files <code>module.xml</code>, <code>events.xml</code>, and folders.</p>
-</li>
-<li>
-<p>Then modify the file <code>lizmap/var/config/localconfig.ini.php</code>
-  to add <code>gobsapi.access=2</code> in the <code>[modules]</code> section, such as</p>
-</li>
-</ul>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">[modules]</span>
-<span class="na">gobsapi.access</span><span class="o">=</span><span class="s">2</span>
-</code></pre></div></td></tr></table></div>
-<h3 id="for-lizmap-web-client-34x">For Lizmap Web Client &lt;= 3.4.x<a class="headerlink" href="#for-lizmap-web-client-34x" title="Permanent link">#</a></h3>
-<ul>
-<li>You need to manually edit the file <code>lizmap/projects.xml</code>
-  and add the following content inside the <code>&lt;entrypoints&gt;</code> section</li>
-</ul>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">    </span><span class="nt">&lt;entry</span><span class="w"> </span><span class="na">file=</span><span class="s">&quot;gobsapi.php&quot;</span><span class="w"> </span><span class="na">config=</span><span class="s">&quot;gobsapi/config.ini.php&quot;</span><span class="w"> </span><span class="na">type=</span><span class="s">&quot;classic&quot;</span><span class="nt">/&gt;</span>
-</code></pre></div></td></tr></table></div>
-<p>Afterwards, you should have a content like this in the <code>entrypoints</code> section</p>
+<h3 id="for-lizmap-web-client-37x">For Lizmap Web Client &gt;= 3.7.x<a class="headerlink" href="#for-lizmap-web-client-37x" title="Permanent link">#</a></h3>
+<p>NB: all the path given in the following sections are relative
+to your Lizmap Web Client instance folder.</p>
+<h4 id="saml">SAML<a class="headerlink" href="#saml" title="Permanent link">#</a></h4>
+<p>See <a href="https://github.com/jelix/saml-module/">https://github.com/jelix/saml-module/</a></p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
 <span class="normal">3</span>
 <span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">    </span><span class="nt">&lt;entrypoints&gt;</span>
-<span class="w">        </span><span class="nt">&lt;entry</span><span class="w"> </span><span class="na">file=</span><span class="s">&quot;index.php&quot;</span><span class="w"> </span><span class="na">config=</span><span class="s">&quot;index/config.ini.php&quot;</span><span class="nt">/&gt;</span>
-<span class="w">        </span><span class="nt">&lt;entry</span><span class="w"> </span><span class="na">file=</span><span class="s">&quot;admin.php&quot;</span><span class="w"> </span><span class="na">config=</span><span class="s">&quot;admin/config.ini.php&quot;</span><span class="w"> </span><span class="na">type=</span><span class="s">&quot;classic&quot;</span><span class="nt">/&gt;</span>
-<span class="w">        </span><span class="nt">&lt;entry</span><span class="w"> </span><span class="na">file=</span><span class="s">&quot;script.php&quot;</span><span class="w"> </span><span class="na">config=</span><span class="s">&quot;cmdline/script.ini.php&quot;</span><span class="w"> </span><span class="na">type=</span><span class="s">&quot;cmdline&quot;</span><span class="nt">/&gt;</span>
-<span class="w">        </span><span class="nt">&lt;entry</span><span class="w"> </span><span class="na">file=</span><span class="s">&quot;gobsapi.php&quot;</span><span class="w"> </span><span class="na">config=</span><span class="s">&quot;gobsapi/config.ini.php&quot;</span><span class="w"> </span><span class="na">type=</span><span class="s">&quot;classic&quot;</span><span class="nt">/&gt;</span>
-<span class="w">    </span><span class="nt">&lt;/entrypoints&gt;</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>lizmap/my-packages/
+composer<span class="w"> </span>require<span class="w"> </span><span class="s2">&quot;jelix/saml-module&quot;</span>
+<span class="nb">cd</span><span class="w"> </span>../..
+php<span class="w"> </span>lizmap/install/configurator.php<span class="w"> </span>saml
+php<span class="w"> </span>lizmap/install/configurator.php<span class="w"> </span>samladmin
 </code></pre></div></td></tr></table></div>
-<ul>
-<li>Copy the folder <code>gobsapi/install/gobsapi</code> inside the Lizmap folder <code>lizmap/var/config/</code>
-  to have a new folder <code>lizmap/var/config/gobsapi</code> with a file <code>config.ini.php</code> inside</li>
-</ul>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>cp<span class="w"> </span>-R<span class="w"> </span>lizmap/lizmap-modules/gobsapi/install/gobsapi<span class="w"> </span>lizmap/var/config/gobsapi
+<p>For more information about configuration, go to <a href="https://github.com/jelix/saml-module/">https://github.com/jelix/saml-module/</a></p>
+<h4 id="ldapdao">LDAPDAO<a class="headerlink" href="#ldapdao" title="Permanent link">#</a></h4>
+<p>See <a href="https://github.com/jelix/ldapdao-module">https://github.com/jelix/ldapdao-module</a></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>lizmap/my-packages/
+composer<span class="w"> </span>require<span class="w"> </span><span class="s2">&quot;jelix/ldapdao-module&quot;</span>
+<span class="nb">cd</span><span class="w"> </span>../..
+php<span class="w"> </span>lizmap/install/configurator.php<span class="w"> </span>ldapdao
 </code></pre></div></td></tr></table></div>
-<ul>
-<li>Copy the file <code>gobsapi/install/gobsapi.php</code> inside the <code>lizmap/www/</code> folder</li>
-</ul>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>cp<span class="w"> </span>-R<span class="w"> </span>lizmap/lizmap-modules/gobsapi/install/gobsapi.php<span class="w"> </span>lizmap/www/
+<p>For more information about configuration, go to <a href="https://github.com/jelix/ldapdao-module">https://github.com/jelix/ldapdao-module</a></p>
+<h4 id="gobsapi">GOBSAPI<a class="headerlink" href="#gobsapi" title="Permanent link">#</a></h4>
+<p>Get the module with composer</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>lizmap/my-packages/
+composer<span class="w"> </span>require<span class="w"> </span><span class="s2">&quot;lizmap/lizmap-gobsapi-module&quot;</span>
+
+<span class="nb">cd</span><span class="w"> </span>../..
+php<span class="w"> </span>lizmap/install/configurator.php<span class="w"> </span>gobsapi
 </code></pre></div></td></tr></table></div>
-<h3 id="for-lizmap-web-client-35x">For Lizmap Web Client &gt;= 3.5.x<a class="headerlink" href="#for-lizmap-web-client-35x" title="Permanent link">#</a></h3>
-<p>You do not need to copy, modify or create files, everything is done by the module installer.</p>
-<h3 id="run-the-lizmap-web-client-installer">Run the Lizmap Web Client installer<a class="headerlink" href="#run-the-lizmap-web-client-installer" title="Permanent link">#</a></h3>
-<ul>
-<li>Then you need to run the Lizmap installer</li>
-</ul>
+<h3 id="run-the-installer-script">Run the installer script<a class="headerlink" href="#run-the-installer-script" title="Permanent link">#</a></h3>
+<p>Then you need to run the Lizmap installer</p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
 <span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>lizmap/install/set_rights.sh
@@ -698,48 +726,15 @@ lizmap/install/clean_vartmp.sh
 php<span class="w"> </span>lizmap/install/installer.php
 </code></pre></div></td></tr></table></div>
 <h2 id="authentication-driver">Authentication driver<a class="headerlink" href="#authentication-driver" title="Permanent link">#</a></h2>
-<p>If your Lizmap Web Client uses <strong>SAMLv2</strong> to authenticate the users,
-you need to force the <code>gobsapi</code> module to use another driver.
-The <code>SAML</code> protocol is based on URL redirections, which are not suitable for the G-Obs API end point.</p>
-<p>You can override the configuration to force the <code>gobsapi.php</code> entry point to use another driver.
-To do so, you must first edit the file <code>localconfig.ini.php</code> and change the <code>[module]</code> section into:</p>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">[modules]</span>
-<span class="c1">;; uncomment it if you want to use ldap for authentication</span>
-<span class="c1">;; see documentation to complete the ldap configuration</span>
-<span class="na">ldapdao.access</span><span class="o">=</span><span class="s">0</span>
-<span class="na">lizmap.installparam</span><span class="o">=</span>
-<span class="na">multiauth.access</span><span class="o">=</span><span class="s">0</span>
-
-<span class="c1">;; we deactivate gobs &amp; saml which must be activated</span>
-<span class="c1">;; only for the entry points index and admin</span>
-<span class="c1">;; by editing their configuration files lizmap/var/config/index/config.ini.php</span>
-<span class="c1">;; and lizmap/var/config/admin/config.ini.php</span>
-<span class="na">gobs.access</span><span class="o">=</span><span class="s">0</span>
-<span class="na">saml.access</span><span class="o">=</span><span class="s">0</span>
-<span class="c1">;; we then activate the gobsapi module</span>
-<span class="na">gobsapi.access</span><span class="o">=</span><span class="s">2</span>
-</code></pre></div></td></tr></table></div>
-<p>We have deactivated gobs &amp; saml in the main config (localconfig):
-they must now be activated <strong>only</strong> for the entry points <strong>index</strong> and <strong>admin</strong>
-by editing their configuration files <code>lizmap/var/config/index/config.ini.php</code> and <code>lizmap/var/config/admin/config.ini.php</code>.</p>
-<p>Example contents:</p>
-<ul>
-<li>for the index entrypoint:</li>
-</ul>
+<p>If your Lizmap Web Client uses <strong>SAMLv2</strong> with the module <code>saml</code>
+to authenticate the users, you need to force the <code>gobsapi</code> module
+to use another driver, for example <code>ldapdao</code>.
+The <code>SAML</code> protocol is based on URL redirections,
+which are not suitable for the G-Obs API end point.</p>
+<p>You can override the configuration to force the <code>gobsapi.php</code> entry point
+to use another driver. To do so, you must first edit
+the file <code>lizmap/var/config/localconfig.ini.php</code>
+and change the content of the following sections:</p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
 <span class="normal"> 2</span>
 <span class="normal"> 3</span>
@@ -773,44 +768,44 @@ by editing their configuration files <code>lizmap/var/config/index/config.ini.ph
 <span class="normal">31</span>
 <span class="normal">32</span>
 <span class="normal">33</span>
-<span class="normal">34</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">;&lt;?php die(&#39;&#39;); ?&gt;</span>
-<span class="c1">;for security reasons , don&#39;t remove or modify the first line</span>
+<span class="normal">34</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">[modules]</span>
 
-<span class="na">startModule</span><span class="o">=</span><span class="s">view</span>
-<span class="na">startAction</span><span class="o">=</span><span class="s">&quot;default:index&quot;</span>
+<span class="c1">; deactivate ldapdao</span>
+<span class="na">ldapdao.enabled</span><span class="o">=</span><span class="s">off</span>
+<span class="c1">; deactivate multiauth</span>
+<span class="na">multiauth.enabled</span><span class="o">=</span><span class="s">off</span>
+<span class="c1">; activate saml</span>
+<span class="na">saml.enabled</span><span class="o">=</span><span class="s">on</span>
+<span class="c1">; activate samladmin</span>
+<span class="na">samladmin.enabled</span><span class="o">=</span><span class="s">on</span>
+<span class="na">saml.localconf</span><span class="o">=</span><span class="s">1</span>
+<span class="na">samladmin.localconf</span><span class="o">=</span><span class="s">1</span>
 
-<span class="k">[coordplugins]</span>
-<span class="na">jacl2</span><span class="o">=</span><span class="s">1</span>
+<span class="c1">; activate gobsapi</span>
+<span class="na">gobsapi.enabled</span><span class="o">=</span><span class="s">on</span>
+<span class="na">gobsapi.localconf</span><span class="o">=</span><span class="s">1</span>
+<span class="na">ldapdao.localconf</span><span class="o">=</span><span class="s">1</span>
 
-<span class="na">saml</span><span class="o">=</span><span class="s">&quot;saml/saml.coord.ini.php&quot;</span>
-<span class="na">saml.name</span><span class="o">=</span><span class="s">auth</span>
-
-<span class="k">[modules]</span>
-<span class="na">dataviz.access</span><span class="o">=</span><span class="s">2</span>
-<span class="na">dynamicLayers.access</span><span class="o">=</span><span class="s">2</span>
-<span class="na">jelix.access</span><span class="o">=</span><span class="s">2</span>
-<span class="na">lizmap.access</span><span class="o">=</span><span class="s">2</span>
-<span class="na">view.access</span><span class="o">=</span><span class="s">2</span>
-<span class="na">filter.access</span><span class="o">=</span><span class="s">2</span>
-<span class="na">action.access</span><span class="o">=</span><span class="s">2</span>
-
-<span class="na">jacl2db_admin.access</span><span class="o">=</span><span class="s">1</span>
-<span class="na">jauthdb_admin.access</span><span class="o">=</span><span class="s">1</span>
-<span class="na">master_admin.access</span><span class="o">=</span><span class="s">1</span>
-
-<span class="na">saml.access</span><span class="o">=</span><span class="s">2</span>
-<span class="na">saml.installparam</span><span class="o">=</span><span class="s">&quot;localconfig</span><span class="c1">;useradmin=mdouchin;emailadmin=mdouchin@3liz.com&quot;</span>
-<span class="na">saml.path</span><span class="o">=</span><span class="s">&quot;app:my-packages/vendor/jelix/saml-module/saml&quot;</span>
-<span class="na">gobs.access</span><span class="o">=</span><span class="s">2</span>
+<span class="na">jcommunity.installparam[eps]</span><span class="o">=</span><span class="s">&quot;[index,admin]&quot;</span>
+<span class="na">jcommunity.installparam[manualconfig]</span><span class="o">=</span><span class="s">off</span>
+<span class="na">jcommunity.installparam[defaultusers]</span><span class="o">=</span>
 
 <span class="k">[coordplugin_auth]</span>
-<span class="c1">;; uncomment it if you want to use ldap for authentication</span>
-<span class="c1">;; see documentation to complete the ldap configuration</span>
+<span class="c1">; use the driver saml</span>
 <span class="na">driver</span><span class="o">=</span><span class="s">saml</span>
+
+<span class="k">[coordplugins]</span>
+<span class="na">lizmap</span><span class="o">=</span><span class="s">lizmapConfig.ini.php</span>
+<span class="na">auth.class</span><span class="o">=</span><span class="s">samlCoordPlugin</span>
+
+<span class="c1">; gobsapi configuration for SAML group synchronization</span>
+<span class="k">[gobsapi]</span>
+<span class="na">adminSAMLGobsRoleName[]</span><span class="o">=</span><span class="s">ROLE_GOBS_ADMIN</span>
+<span class="na">adminSAMLGobsRoleName[]</span><span class="o">=</span><span class="s">GOBS_ADMIN</span>
 </code></pre></div></td></tr></table></div>
-<ul>
-<li>for the admin entrypoint:</li>
-</ul>
+<p>We have then activated the SAML auth for the entry points <strong>index</strong> and <strong>admin</strong>.</p>
+<p>Now we must activate another driver for the <code>gobsapi</code> entry point, by editing
+the file <code>lizmap/var/config/gobsapi/config.ini.php</code>:</p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
 <span class="normal"> 2</span>
 <span class="normal"> 3</span>
@@ -833,102 +828,74 @@ by editing their configuration files <code>lizmap/var/config/index/config.ini.ph
 <span class="normal">20</span>
 <span class="normal">21</span>
 <span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">;&lt;?php die(&#39;&#39;); ?&gt;</span>
-<span class="c1">;for security reasons , don&#39;t remove or modify the first line</span>
+<span class="normal">23</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">[modules]</span>
 
-<span class="na">startModule</span><span class="o">=</span><span class="s">master_admin</span>
-<span class="na">startAction</span><span class="o">=</span><span class="s">&quot;default:index&quot;</span>
-
-<span class="k">[responses]</span>
-<span class="na">html</span><span class="o">=</span><span class="s">adminHtmlResponse</span>
-<span class="na">htmlauth</span><span class="o">=</span><span class="s">adminLoginHtmlResponse</span>
-
-<span class="k">[modules]</span>
-<span class="na">admin.access</span><span class="o">=</span><span class="s">2</span>
-<span class="na">jauthdb_admin.access</span><span class="o">=</span><span class="s">2</span>
-<span class="na">jacl2db_admin.access</span><span class="o">=</span><span class="s">2</span>
-<span class="na">master_admin.access</span><span class="o">=</span><span class="s">2</span>
-<span class="na">jcommunity.access</span><span class="o">=</span><span class="s">2</span>
-
-<span class="na">saml.access</span><span class="o">=</span><span class="s">2</span>
-<span class="na">saml.installparam</span><span class="o">=</span><span class="s">&quot;localconfig</span><span class="c1">;useradmin=mdouchin;emailadmin=mdouchin@3liz.com&quot;</span>
-<span class="na">saml.path</span><span class="o">=</span><span class="s">&quot;app:my-packages/vendor/jelix/saml-module/saml&quot;</span>
-<span class="na">gobs.access</span><span class="o">=</span><span class="s">2</span>
-
-<span class="k">[coordplugins]</span>
-<span class="na">jacl2</span><span class="o">=</span><span class="s">1</span>
-
-<span class="na">saml</span><span class="o">=</span><span class="s">&quot;saml/saml.coord.ini.php&quot;</span>
-<span class="na">saml.name</span><span class="o">=</span><span class="s">auth</span>
+<span class="na">ldapdao.enabled</span><span class="o">=</span><span class="s">on</span>
+<span class="na">multiauth.enabled</span><span class="o">=</span><span class="s">off</span>
+<span class="na">samladmin.enabled</span><span class="o">=</span><span class="s">off</span>
+<span class="na">saml.enabled</span><span class="o">=</span><span class="s">off</span>
+<span class="na">saml.localconf</span><span class="o">=</span><span class="s">1</span>
+<span class="na">samladmin.localconf</span><span class="o">=</span><span class="s">1</span>
+<span class="na">gobsapi.enabled</span><span class="o">=</span><span class="s">on</span>
+<span class="na">gobsapi.localconf</span><span class="o">=</span><span class="s">1</span>
+<span class="na">ldapdao.localconf</span><span class="o">=</span><span class="s">1</span>
 
 <span class="k">[coordplugin_auth]</span>
-<span class="c1">;; uncomment it if you want to use ldap for authentication</span>
-<span class="c1">;; see documentation to complete the ldap configuration</span>
-<span class="na">driver</span><span class="o">=</span><span class="s">saml</span>
-</code></pre></div></td></tr></table></div>
-<ul>
-<li>for the gobsapi entrypoint:</li>
-</ul>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">[modules]</span>
-<span class="na">jelix.access</span><span class="o">=</span><span class="s">1</span>
-<span class="na">lizmap.access</span><span class="o">=</span><span class="s">1</span>
-<span class="na">view.access</span><span class="o">=</span><span class="s">1</span>
-
-<span class="na">jacl2db_admin.access</span><span class="o">=</span><span class="s">1</span>
-<span class="na">jauthdb_admin.access</span><span class="o">=</span><span class="s">1</span>
-<span class="na">master_admin.access</span><span class="o">=</span><span class="s">1</span>
-
-<span class="c1">;; on active le module gobsapi</span>
-<span class="na">gobsapi.access</span><span class="o">=</span><span class="s">2</span>
-
-<span class="c1">;; et ldapdao</span>
-<span class="na">ldapdao.access</span><span class="o">=</span><span class="s">1</span>
-<span class="na">jacl2.access</span><span class="o">=</span><span class="s">1</span>
-<span class="na">jauth.access</span><span class="o">=</span><span class="s">1</span>
-<span class="na">jauthdb.access</span><span class="o">=</span><span class="s">1</span>
+<span class="na">driver</span><span class="o">=</span><span class="s">ldapdao</span>
 
 <span class="k">[coordplugins]</span>
 <span class="na">jacl2</span><span class="o">=</span><span class="s">1</span>
-<span class="na">auth</span><span class="o">=</span><span class="s">&quot;gobsapi/auth.coord.ini.php&quot;</span>
+<span class="na">auth</span><span class="o">=</span><span class="s">&quot;index/auth.coord.ini.php&quot;</span>
 
 <span class="k">[coordplugin_jacl2]</span>
 <span class="na">on_error</span><span class="o">=</span><span class="s">2</span>
 <span class="na">error_message</span><span class="o">=</span><span class="s">&quot;jacl2~errors.action.right.needed&quot;</span>
 <span class="na">on_error_action</span><span class="o">=</span><span class="s">&quot;jelix~error:badright&quot;</span>
+</code></pre></div></td></tr></table></div>
+<p>You may need to change the file <code>lizmap/var/config/localurls.xml</code>.
+Check its content is like:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span>
+<span class="nt">&lt;urls</span><span class="w"> </span><span class="na">xmlns=</span><span class="s">&quot;http://jelix.org/ns/urls/1.0&quot;</span><span class="nt">&gt;</span>
+<span class="w">    </span><span class="nt">&lt;entrypoint</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;index&quot;</span><span class="w"> </span><span class="na">default=</span><span class="s">&quot;true&quot;</span><span class="nt">&gt;</span>
+<span class="w">        </span><span class="nt">&lt;url</span><span class="w"> </span><span class="na">include=</span><span class="s">&quot;urls.xml&quot;</span><span class="w"> </span><span class="na">module=</span><span class="s">&quot;saml&quot;</span><span class="w"> </span><span class="na">pathinfo=</span><span class="s">&quot;/saml&quot;</span><span class="nt">/&gt;</span>
+<span class="w">        </span><span class="nt">&lt;url</span><span class="w"> </span><span class="na">module=</span><span class="s">&quot;ldapdao&quot;</span><span class="w"> </span><span class="na">pathinfo=</span><span class="s">&quot;/ldapdao&quot;</span><span class="nt">/&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/entrypoint&gt;</span>
+
+<span class="w">    </span><span class="nt">&lt;entrypoint</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;admin&quot;</span><span class="nt">&gt;</span>
+<span class="w">        </span><span class="nt">&lt;url</span><span class="w"> </span><span class="na">include=</span><span class="s">&quot;urls.xml&quot;</span><span class="w"> </span><span class="na">module=</span><span class="s">&quot;saml&quot;</span><span class="w"> </span><span class="na">pathinfo=</span><span class="s">&quot;/saml&quot;</span><span class="nt">/&gt;</span>
+<span class="w">        </span><span class="nt">&lt;url</span><span class="w"> </span><span class="na">include=</span><span class="s">&quot;urls.xml&quot;</span><span class="w"> </span><span class="na">module=</span><span class="s">&quot;samladmin&quot;</span><span class="w"> </span><span class="na">pathinfo=</span><span class="s">&quot;/samladmin&quot;</span><span class="nt">/&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/entrypoint&gt;</span>
+
+<span class="w">    </span><span class="nt">&lt;entrypoint</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;gobsapi&quot;</span><span class="w"> </span><span class="na">type=</span><span class="s">&quot;classic&quot;</span><span class="nt">&gt;</span>
+<span class="w">        </span><span class="nt">&lt;url</span><span class="w"> </span><span class="na">include=</span><span class="s">&quot;urls.xml&quot;</span><span class="w"> </span><span class="na">module=</span><span class="s">&quot;gobsapi&quot;</span><span class="w"> </span><span class="na">pathinfo=</span><span class="s">&quot;/gobsapi&quot;</span><span class="nt">/&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/entrypoint&gt;</span>
+<span class="w">    </span><span class="nt">&lt;entrypoint</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;cmdline&quot;</span><span class="w"> </span><span class="na">type=</span><span class="s">&quot;cmdline&quot;</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/urls&gt;</span>
+</code></pre></div></td></tr></table></div>
+<p>After this configuration, apply with the following commands:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code>lizmap/install/clean_vartmp.sh
+lizmap/install/set_rights.sh
+php<span class="w"> </span>lizmap/install/installer.php
+lizmap/install/set_rights.sh
 </code></pre></div></td></tr></table></div>
 <h2 id="test-the-api">Test the API<a class="headerlink" href="#test-the-api" title="Permanent link">#</a></h2>
 <p>Then you are ready to test. For example with curl (you need curl to pass JWT token in Authorization header).
