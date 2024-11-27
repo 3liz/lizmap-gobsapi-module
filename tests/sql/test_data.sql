@@ -24,6 +24,70 @@ CREATE SCHEMA gobs;
 
 
 --
+-- Name: control_observation_editing_capability(); Type: FUNCTION; Schema: gobs; Owner: -
+--
+
+CREATE FUNCTION gobs.control_observation_editing_capability() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    maximum_duration integer;
+    observation_ok boolean;
+    can_edit_protocol boolean;
+BEGIN
+    -- Do nothing for creation
+    IF TG_OP = 'INSERT' THEN
+        RETURN NEW;
+    END IF;
+
+    -- If the current user has the right to edit the protocol, do not restrict editing
+    can_edit_protocol = (
+        SELECT (count(*) > 0)
+        FROM information_schema.role_table_grants
+        WHERE grantee = current_role
+        AND table_schema = 'gobs'
+        AND table_name = 'protocol'
+        AND privilege_type IN ('UPDATE', 'INSERT')
+    );
+    IF can_edit_protocol THEN
+        IF TG_OP = 'DELETE' THEN
+            RETURN OLD;
+        ELSE
+            RETURN NEW;
+        END IF;
+    END IF;
+
+    -- Get the protocol delay
+    maximum_duration := (
+        SELECT pr_days_editable
+        FROM gobs.protocol
+        WHERE id IN (
+            SELECT fk_id_protocol
+            FROM gobs.series
+            WHERE id = NEW.fk_id_series
+        )
+        LIMIT 1
+    );
+
+    -- Check the observation created_at timestamp agains the maximum duration in days
+    observation_ok = ((now() - NEW.created_at) < (concat(maximum_duration, ' days'))::interval);
+
+    IF NOT observation_ok THEN
+        -- On renvoie une erreur
+        RAISE EXCEPTION 'The given observation cannot be edited since it is older than the delay defined in its related series protocol';
+    END IF;
+
+    -- If no problem occured, return the record
+    IF TG_OP = 'DELETE' THEN
+        RETURN OLD;
+    ELSE
+        RETURN NEW;
+    END IF;
+END;
+$$;
+
+
+--
 -- Name: find_observation_with_wrong_spatial_object(integer); Type: FUNCTION; Schema: gobs; Owner: -
 --
 
@@ -410,7 +474,7 @@ CREATE TABLE gobs.actor (
     a_description text NOT NULL,
     a_email text NOT NULL,
     id_category integer NOT NULL,
-    a_login text NOT NULL
+    a_login text
 );
 
 
@@ -460,7 +524,7 @@ COMMENT ON COLUMN gobs.actor.id_category IS 'Category of actor';
 -- Name: COLUMN actor.a_login; Type: COMMENT; Schema: gobs; Owner: -
 --
 
-COMMENT ON COLUMN gobs.actor.a_login IS 'Login of the actor. It is the unique identifier of the actor.';
+COMMENT ON COLUMN gobs.actor.a_login IS 'Login of the actor. It is the unique identifier of the actor. Only needed for actors having the category ''platform_user''.';
 
 
 --
@@ -541,81 +605,6 @@ ALTER SEQUENCE gobs.actor_id_seq OWNED BY gobs.actor.id;
 
 
 --
--- Name: application; Type: TABLE; Schema: gobs; Owner: -
---
-
-CREATE TABLE gobs.application (
-    id integer NOT NULL,
-    ap_code text NOT NULL,
-    ap_label text NOT NULL,
-    ap_description text NOT NULL,
-    ap_default_values jsonb NOT NULL
-);
-
-
---
--- Name: TABLE application; Type: COMMENT; Schema: gobs; Owner: -
---
-
-COMMENT ON TABLE gobs.application IS 'List the external applications interacting with G-Obs database with the web API.
-This will help storing application specific data such as the default values when creating automatically series, protocols, users, etc.';
-
-
---
--- Name: COLUMN application.id; Type: COMMENT; Schema: gobs; Owner: -
---
-
-COMMENT ON COLUMN gobs.application.id IS 'Unique identifier';
-
-
---
--- Name: COLUMN application.ap_code; Type: COMMENT; Schema: gobs; Owner: -
---
-
-COMMENT ON COLUMN gobs.application.ap_code IS 'Code of the application. Ex: kobo_toolbox';
-
-
---
--- Name: COLUMN application.ap_label; Type: COMMENT; Schema: gobs; Owner: -
---
-
-COMMENT ON COLUMN gobs.application.ap_label IS 'Label of the application. Ex: Kobo Toolbox';
-
-
---
--- Name: COLUMN application.ap_description; Type: COMMENT; Schema: gobs; Owner: -
---
-
-COMMENT ON COLUMN gobs.application.ap_description IS 'Description of the application.';
-
-
---
--- Name: COLUMN application.ap_default_values; Type: COMMENT; Schema: gobs; Owner: -
---
-
-COMMENT ON COLUMN gobs.application.ap_default_values IS 'Default values for the different API need. JSONB to allow to easily add more data when necessary';
-
-
---
--- Name: application_id_seq; Type: SEQUENCE; Schema: gobs; Owner: -
---
-
-CREATE SEQUENCE gobs.application_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: application_id_seq; Type: SEQUENCE OWNED BY; Schema: gobs; Owner: -
---
-
-ALTER SEQUENCE gobs.application_id_seq OWNED BY gobs.application.id;
-
-
---
 -- Name: deleted_data_log; Type: TABLE; Schema: gobs; Owner: -
 --
 
@@ -660,7 +649,7 @@ COMMENT ON COLUMN gobs.deleted_data_log.de_timestamp IS 'Timestamp of the deleti
 
 CREATE TABLE gobs.dimension (
     id integer NOT NULL,
-    fk_id_indicator integer,
+    fk_id_indicator integer NOT NULL,
     di_code text NOT NULL,
     di_label text NOT NULL,
     di_type text NOT NULL,
@@ -1501,7 +1490,8 @@ CREATE TABLE gobs.protocol (
     id integer NOT NULL,
     pr_code text NOT NULL,
     pr_label text NOT NULL,
-    pr_description text NOT NULL
+    pr_description text NOT NULL,
+    pr_days_editable integer DEFAULT 30 NOT NULL
 );
 
 
@@ -1538,6 +1528,15 @@ COMMENT ON COLUMN gobs.protocol.pr_label IS 'Name of the indicator';
 --
 
 COMMENT ON COLUMN gobs.protocol.pr_description IS 'Description, including URLs to references and authors.';
+
+
+--
+-- Name: COLUMN protocol.pr_days_editable; Type: COMMENT; Schema: gobs; Owner: -
+--
+
+COMMENT ON COLUMN gobs.protocol.pr_days_editable IS 'Number of days the observations from series related to the protocol are editable (delete & update) after creation.
+Use a very long value such as 10000 if the editing can occur at any time.
+The control is made based on the observation created_at column';
 
 
 --
@@ -1704,7 +1703,7 @@ CREATE TABLE gobs.spatial_layer (
     sl_code text NOT NULL,
     sl_label text NOT NULL,
     sl_description text NOT NULL,
-    sl_creation_date date DEFAULT '2018-06-28'::date NOT NULL,
+    sl_creation_date date DEFAULT (now())::date NOT NULL,
     fk_id_actor integer NOT NULL,
     sl_geometry_type text NOT NULL
 );
@@ -1907,13 +1906,6 @@ ALTER TABLE ONLY gobs.actor_category ALTER COLUMN id SET DEFAULT nextval('gobs.a
 
 
 --
--- Name: application id; Type: DEFAULT; Schema: gobs; Owner: -
---
-
-ALTER TABLE ONLY gobs.application ALTER COLUMN id SET DEFAULT nextval('gobs.application_id_seq'::regclass);
-
-
---
 -- Name: dimension id; Type: DEFAULT; Schema: gobs; Owner: -
 --
 
@@ -2016,15 +2008,15 @@ ALTER TABLE ONLY gobs.spatial_object ALTER COLUMN id SET DEFAULT nextval('gobs.s
 --
 
 COPY gobs.actor (id, a_label, a_description, a_email, id_category, a_login) FROM stdin;
-1	IGN	French national geographical institute.	contact@ign.fr	1	ign
-2	CIRAD	The French agricultural research and international cooperation organization	contact@cirad.fr	2	cirad
-3	DREAL Bretagne	Direction régionale de l'environnement, de l'aménagement et du logement.	email@dreal.fr	1	dreal
-4	Al	Al A.	al@al.al	3	al
-5	Bob	Bob B.	bob@bob.bob	3	bob
-6	John	John J.	jon@jon.jon	3	john
-7	Mike	Mike M.	mik@mik.mik	3	mike
-8	Phil	Phil P.	phi@phi.phi	3	phil
-9		Automatically created actor for G-Events: 	al@al.al	4	gobsapi_writer
+1	IGN	French national geographical institute.	contact@ign.fr	1	\N
+2	CIRAD	The French agricultural research and international cooperation organization	contact@cirad.fr	1	\N
+3	DREAL Bretagne	Direction régionale de l'environnement, de l'aménagement et du logement.	email@dreal.fr	1	\N
+4	Al	Al A.	al@al.al	1	\N
+5	Bob	Bob B.	bob@bob.bob	1	\N
+6	John	John J.	jon@jon.jon	1	\N
+7	Mike	Mike M.	mik@mik.mik	1	\N
+8	Phil	Phil P.	phi@phi.phi	1	\N
+9		Automatically created actor for G-Events: 	al@al.al	2	gobsapi_writer
 \.
 
 
@@ -2033,18 +2025,8 @@ COPY gobs.actor (id, a_label, a_description, a_email, id_category, a_login) FROM
 --
 
 COPY gobs.actor_category (id, ac_label, ac_description) FROM stdin;
-1	Public organizations	Public organizations and stakeholders
-2	Research centers	Public or private research centers
-3	Individuals	Persons acting as a single individual
-4	G-Events	Automatically created category of actors for G-Events
-\.
-
-
---
--- Data for Name: application; Type: TABLE DATA; Schema: gobs; Owner: -
---
-
-COPY gobs.application (id, ap_code, ap_label, ap_description, ap_default_values) FROM stdin;
+1	other	Other actors
+2	platform_user	Platform users
 \.
 
 
@@ -2110,6 +2092,8 @@ COPY gobs.glossary (id, gl_field, gl_code, gl_label, gl_description, gl_order) F
 24	do_type	document	Document	Generic document like PDF, ODT, text files or archives	4
 25	do_type	url	URL	URL pointing to the document	5
 26	do_type	other	Other	Other type of document	6
+27	pv_type	global	Global	Global project view (only one per project)	1
+28	pv_type	filter	Filter	Filter view (to restrict access to some observations)	2
 \.
 
 
@@ -6014,11 +5998,11 @@ COPY gobs.project_view (id, pv_label, fk_id_project, pv_groups, pv_type, geom) F
 -- Data for Name: protocol; Type: TABLE DATA; Schema: gobs; Owner: -
 --
 
-COPY gobs.protocol (id, pr_code, pr_label, pr_description) FROM stdin;
-1	pluviometry	Pluviometry	Measure of rainfall in mm
-2	population	Population	Number of inhabitants obtained from census.
-3	gps-tracking	GPS tracking	GPS position recorded by a smartphone containing timestamp at second resolution, position and altitude in meters.
-4	field_observations	Field observations on species	Go to the field, recognize the observed species and give the number of individuals.
+COPY gobs.protocol (id, pr_code, pr_label, pr_description, pr_days_editable) FROM stdin;
+1	pluviometry	Pluviometry	Measure of rainfall in mm	30
+2	population	Population	Number of inhabitants obtained from census.	30
+3	gps-tracking	GPS tracking	GPS position recorded by a smartphone containing timestamp at second resolution, position and altitude in meters.	30
+4	field_observations	Field observations on species	Go to the field, recognize the observed species and give the number of individuals.	30
 \.
 
 
@@ -7061,7 +7045,7 @@ COPY gobs.spatial_object (id, so_unique_id, so_unique_label, geom, fk_id_spatial
 -- Name: actor_category_id_seq; Type: SEQUENCE SET; Schema: gobs; Owner: -
 --
 
-SELECT pg_catalog.setval('gobs.actor_category_id_seq', 4, true);
+SELECT pg_catalog.setval('gobs.actor_category_id_seq', 2, true);
 
 
 --
@@ -7069,13 +7053,6 @@ SELECT pg_catalog.setval('gobs.actor_category_id_seq', 4, true);
 --
 
 SELECT pg_catalog.setval('gobs.actor_id_seq', 9, true);
-
-
---
--- Name: application_id_seq; Type: SEQUENCE SET; Schema: gobs; Owner: -
---
-
-SELECT pg_catalog.setval('gobs.application_id_seq', 1, false);
 
 
 --
@@ -7096,7 +7073,7 @@ SELECT pg_catalog.setval('gobs.document_id_seq', 2, true);
 -- Name: glossary_id_seq; Type: SEQUENCE SET; Schema: gobs; Owner: -
 --
 
-SELECT pg_catalog.setval('gobs.glossary_id_seq', 26, true);
+SELECT pg_catalog.setval('gobs.glossary_id_seq', 28, true);
 
 
 --
@@ -7206,14 +7183,6 @@ ALTER TABLE ONLY gobs.actor_category
 
 ALTER TABLE ONLY gobs.actor
     ADD CONSTRAINT actor_pkey PRIMARY KEY (id);
-
-
---
--- Name: application application_pkey; Type: CONSTRAINT; Schema: gobs; Owner: -
---
-
-ALTER TABLE ONLY gobs.application
-    ADD CONSTRAINT application_pkey PRIMARY KEY (id);
 
 
 --
@@ -7547,6 +7516,13 @@ CREATE TRIGGER gobs_on_import_change AFTER UPDATE ON gobs.import FOR EACH ROW EX
 --
 
 CREATE TRIGGER gobs_on_indicator_change AFTER INSERT OR UPDATE ON gobs.indicator FOR EACH ROW EXECUTE PROCEDURE gobs.trg_parse_indicator_paths();
+
+
+--
+-- Name: observation trg_control_observation_editing_capability; Type: TRIGGER; Schema: gobs; Owner: -
+--
+
+CREATE TRIGGER trg_control_observation_editing_capability BEFORE DELETE OR UPDATE ON gobs.observation FOR EACH ROW EXECUTE PROCEDURE gobs.control_observation_editing_capability();
 
 
 --
