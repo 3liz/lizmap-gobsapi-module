@@ -112,10 +112,10 @@ class User
         $category_id = $utils->getOrAddObject(
             $connection_profile,
             'actor_category',
-            array('G-Events'),
+            array('other'),
             array(
-                'G-Events',
-                'Automatically created category of actors for G-Events',
+                'other',
+                'Other actors',
             )
         );
         if (!$category_id) {
@@ -133,7 +133,7 @@ class User
                 $this->lastname,
                 $this->email,
                 $category_id,
-                'Automatically created actor for G-Events: ',
+                'Automatically created actor for G-Events',
             )
         );
         if (!$actor_id) {
