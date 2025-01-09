@@ -22,6 +22,11 @@ class gobsapiListenerListener extends \jEventListener
 
         $attributes = $driver->getSAMLAttributes();
         \jLog::dump($attributes, 'onAuthLogin: SAML attributes');
+        // Do nothing if attributes is an empty array
+        // to avoid emptying all rights for SAML users
+        if (empty($attributes)) {
+            return;
+        }
 
         $allGroups = array();
         foreach (jAcl2DbUserGroup::getGroupList() as $group) {
