@@ -21,7 +21,7 @@ class gobsapiListenerListener extends \jEventListener
         }
 
         $attributes = $driver->getSAMLAttributes();
-        \jLog::dump($attributes, 'onAuthLogin: SAML attributes');
+        // \jLog::dump($attributes, 'onAuthLogin: SAML attributes');
         // Do nothing if attributes is an empty array
         // to avoid emptying all rights for SAML users
         if (empty($attributes)) {
@@ -57,7 +57,7 @@ class gobsapiListenerListener extends \jEventListener
             $groupsOfUser = array_merge($groupsOfUser, $this->registerGroups($allGroups, $attributes['GOBS_SI'], 'GOBS_SI'));
         }
 
-        \jLog::dump(array_keys($groupsOfUser), "onAuthLogin: Groupes de l'utilisateur {$login}");
+        // \jLog::dump(array_keys($groupsOfUser), "onAuthLogin: Groupes de l'utilisateur {$login}");
         $groupToRemove = array();
         foreach (jAcl2DbUserGroup::getGroupList($login) as $group) {
             if ($group->id_aclgrp == 'admins') {
@@ -114,7 +114,11 @@ class gobsapiListenerListener extends \jEventListener
 
                 continue;
             }
-            $idGrp = $role['code'];
+            // Souci avec la commande interne de création de groupe
+            // jAcl2DbUserGroup::createGroup() qui met le groupe en minuscule
+            // On passe tout en minuscule ici pour éviter les problèmes
+            // ERROR:  insert or update on table "jacl2_rights" violates foreign key constraint "jacl2_rights_id_aclgrp_fkey"
+            $idGrp = strtolower($role['code']);
             $name = isset($role['label']) ? $role['label'] : $idGrp;
             if ($name == '') {
                 $name = $idGrp;
@@ -136,8 +140,16 @@ class gobsapiListenerListener extends \jEventListener
                     \jAcl2DbManager::addRight($idGrp, 'lizmap.admin.repositories.view');
                     \jAcl2DbManager::addRight($idGrp, 'lizmap.admin.services.update');
                     \jAcl2DbManager::addRight($idGrp, 'lizmap.admin.services.view');
+                    \jAcl2DbManager::addRight($idGrp, 'lizmap.admin.project.list.view');
+                    \jAcl2DbManager::addRight($idGrp, 'lizmap.admin.home.page.update');
+                    \jAcl2DbManager::addRight($idGrp, 'lizmap.admin.theme.update');
+                    \jAcl2DbManager::addRight($idGrp, 'lizmap.admin.theme.view');
+                    \jAcl2DbManager::addRight($idGrp, 'lizmap.admin.server.information.view');
+                    \jAcl2DbManager::addRight($idGrp, 'lizmap.admin.lizmap.log.view');
+                    \jAcl2DbManager::addRight($idGrp, 'lizmap.admin.lizmap.log.delete');
 
                 }
+                // On enlève les droits liés à la création d'utilisateur, car SAML
                 \jAcl2DbManager::removeRight($idGrp, 'auth.user.change.password', '-', true);
                 \jAcl2DbManager::removeRight($idGrp, 'auth.users.change.password', '-', true);
                 \jAcl2DbManager::addRight($idGrp, 'auth.user.view');

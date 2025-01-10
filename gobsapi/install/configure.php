@@ -64,7 +64,7 @@ class gobsapiModuleConfigurator extends \Jelix\Installer\Module\Configurator
         $localConfig = new \Jelix\IniFile\IniModifier($localConfigFile);
         if (!isset(jApp::config()->gobsapi['adminSAMLGobsRoleName'])) {
             $localConfig->setValue('adminSAMLGobsRoleName', 'ROLE_GOBS_ADMIN', 'gobsapi', '');
-            $localConfig->setValue('adminSAMLGobsRoleName', 'GOBS_ADMIN', 'gobsapi', '');
+            $localConfig->setValue('adminSAMLGobsRoleName', 'role_gobs_admin', 'gobsapi', '');
             $localConfig->save();
         }
     }
