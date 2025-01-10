@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+## 0.8.1 - 2025-01-10
+
+### Changed
+
+* SAML group synchronisation
+  * avoid synchronisation for non SAML users (check given attributes)
+  * avoid errors with uppercase groups by forcing the new created group
+    with lower case
+  * add missing admin rights to the ROLE_GOBS_ADMIN
+* API - Automatic actor creation: use platform_user category
+* Tests
+  * Improve the QGIS administration project & its lizmap configuration
+  * Update test data
+
 
 ## 0.8.0 - 2024-07-25
 
@@ -13,7 +27,7 @@
 ### Added
 
 * User authentication - Allow the use of Basic authentication for /user/login endpoint
-* When using SAML authentication protocol, add synchronization of Roles and SI 
+* When using SAML authentication protocol, add synchronization of Roles and SI
   (feature taken from the old deprecated module gobs)
 
 ### Fixed
