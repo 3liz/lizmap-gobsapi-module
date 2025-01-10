@@ -112,10 +112,12 @@ class User
         $category_id = $utils->getOrAddObject(
             $connection_profile,
             'actor_category',
-            array('other'),
+            // Get actor with ac_label = platform_user
+            array('platform_user'),
+            // Create one if not found with following ac_label & ac_description
             array(
-                'other',
-                'Other actors',
+                'platform_user',
+                'Platform users',
             )
         );
         if (!$category_id) {
@@ -133,7 +135,7 @@ class User
                 $this->lastname,
                 $this->email,
                 $category_id,
-                'Automatically created actor for G-Events',
+                'Automatically created platform user actor',
             )
         );
         if (!$actor_id) {
