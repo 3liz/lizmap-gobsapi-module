@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 11.13 (Debian 11.13-1.pgdg100+1)
--- Dumped by pg_dump version 11.13 (Debian 11.13-1.pgdg100+1)
+-- Dumped from database version 15.10 (Debian 15.10-1.pgdg110+1)
+-- Dumped by pg_dump version 15.10 (Debian 15.10-1.pgdg110+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -462,7 +462,7 @@ $$;
 
 SET default_tablespace = '';
 
-SET default_with_oids = false;
+SET default_table_access_method = heap;
 
 --
 -- Name: actor; Type: TABLE; Schema: gobs; Owner: -
@@ -2149,7 +2149,7 @@ COPY gobs.indicator (id, id_code, id_label, id_description, id_date_format, id_p
 --
 
 COPY gobs.metadata (id, me_version, me_version_date, me_status) FROM stdin;
-1	6.0.0	2023-03-22	1
+1	6.3.2	2025-02-07	1
 \.
 
 
@@ -7508,70 +7508,70 @@ CREATE INDEX spatial_object_geom_idx ON gobs.spatial_object USING gist (geom);
 -- Name: import gobs_on_import_change; Type: TRIGGER; Schema: gobs; Owner: -
 --
 
-CREATE TRIGGER gobs_on_import_change AFTER UPDATE ON gobs.import FOR EACH ROW EXECUTE PROCEDURE gobs.trg_after_import_validation();
+CREATE TRIGGER gobs_on_import_change AFTER UPDATE ON gobs.import FOR EACH ROW EXECUTE FUNCTION gobs.trg_after_import_validation();
 
 
 --
 -- Name: indicator gobs_on_indicator_change; Type: TRIGGER; Schema: gobs; Owner: -
 --
 
-CREATE TRIGGER gobs_on_indicator_change AFTER INSERT OR UPDATE ON gobs.indicator FOR EACH ROW EXECUTE PROCEDURE gobs.trg_parse_indicator_paths();
+CREATE TRIGGER gobs_on_indicator_change AFTER INSERT OR UPDATE ON gobs.indicator FOR EACH ROW EXECUTE FUNCTION gobs.trg_parse_indicator_paths();
 
 
 --
 -- Name: observation trg_control_observation_editing_capability; Type: TRIGGER; Schema: gobs; Owner: -
 --
 
-CREATE TRIGGER trg_control_observation_editing_capability BEFORE DELETE OR UPDATE ON gobs.observation FOR EACH ROW EXECUTE PROCEDURE gobs.control_observation_editing_capability();
+CREATE TRIGGER trg_control_observation_editing_capability BEFORE DELETE OR UPDATE ON gobs.observation FOR EACH ROW EXECUTE FUNCTION gobs.control_observation_editing_capability();
 
 
 --
 -- Name: observation trg_log_deleted_object; Type: TRIGGER; Schema: gobs; Owner: -
 --
 
-CREATE TRIGGER trg_log_deleted_object AFTER DELETE ON gobs.observation FOR EACH ROW EXECUTE PROCEDURE gobs.log_deleted_object();
+CREATE TRIGGER trg_log_deleted_object AFTER DELETE ON gobs.observation FOR EACH ROW EXECUTE FUNCTION gobs.log_deleted_object();
 
 
 --
 -- Name: document trg_manage_object_timestamps; Type: TRIGGER; Schema: gobs; Owner: -
 --
 
-CREATE TRIGGER trg_manage_object_timestamps BEFORE INSERT OR UPDATE ON gobs.document FOR EACH ROW EXECUTE PROCEDURE gobs.manage_object_timestamps();
+CREATE TRIGGER trg_manage_object_timestamps BEFORE INSERT OR UPDATE ON gobs.document FOR EACH ROW EXECUTE FUNCTION gobs.manage_object_timestamps();
 
 
 --
 -- Name: indicator trg_manage_object_timestamps; Type: TRIGGER; Schema: gobs; Owner: -
 --
 
-CREATE TRIGGER trg_manage_object_timestamps BEFORE INSERT OR UPDATE ON gobs.indicator FOR EACH ROW EXECUTE PROCEDURE gobs.manage_object_timestamps();
+CREATE TRIGGER trg_manage_object_timestamps BEFORE INSERT OR UPDATE ON gobs.indicator FOR EACH ROW EXECUTE FUNCTION gobs.manage_object_timestamps();
 
 
 --
 -- Name: observation trg_manage_object_timestamps; Type: TRIGGER; Schema: gobs; Owner: -
 --
 
-CREATE TRIGGER trg_manage_object_timestamps BEFORE INSERT OR UPDATE ON gobs.observation FOR EACH ROW EXECUTE PROCEDURE gobs.manage_object_timestamps();
+CREATE TRIGGER trg_manage_object_timestamps BEFORE INSERT OR UPDATE ON gobs.observation FOR EACH ROW EXECUTE FUNCTION gobs.manage_object_timestamps();
 
 
 --
 -- Name: spatial_object trg_manage_object_timestamps; Type: TRIGGER; Schema: gobs; Owner: -
 --
 
-CREATE TRIGGER trg_manage_object_timestamps BEFORE INSERT OR UPDATE ON gobs.spatial_object FOR EACH ROW EXECUTE PROCEDURE gobs.manage_object_timestamps();
+CREATE TRIGGER trg_manage_object_timestamps BEFORE INSERT OR UPDATE ON gobs.spatial_object FOR EACH ROW EXECUTE FUNCTION gobs.manage_object_timestamps();
 
 
 --
 -- Name: spatial_object trg_update_observation_on_spatial_object_change; Type: TRIGGER; Schema: gobs; Owner: -
 --
 
-CREATE TRIGGER trg_update_observation_on_spatial_object_change AFTER UPDATE ON gobs.spatial_object FOR EACH ROW EXECUTE PROCEDURE gobs.update_observation_on_spatial_object_change();
+CREATE TRIGGER trg_update_observation_on_spatial_object_change AFTER UPDATE ON gobs.spatial_object FOR EACH ROW EXECUTE FUNCTION gobs.update_observation_on_spatial_object_change();
 
 
 --
 -- Name: spatial_object trg_update_spatial_object_end_validity; Type: TRIGGER; Schema: gobs; Owner: -
 --
 
-CREATE TRIGGER trg_update_spatial_object_end_validity AFTER INSERT ON gobs.spatial_object FOR EACH ROW EXECUTE PROCEDURE gobs.update_spatial_object_end_validity();
+CREATE TRIGGER trg_update_spatial_object_end_validity AFTER INSERT ON gobs.spatial_object FOR EACH ROW EXECUTE FUNCTION gobs.update_spatial_object_end_validity();
 
 
 --
