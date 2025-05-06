@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 15.10 (Debian 15.10-1.pgdg110+1)
--- Dumped by pg_dump version 15.10 (Debian 15.10-1.pgdg110+1)
+-- Dumped from database version 15.12 (Debian 15.12-1.pgdg110+1)
+-- Dumped by pg_dump version 15.12 (Debian 15.12-1.pgdg110+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -2017,6 +2017,8 @@ COPY gobs.actor (id, a_label, a_description, a_email, id_category, a_login) FROM
 7	Mike	Mike M.	mik@mik.mik	1	\N
 8	Phil	Phil P.	phi@phi.phi	1	\N
 9		Automatically created actor for G-Events: 	al@al.al	2	gobsapi_writer
+10		Automatically created platform user actor	md@md.md	2	gobsapi_writer_filtered
+11	G-Events Application	Automatically created actor for G-Events: G-Events Application	g_events@g_events.evt	3	g_events
 \.
 
 
@@ -2027,6 +2029,7 @@ COPY gobs.actor (id, a_label, a_description, a_email, id_category, a_login) FROM
 COPY gobs.actor_category (id, ac_label, ac_description) FROM stdin;
 1	other	Other actors
 2	platform_user	Platform users
+3	G-Events	Automatically created category of actors for G-Events
 \.
 
 
@@ -2122,8 +2125,6 @@ COPY gobs.graph_node (id, gn_label) FROM stdin;
 
 COPY gobs.import (id, im_timestamp, fk_id_series, im_status) FROM stdin;
 1	2022-10-05 14:53:51	1	P
-2	2022-10-05 15:12:08	2	P
-3	2022-10-05 15:12:14	2	P
 4	2022-10-05 15:12:22	2	P
 5	2022-10-05 15:12:30	2	P
 6	2022-10-05 15:12:37	2	P
@@ -5989,8 +5990,8 @@ COPY gobs.project (id, pt_code, pt_lizmap_project_key, pt_label, pt_description,
 --
 
 COPY gobs.project_view (id, pv_label, fk_id_project, pv_groups, pv_type, geom) FROM stdin;
-2	Test project a filtered view	1	gobsapi_filtered_group	filter	0106000020E610000001000000010300000001000000050000008665340C16030FC010711006313248408665340C16030FC0E9801CA8FA414840D02AB7EDD9680DC0E9801CA8FA414840D02AB7EDD9680DC010711006313248408665340C16030FC01071100631324840
-1	Test project a global view	1	gobsapi_global_group, gobs_api_other_global	global	0106000020E61000000100000001030000000100000005000000287E5FEC7A980FC08E7BCD956E2B4840287E5FEC7A980FC031FC7496694948408DB1470419CF0CC031FC7496694948408DB1470419CF0CC08E7BCD956E2B4840287E5FEC7A980FC08E7BCD956E2B4840
+2	Test project a filtered view	1	gobsapi_filtered_group	filter	0106000020E610000001000000010300000001000000050000002ABFB10C16030FC00B560706313248402ABFB10C16030FC06ED711A8FA4148408B7248EED9680DC06ED711A8FA4148408B7248EED9680DC00B560706313248402ABFB10C16030FC00B56070631324840
+1	Test project a global view	1	gobsapi_global_group, gobs_api_other_global	global	0106000020E61000000100000001030000000100000005000000FD41B0EC7A980FC02757CA956E2B4840FD41B0EC7A980FC0FA9B7196694948403511B20319CF0CC0FA9B7196694948403511B20319CF0CC02757CA956E2B4840FD41B0EC7A980FC02757CA956E2B4840
 \.
 
 
@@ -6003,6 +6004,7 @@ COPY gobs.protocol (id, pr_code, pr_label, pr_description, pr_days_editable) FRO
 2	population	Population	Number of inhabitants obtained from census.	30
 3	gps-tracking	GPS tracking	GPS position recorded by a smartphone containing timestamp at second resolution, position and altitude in meters.	30
 4	field_observations	Field observations on species	Go to the field, recognize the observed species and give the number of individuals.	30
+5	g_events	G-Events	Automatically created protocol for G-Events	30
 \.
 
 
@@ -6045,11 +6047,6 @@ COPY gobs.series (id, fk_id_protocol, fk_id_actor, fk_id_indicator, fk_id_spatia
 1	1	2	1	1
 2	2	2	2	2
 3	3	4	3	3
-4	3	5	3	3
-5	3	6	3	3
-6	3	7	3	3
-7	3	8	3	3
-8	4	4	4	4
 \.
 
 
@@ -6062,6 +6059,7 @@ COPY gobs.spatial_layer (id, sl_code, sl_label, sl_description, sl_creation_date
 2	brittany-cities	Cities of Brittany , France	Cities of Brittany, France	2019-07-05	1	multipolygon
 3	gpsposition	GPS position	Position of GPS trackers	2020-09-10	2	point
 4	faunal_observation	Position of faunal observations	Observations on species (lions, girafes, etc.)	2022-09-10	4	point
+5	g_events_hiker_position	Observation layer for the indicator hiker_position	Automatically created spatial layer for G-Events indicator hiker_position	2025-05-06	11	point
 \.
 
 
@@ -6358,7 +6356,6 @@ COPY gobs.spatial_object (id, so_unique_id, so_unique_label, geom, fk_id_spatial
 329	269	Al	0101000020E6100000B2189D49D9C50DC06E180F1DFA3B4840	3	2017-10-31	\N	445c281a-ab4c-403f-a586-f646551f493a	2022-10-05 16:03:24.49695	2022-10-05 16:03:24.49695
 330	270	Al	0101000020E6100000479DE123A0C50DC0CCB8B3DDFC3B4840	3	2017-10-31	\N	f6b2cca4-2b96-4eff-8f17-36a05bf53b4c	2022-10-05 16:03:24.49695	2022-10-05 16:03:24.49695
 331	271	Al	0101000020E6100000E761C97250C50DC0882D47F6003C4840	3	2017-10-31	\N	897e46a3-82bf-4379-80a4-6190392bc54d	2022-10-05 16:03:24.49695	2022-10-05 16:03:24.49695
-332	272	Al	0101000020E6100000D6B689B01FC50DC0545407A7FD3B4840	3	2017-10-31	\N	83d1e57d-ef99-4dd7-9ce4-96c1ee724a33	2022-10-05 16:03:24.49695	2022-10-05 16:03:24.49695
 333	273	Phil	0101000020E61000006849FA207A8F0DC04E7C709AF33C4840	3	2017-10-31	\N	f15fd756-e0a9-4977-9b1c-4c62e3e171c0	2022-10-05 16:03:24.49695	2022-10-05 16:03:24.49695
 334	274	Phil	0101000020E610000029B6FC2C458F0DC0CD05E985F03C4840	3	2017-10-31	\N	66731f41-ff5a-4fef-9d8f-500428bc6918	2022-10-05 16:03:24.49695	2022-10-05 16:03:24.49695
 335	275	Phil	0101000020E6100000F79C6E45118F0DC080D035EFED3C4840	3	2017-10-31	\N	dacb7c8a-1ae4-4dde-971d-125d5c75a194	2022-10-05 16:03:24.49695	2022-10-05 16:03:24.49695
@@ -7038,6 +7035,7 @@ COPY gobs.spatial_object (id, so_unique_id, so_unique_label, geom, fk_id_spatial
 1009	949	John	0101000020E61000000D75C0C360620DC0440986C50F394840	3	2017-10-31	\N	c0ddd927-cffb-4c4e-a69d-6c1ba08bc579	2022-10-05 16:03:24.49695	2022-10-05 16:03:24.49695
 1010	950	John	0101000020E610000062366968AF620DC06ED0EA360F394840	3	2017-10-31	\N	7c85a78b-c982-4a46-8143-f35a95b6abf6	2022-10-05 16:03:24.49695	2022-10-05 16:03:24.49695
 1011	951	John	0101000020E6100000A64CD24ACD620DC063567B2A0E394840	3	2017-10-31	\N	61c7a9ed-a29e-4296-a7ce-f6cc9e1e365e	2022-10-05 16:03:24.49695	2022-10-05 16:03:24.49695
+332	272	Al	0101000020E61000009C6F9FB01FC50DC07E450AA7FD3B4840	3	2017-10-31	\N	83d1e57d-ef99-4dd7-9ce4-96c1ee724a33	2022-10-05 16:03:24.49695	2022-10-05 16:03:24.49695
 \.
 
 
@@ -7045,14 +7043,14 @@ COPY gobs.spatial_object (id, so_unique_id, so_unique_label, geom, fk_id_spatial
 -- Name: actor_category_id_seq; Type: SEQUENCE SET; Schema: gobs; Owner: -
 --
 
-SELECT pg_catalog.setval('gobs.actor_category_id_seq', 2, true);
+SELECT pg_catalog.setval('gobs.actor_category_id_seq', 3, true);
 
 
 --
 -- Name: actor_id_seq; Type: SEQUENCE SET; Schema: gobs; Owner: -
 --
 
-SELECT pg_catalog.setval('gobs.actor_id_seq', 9, true);
+SELECT pg_catalog.setval('gobs.actor_id_seq', 11, true);
 
 
 --
@@ -7129,21 +7127,21 @@ SELECT pg_catalog.setval('gobs.project_view_id_seq', 2, true);
 -- Name: protocol_id_seq; Type: SEQUENCE SET; Schema: gobs; Owner: -
 --
 
-SELECT pg_catalog.setval('gobs.protocol_id_seq', 4, true);
+SELECT pg_catalog.setval('gobs.protocol_id_seq', 5, true);
 
 
 --
 -- Name: series_id_seq; Type: SEQUENCE SET; Schema: gobs; Owner: -
 --
 
-SELECT pg_catalog.setval('gobs.series_id_seq', 8, true);
+SELECT pg_catalog.setval('gobs.series_id_seq', 3, true);
 
 
 --
 -- Name: spatial_layer_id_seq; Type: SEQUENCE SET; Schema: gobs; Owner: -
 --
 
-SELECT pg_catalog.setval('gobs.spatial_layer_id_seq', 4, true);
+SELECT pg_catalog.setval('gobs.spatial_layer_id_seq', 5, true);
 
 
 --
