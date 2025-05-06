@@ -6,10 +6,10 @@
         "media_url": "http:\/\/localhost:9095\/gobsapi.php\/project\/test_project_a\/illustration",
         "geopackage_url": "http:\/\/localhost:9095\/gobsapi.php\/project\/test_project_a\/geopackage",
         "extent": {
-            "xmin": "-3.94945320764943",
-            "ymin": "48.3393122914632",
-            "xmax": "-3.6011219343547",
-            "ymax": "48.573534781572"
+            "xmin": "-3.94945321",
+            "ymin": "48.33931229",
+            "xmax": "-3.60112193",
+            "ymax": "48.57353478"
         }
     }
 ]

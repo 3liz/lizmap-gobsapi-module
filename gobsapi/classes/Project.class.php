@@ -253,7 +253,7 @@ class Project
                 p.id, p.pt_code, p.pt_lizmap_project_key,
                 p.pt_label, p.pt_description,
                 array_to_string(p.pt_indicator_codes, ',') AS pt_indicator_codes,
-                ST_AsText(mv.geom) AS allowed_polygon_wkt,
+                ST_AsText(mv.geom, 8) AS allowed_polygon_wkt,
                 ST_xmin(gv.geom) AS xmin,
                 ST_ymin(gv.geom) AS ymin,
                 ST_xmax(gv.geom) AS xmax,

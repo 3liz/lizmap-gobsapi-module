@@ -393,8 +393,8 @@ class TestRequests(unittest.TestCase):
         # Check the returned observation contains expected data
         self.assertEqual(json_response['indicator'], 'population')
         self.assertEqual(json_response['start_timestamp'], '2011-01-01 00:00:00')
-        self.assertEqual(json_response['coordinates']['x'], -3.76560994319688)
-        self.assertEqual(json_response['coordinates']['y'], 48.402962147635)
+        self.assertEqual(json_response['coordinates']['x'], -3.76560994)
+        self.assertEqual(json_response['coordinates']['y'], 48.40296215)
 
         # Check UID is valid
         observation_uuid = json_response['uuid']

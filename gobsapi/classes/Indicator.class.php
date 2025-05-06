@@ -596,7 +596,7 @@ class Indicator
                     'x', ST_X(ST_Centroid(so.geom)),
                     'y', ST_Y(ST_Centroid(so.geom))
                 ) AS coordinates,
-                ST_AsText(ST_Centroid(so.geom)) AS wkt,
+                ST_AsText(ST_Centroid(so.geom), 8) AS wkt,
                 ob_value AS values,
                 NULL AS media_url,
                 o.created_at::timestamp(0), o.updated_at::timestamp(0)

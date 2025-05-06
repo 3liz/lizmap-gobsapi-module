@@ -568,7 +568,7 @@ class Observation
             SELECT
                 so.id, so.so_unique_id,
                 sl.sl_code, sl.sl_label, sl.sl_geometry_type,
-                ST_AsText(so.geom) AS wkt
+                ST_AsText(so.geom, 8) AS wkt
             FROM gobs.spatial_object AS so
             INNER JOIN gobs.spatial_layer AS sl
                 ON sl.id = so.fk_id_spatial_layer
@@ -616,10 +616,10 @@ class Observation
                     o.ob_start_timestamp AS start_timestamp,
                     o.ob_end_timestamp AS end_timestamp,
                     json_build_object(
-                        'x', ST_X(ST_Centroid(so.geom)),
-                        'y', ST_Y(ST_Centroid(so.geom))
+                        'x', ST_X(ST_ReducePrecision(ST_Centroid(so.geom), 0.00000001)),
+                        'y', ST_Y(ST_ReducePrecision(ST_Centroid(so.geom), 0.00000001))
                     ) AS coordinates,
-                    ST_AsText(so.geom) AS wkt,
+                    ST_AsText(so.geom, 8) AS wkt,
                     ob_value AS values,
                     NULL AS media_url,
                     o.created_at::timestamp(0), o.updated_at::timestamp(0)
@@ -684,7 +684,7 @@ class Observation
                         $2::text
                     )) AS so_unique_id,
                     'api_gevent',
-                    ST_GeomFromText(o->>'wkt', 4326), ser.fk_id_spatial_layer,
+                    ST_ReducePrecision(ST_GeomFromText(o->>'wkt', 4326), 0.00000001), ser.fk_id_spatial_layer,
                     date_trunc(ind.id_date_format, (o->>'start_timestamp')::timestamp),  NULL
                 FROM source, ser, ind
                 LIMIT 1
@@ -758,7 +758,7 @@ class Observation
                         date_trunc(ind.id_date_format, (o->>'start_timestamp')::timestamp),
                         $2::text
                     )),
-                    ST_GeomFromText(o->>'wkt', 4326),
+                    ST_ReducePrecision(ST_GeomFromText(o->>'wkt', 4326), 0.00000001),
                     date_trunc(ind.id_date_format, (o->>'start_timestamp')::timestamp),
                     NULL
                 )
