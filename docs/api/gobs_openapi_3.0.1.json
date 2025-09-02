@@ -188,6 +188,11 @@
             "format": "int64",
             "example": 1
           },
+          "uuid": {
+            "type": "string",
+            "description": "UUID of indicator document",
+            "example": "1a7f7323-6b18-46ed-a9fe-9efbe1f006a2"
+          },
           "indicator": {
             "type": "string",
             "description": "Code of the indicator",
@@ -336,6 +341,35 @@
           "name": "Indicator"
         }
       },
+      "Series": {
+        "type": "object",
+        "required": [
+          "id",
+          "project_key",
+          "layer_code",
+          "indicator"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "ID of the series",
+            "example": 1
+          },
+          "project_key": {
+            "type": "string",
+            "description": "Key of the series project",
+            "example": "environment~weather"
+          },
+          "layer_code": {
+            "type": "string",
+            "description": "Code of the spatial layer for the given spatial object unique ID",
+            "example": "brittany-cities"
+          },
+          "indicator": {
+            "$ref": "#/components/schemas/Indicator"
+          }
+        }
+      },
       "ObservationSpatialObjectValue": {
         "required": [
           "layer_code",
@@ -361,7 +395,7 @@
       "Observation": {
         "required": [
           "uuid",
-          "indicator",
+          "series",
           "start_timestamp",
           "wkt",
           "values"
@@ -372,6 +406,11 @@
             "type": "integer",
             "format": "int64",
             "description": "Unique internal identifier",
+            "example": 1
+          },
+          "series": {
+            "type": "integer",
+            "description": "Id of the observation series",
             "example": 1
           },
           "indicator": {
@@ -463,6 +502,10 @@
     {
       "name": "project",
       "description": "Project"
+    },
+    {
+      "name": "series",
+      "description": "Series"
     },
     {
       "name": "indicator",
@@ -581,7 +624,7 @@
             }
           },
           "400": {
-            "description": "Invalid indicator value",
+            "description": "Invalid request",
             "content": {}
           },
           "401": {
@@ -635,14 +678,14 @@
         }
       }
     },
-    "/project/{projectKey}/indicators": {
+    "/project/{projectKey}/series": {
       "get": {
         "tags": [
           "project"
         ],
-        "summary": "Get the indicators for a given project",
+        "summary": "Get the series for a given project",
         "description": "Project key must be given in the path.",
-        "operationId": "getProjectIndicators",
+        "operationId": "getProjectSeries",
         "parameters": [
           {
             "name": "projectKey",
@@ -663,14 +706,14 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Indicator"
+                    "$ref": "#/components/schemas/Series"
                   }
                 }
               }
             }
           },
           "400": {
-            "description": "Invalid indicator value",
+            "description": "Invalid request",
             "content": {}
           },
           "401": {
@@ -712,7 +755,7 @@
             }
           },
           "400": {
-            "description": "Invalid indicator value",
+            "description": "Invalid request",
             "content": {}
           },
           "401": {
@@ -721,14 +764,14 @@
         }
       }
     },
-    "/project/{projectKey}/indicator/{indicatorCode}": {
+    "/project/{projectKey}/series/{seriesId}": {
       "get": {
         "tags": [
-          "indicator"
+          "series"
         ],
-        "summary": "Get indicator by code",
-        "description": "Returns a single indicator",
-        "operationId": "getIndicatorByCode",
+        "summary": "Get a series by its ID",
+        "description": "Returns a single series",
+        "operationId": "getSeriesById",
         "parameters": [
           {
             "name": "projectKey",
@@ -741,14 +784,14 @@
             }
           },
           {
-            "name": "indicatorCode",
+            "name": "seriesId",
             "in": "path",
-            "description": "Code of indicator to return",
+            "description": "Id of the serie to return",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "integer"
             },
-            "example": "weather_status"
+            "example": 1
           }
         ],
         "responses": {
@@ -757,7 +800,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Indicator"
+                  "$ref": "#/components/schemas/Series"
                 }
               }
             }
@@ -770,18 +813,18 @@
             "$ref": "#/components/responses/UnauthorizedError"
           },
           "404": {
-            "description": "Indicator not found",
+            "description": "Series not found",
             "content": {}
           }
         }
       }
     },
-    "/project/{projectKey}/indicator/{indicatorCode}/document/{documentUuid}": {
+    "/project/{projectKey}/series/{seriesId}/document/{documentUuid}": {
       "get": {
         "tags": [
-          "indicator"
+          "series"
         ],
-        "summary": "Get an indicator document by its UUID",
+        "summary": "Get a series indicator document by its UUID",
         "description": "Returns a single indicator document",
         "operationId": "getIndicatorDocumentByUuid",
         "parameters": [
@@ -796,7 +839,7 @@
             }
           },
           {
-            "name": "indicatorCode",
+            "name": "seriesId",
             "in": "path",
             "description": "Code of indicator to return",
             "required": true,
@@ -841,14 +884,14 @@
         }
       }
     },
-    "/project/{projectKey}/indicator/{indicatorCode}/observations": {
+    "/project/{projectKey}/series/{seriesId}/observations": {
       "get": {
         "tags": [
-          "indicator"
+          "series"
         ],
-        "summary": "Get observations by indicator",
-        "description": "Indicator code must be given in the path. For synchronization purpose, last synchronization timestamp and request timestamp must be passed in header.",
-        "operationId": "getObservationsByIndicator",
+        "summary": "Get observations for the given series",
+        "description": "Series ID must be given in the path. For synchronization purpose, last synchronization timestamp and request timestamp must be passed in header.",
+        "operationId": "getObservationsBySeries",
         "parameters": [
           {
             "name": "projectKey",
@@ -861,13 +904,13 @@
             }
           },
           {
-            "name": "indicatorCode",
+            "name": "seriesId",
             "in": "path",
-            "description": "Indicator code to filter by",
+            "description": "Series ID to filter by",
             "required": true,
             "schema": {
-              "type": "string",
-              "example": "weather_status"
+              "type": "integer",
+              "example": 1
             }
           },
           {
@@ -915,20 +958,20 @@
             "$ref": "#/components/responses/UnauthorizedError"
           },
           "404": {
-            "description": "Indicator not found",
+            "description": "Not found",
             "content": {}
           }
         }
       }
     },
-    "/project/{projectKey}/indicator/{indicatorCode}/deletedObservations": {
+    "/project/{projectKey}/series/{seriesId}/deletedObservations": {
       "get": {
         "tags": [
-          "indicator"
+          "series"
         ],
-        "summary": "Get deleted observations by indicator since last synchronization",
-        "description": "Indicator code must be given in the path. For synchronization purpose, last synchronization timestamp and request timestamp must be passed in header.",
-        "operationId": "getDeletedObservationsByIndicator",
+        "summary": "Get deleted observations by series since last synchronization",
+        "description": "Series ID must be given in the path. For synchronization purpose, last synchronization timestamp and request timestamp must be passed in header.",
+        "operationId": "getDeletedObservationsBySeries",
         "parameters": [
           {
             "name": "projectKey",
@@ -941,13 +984,13 @@
             }
           },
           {
-            "name": "indicatorCode",
+            "name": "seriesId",
             "in": "path",
-            "description": "Indicator code to filter by",
+            "description": "Series ID to filter by",
             "required": true,
             "schema": {
-              "type": "string",
-              "example": "weather_status"
+              "type": "integer",
+              "example": 1
             }
           },
           {
@@ -997,13 +1040,13 @@
             "$ref": "#/components/responses/UnauthorizedError"
           },
           "404": {
-            "description": "Indicator not found",
+            "description": "Not found",
             "content": {}
           }
         }
       }
     },
-    "/project/{projectKey}/indicator/{indicatorCode}/observation": {
+    "/project/{projectKey}/series/{seriesId}/observation": {
       "post": {
         "tags": [
           "observation"
@@ -1022,14 +1065,14 @@
             }
           },
           {
-            "name": "indicatorCode",
+            "name": "seriesId",
             "in": "path",
-            "description": "Code of indicator to return",
+            "description": "Series ID",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "integer"
             },
-            "example": "weather_status"
+            "example": 1
           },
           {
             "name": "requestSyncDate",
@@ -1102,14 +1145,14 @@
             }
           },
           {
-            "name": "indicatorCode",
+            "name": "seriesId",
             "in": "path",
-            "description": "Code of indicator to return",
+            "description": "Series ID",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "integer"
             },
-            "example": "weather_status"
+            "example": 1
           },
           {
             "name": "requestSyncDate",
@@ -1185,7 +1228,7 @@
         "x-codegen-request-body-name": "body"
       }
     },
-    "/project/{projectKey}/indicator/{indicatorCode}/observation/{observationId}": {
+    "/project/{projectKey}/series/{seriesId}/observation/{observationId}": {
       "get": {
         "tags": [
           "observation"
@@ -1205,19 +1248,19 @@
             }
           },
           {
-            "name": "indicatorCode",
+            "name": "seriesId",
             "in": "path",
-            "description": "Code of indicator to return",
+            "description": "Series ID of the given observation",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "integer"
             },
-            "example": "weather_status"
+            "example": 1
           },
           {
             "name": "observationId",
             "in": "path",
-            "description": "UID of the observation",
+            "description": "UUID of the observation",
             "required": true,
             "schema": {
               "type": "string",
@@ -1302,19 +1345,19 @@
             }
           },
           {
-            "name": "indicatorCode",
+            "name": "seriesId",
             "in": "path",
-            "description": "Code of indicator to return",
+            "description": "Series ID of the observation to delete",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "integer"
             },
-            "example": "weather_status"
+            "example": 1
           },
           {
             "name": "observationId",
             "in": "path",
-            "description": "UID of the observation",
+            "description": "UUID of the observation",
             "required": true,
             "schema": {
               "type": "string",
@@ -1371,7 +1414,7 @@
         }
       }
     },
-    "/project/{projectKey}/indicator/{indicatorCode}/observation/{observationId}/uploadMedia": {
+    "/project/{projectKey}/series/{seriesId}/observation/{observationId}/uploadMedia": {
       "post": {
         "tags": [
           "observation"
@@ -1390,19 +1433,19 @@
             }
           },
           {
-            "name": "indicatorCode",
+            "name": "seriesId",
             "in": "path",
-            "description": "Code of indicator to return",
+            "description": "Id of the observation series",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "integer"
             },
-            "example": "weather_status"
+            "example": 1
           },
           {
             "name": "observationId",
             "in": "path",
-            "description": "UID of the observation",
+            "description": "UUID of the observation",
             "required": true,
             "schema": {
               "type": "string",
@@ -1474,7 +1517,7 @@
         }
       }
     },
-    "/project/{projectKey}/indicator/{indicatorCode}/observation/{observationId}/deleteMedia": {
+    "/project/{projectKey}/series/{seriesId}/observation/{observationId}/deleteMedia": {
       "delete": {
         "tags": [
           "observation"
@@ -1493,19 +1536,19 @@
             }
           },
           {
-            "name": "indicatorCode",
+            "name": "seriesId",
             "in": "path",
-            "description": "Code of indicator to return",
+            "description": "Id of the observation series",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "integer"
             },
-            "example": "weather_status"
+            "example": 1
           },
           {
             "name": "observationId",
             "in": "path",
-            "description": "UID of the observation",
+            "description": "UUID of the observation",
             "required": true,
             "schema": {
               "type": "string",
