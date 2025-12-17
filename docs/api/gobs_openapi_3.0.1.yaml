@@ -377,13 +377,11 @@ components:
       
 tags:
 - name: user
-  description: Operations about user
+  description: Operations about the user
 - name: project
   description: Project
 - name: series
   description: Series
-- name: indicator
-  description: Indicator
 - name: observation
   description: Field observation
   
@@ -558,6 +556,35 @@ paths:
         401:
            $ref: '#/components/responses/UnauthorizedError'
            
+  /project/{projectKey}/illustration:
+    get:
+      tags:
+      - project
+      summary: Get the project illustration image file if available
+      description: Project key must be given in the path.
+      operationId: getProjectIllustration
+      parameters:
+      - name: projectKey
+        in: path
+        description: Project key to filter by.
+        example: environment~weather
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content: # Response body
+            image/*: # Media type
+              schema:
+                type: string
+                format: binary
+        400:
+          description: Invalid request
+          content: {}
+        401:
+           $ref: '#/components/responses/UnauthorizedError'
+           
   /project/{projectKey}/series/{seriesId}:
     get:
       tags:
@@ -596,7 +623,7 @@ paths:
           description: Series not found
           content: {}
           
-  /project/{projectKey}/series/{seriesId}/document/{documentUuid}:
+  /project/{projectKey}/series/{seriesId}/indicator/{indicator}/document/{documentUuid}:
     get:
       tags:
       - series
@@ -612,6 +639,13 @@ paths:
         schema:
           type: string
       - name: seriesId
+        in: path
+        description: Code of the indicator series
+        required: true
+        schema:
+          type: string
+        example: weather_status
+      - name: indicator
         in: path
         description: Code of indicator to return
         required: true

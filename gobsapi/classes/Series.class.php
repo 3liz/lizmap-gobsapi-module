@@ -7,30 +7,35 @@
  *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
-class Indicator
+class Series
 {
     /**
-     * @var code: Indicator code
+     * @var id: Series ID
      */
-    protected $code;
+    protected $id;
 
     /**
-     * @var user: Gobs authenticated user instance
+     * @var indicator_code Indicator code
+     */
+    protected $indicator_code;
+
+    /**
+     * @var object Gobs authenticated jelix user instance
      */
     protected $user;
 
     /**
-     * @var project_key: Indicator project
+     * @var project_key: Series project
      */
     protected $project_key;
 
     /**
-     * @var string: Database connection profile
+     * @var jDb connection profile
      */
-    protected $connection_profile;
+    protected $connectionProfile = 'gobsapi';
 
     /**
-     * @var data G-Obs Representation of a indicator
+     * @var data G-Obs Representation of a series
      */
     protected $raw_data;
 
@@ -54,28 +59,22 @@ class Indicator
      */
     protected $allowed_polygon_wkt;
 
-    // Todo: Indicator - Ajouter nouvelle catégorie de document = icon
-
     /**
      * constructor.
      *
-     * @param mixed  $user                Gobs user instance
-     * @param string $code                the code of the indicator
-     * @param string $project_key         the project code of the indicator
-     * @param string $connection_profile  the QGIS project corresponding jDb connection profile name
-     * @param string $allowed_polygon_wkt The WKT representing the allowed polygone for the user
+     * @param mixed  $user                Gobs Jelix authenticated user instance
+     * @param string $id                  the ID of the series
+     * @param string $project_key         the project code of the series
+     * @param string $allowed_polygon_wkt The WKT representing the allowed polygon for the user
      */
-    public function __construct($user, $code, $project_key, $connection_profile, $allowed_polygon_wkt)
+    public function __construct($user, $id, $project_key, $allowed_polygon_wkt)
     {
-        $this->code = $code;
+        $this->id = $id;
         $this->user = $user;
         $this->project_key = $project_key;
-        $this->connection_profile = $connection_profile;
 
-        // Create Gobs projet expected data
-        if ($this->checkCode()) {
-            $this->buildGobsIndicator();
-        }
+        // Create Gobs expected series data
+        $this->buildGobsSeries();
 
         // Set document and observation media directories
         $this->setDocumentDirectory();
@@ -85,20 +84,26 @@ class Indicator
         $this->allowed_polygon_wkt = $allowed_polygon_wkt;
     }
 
-    // Get indicator code
-    public function getCode()
+    // Get Id
+    public function getId()
     {
-        return $this->code;
+        return $this->id;
     }
 
-    // Get indicator project code
+    // Get series indicator code
+    public function getIndicatorCode()
+    {
+        return $this->indicator_code;
+    }
+
+    // Get series project code
     public function getProjectKey()
     {
         return $this->project_key;
     }
 
     /**
-     * Get indicator project instance.
+     * Get series project instance.
      *
      * @return \Project G-Obs project instance
      */
@@ -114,22 +119,6 @@ class Indicator
     public function getAllowedPolygon()
     {
         return $this->allowed_polygon_wkt;
-    }
-
-    // Get the connection profile
-    public function getConnectionProfile()
-    {
-        return $this->connection_profile;
-    }
-
-    // Check indicator code is valid
-    public function checkCode()
-    {
-        $i = $this->code;
-
-        return
-            preg_match('/^[a-zA-Z0-9_\-]+$/', $i)
-            and strlen($i) > 2;
     }
 
     /**
@@ -149,12 +138,26 @@ class Indicator
     }
 
     // Create a JSON representation of the G-Obs project
-    private function buildGobsIndicator()
+    private function buildGobsSeries()
     {
         // NEW SQL, with the dimension table
         // Since 6.0.0
         $sql = "
-        WITH ind AS (
+        WITH
+        ser AS (
+            SELECT
+            s.id,
+            p.pt_code AS project_code,
+            sl_code AS layer_code,
+            s.fk_id_indicator
+            FROM gobs.series AS s
+            INNER JOIN gobs.spatial_layer AS sl
+                ON s.fk_id_spatial_layer = sl.id
+            INNER JOIN gobs.project AS p
+                ON s.fk_id_project = p.id
+            WHERE s.id = $1
+        ),
+        ind AS (
             SELECT
             id.id AS id,
             id.id_code AS code,
@@ -177,7 +180,10 @@ class Indicator
             FROM gobs.indicator AS id
             INNER JOIN gobs.dimension AS d
                 ON d.fk_id_indicator = id.id
-            WHERE id_code = $1
+            WHERE id.id = (
+                SELECT fk_id_indicator
+                FROM ser
+            )
             GROUP BY
             id.id,
             id_code,
@@ -188,7 +194,8 @@ class Indicator
             id.created_at,
             id.updated_at
             ORDER BY id.id
-        ),
+        )
+        ,
         consolidated AS (
             SELECT ind.*,
 
@@ -223,7 +230,7 @@ class Indicator
             ind.updated_at
 
         ),
-        last AS (
+        i AS (
             SELECT
                 id, code, label, description, category, date_format,
                 values, documents,
@@ -234,126 +241,29 @@ class Indicator
             FROM consolidated
         )
         SELECT
-            row_to_json(last.*) AS object_json
-        FROM last
+            json_build_object(
+                'id', s.id,
+                'project_key', s.project_code,
+                'layer_code', s.layer_code,
+                'indicator', row_to_json(i.*)
+            ) AS object_json
+        FROM
+            ser AS s, i
         ";
 
-        // Check database structure version
-        jClasses::inc('gobsapi~Utils');
-        $utils = new Utils();
-        $databaseVersion = $utils->getDatabaseStructureVersion($this->connection_profile);
-        if (empty($databaseVersion)) {
-            return;
-        }
-        $versions = explode('.', $databaseVersion);
-        // OLD SQL, ie before 6.0.0
-        // with indicator dimensions stored
-        // in id_value_xxx columns
-        // TODO: to be removed after some time
-        if (count($versions) > 0 && (int) $versions[0] < 6) {
-            $sql = "
-            WITH decompose_values AS (
-                SELECT
-                    i.*,
-                    array_position(id_value_code, unnest(id_value_code)) AS value_position
-                FROM gobs.indicator AS i
-                WHERE id_code = $1
-            ),
-            ind AS (
-                SELECT
-                decompose_values.id AS id,
-                id_code AS code,
-                id_label AS label,
-                id_description AS description,
-                id_category AS category,
-                id_date_format AS date_format,
-
-                -- values
-                jsonb_agg(jsonb_build_object(
-                    'code', id_value_code[value_position],
-                    'name', id_value_name[value_position],
-                    'type', id_value_type[value_position],
-                    'unit', id_value_unit[value_position]
-                )) AS values,
-
-                decompose_values.created_at,
-                decompose_values.updated_at
-
-                FROM decompose_values
-                GROUP BY
-                decompose_values.id,
-                id_code,
-                id_label,
-                id_description,
-                id_date_format,
-                id_value_code,
-                id_value_name,
-                id_value_type,
-                id_value_unit,
-                id_category,
-                decompose_values.created_at,
-                decompose_values.updated_at
-                ORDER BY id
-            ),
-            consolidated AS (
-                SELECT ind.*,
-
-                -- documents
-                json_agg(
-                CASE
-                    WHEN d.id IS NOT NULL THEN json_build_object(
-                        'id', d.id,
-                        'uid', d.do_uid,
-                        'indicator', ind.code,
-                        'label', d.do_label,
-                        'description', d.do_description,
-                        'type', d.do_type,
-                        'url', d.do_path,
-                        'created_at', d.created_at,
-                        'updated_at', d.updated_at
-                    )
-                    ELSE NULL
-                END)  AS documents
-                FROM ind
-                LEFT JOIN gobs.document AS d
-                    ON d.fk_id_indicator = ind.id
-                GROUP BY
-                ind.id,
-                ind.code,
-                ind.label,
-                ind.description,
-                ind.date_format,
-                ind.values,
-                ind.category,
-                ind.created_at,
-                ind.updated_at
-
-            ),
-            last AS (
-                SELECT
-                    id, code, label, description, category, date_format,
-                    values, documents,
-                    NULL AS preview,
-                    NULL AS icon,
-                    created_at,
-                    updated_at
-                FROM consolidated
-            )
-            SELECT
-                row_to_json(last.*) AS object_json
-            FROM last
-            ";
-        }
-
-        $cnx = jDb::getConnection($this->connection_profile);
+        // Get data
+        $cnx = jDb::getConnection($this->connectionProfile);
         $resultset = $cnx->prepare($sql);
-        $resultset->execute(array($this->code));
+        $resultset->execute(array($this->id));
         $json = null;
         foreach ($resultset->fetchAll() as $record) {
             $json = $record->object_json;
         }
 
         $this->raw_data = json_decode($json);
+
+        // Set indicator code
+        $this->indicator_code = $this->raw_data->indicator->code;
     }
 
     // Get Gobs representation of a indicator object
@@ -378,10 +288,10 @@ class Indicator
         if (!empty($data)) {
             // Transform document paths into URL
             $docs = array();
-            if (count($data->documents) == 1 && !$data->documents[0]) {
+            if (count($data->indicator->documents) == 1 && !$data->indicator->documents[0]) {
                 $docs = array();
             } else {
-                foreach ($data->documents as $document) {
+                foreach ($data->indicator->documents as $document) {
                     // Check if document is preview or icon
                     if (in_array($document->type, array('preview', 'icon'))) {
                         // We move the doc from documents to preview/icon property
@@ -401,7 +311,7 @@ class Indicator
                     }
                 }
             }
-            $data->documents = $docs;
+            $data->indicator->documents = $docs;
         }
 
         return $data;
@@ -420,7 +330,7 @@ class Indicator
     public function getOrAddGobsSeries($spatial_layer_code = null)
     {
         // Check cache
-        $cache_key = 'gobs_series_'.$this->code.'_'.$this->user->login;
+        $cache_key = 'gobs_series_'.$this->id.'_'.$this->user->login;
         $series_id = jCache::get($cache_key);
         if ($series_id) {
             return $series_id;
@@ -432,7 +342,6 @@ class Indicator
 
         // protocol
         $protocol_id = $utils->getOrAddObject(
-            $this->connection_profile,
             'protocol',
             array('g_events'),
             array(
@@ -447,7 +356,6 @@ class Indicator
 
         // actor_category for actor
         $category_id = $utils->getOrAddObject(
-            $this->connection_profile,
             'actor_category',
             array('G-Events'),
             array(
@@ -461,7 +369,6 @@ class Indicator
 
         // actor for spatial layer
         $sl_actor_id = $utils->getOrAddObject(
-            $this->connection_profile,
             'actor',
             array('g_events'),
             array(
@@ -481,16 +388,15 @@ class Indicator
         // We do not create a new spatial layer if its code has been given
         // in the JSON body, but use the existing layer to create the needed series
         if ($spatial_layer_code === null) {
-            $spatial_layer_code = 'g_events_'.$this->code;
+            $spatial_layer_code = 'g_events_'.$this->id;
         }
         $spatial_layer_id = $utils->getOrAddObject(
-            $this->connection_profile,
             'spatial_layer',
             array($spatial_layer_code),
             array(
-                'g_events_'.$this->code,
-                'Observation layer for the indicator '.$this->code,
-                'Automatically created spatial layer for G-Events indicator '.$this->code,
+                'g_events_'.$this->id,
+                'Observation layer for the series '.$this->id,
+                'Automatically created spatial layer for G-Events series '.$this->id,
                 $sl_actor_id,
                 'point',
             )
@@ -499,13 +405,12 @@ class Indicator
             return null;
         }
 
-        // indicator
-        $indicator_id = $this->raw_data->id;
+        // series id
+        $series_id = $this->raw_data->id;
 
         // authenticated actor
         // it has already been created before hand (see User class)
         $actor_id = $utils->getOrAddObject(
-            $this->connection_profile,
             'actor',
             array($this->user->login),
             null
@@ -521,7 +426,6 @@ class Indicator
             $spatial_layer_id,
         );
         $series_id = $utils->getOrAddObject(
-            $this->connection_profile,
             'series',
             $series_properties,
             $series_properties
@@ -587,7 +491,10 @@ class Indicator
         ),
         obs AS (
             SELECT
-                o.id, ind.id_code AS indicator, o.ob_uid AS uuid,
+                o.id,
+                s.id AS series,
+                ind.id_code AS indicator,
+                o.ob_uid AS uuid,
                 o.ob_start_timestamp AS start_timestamp,
                 o.ob_end_timestamp AS end_timestamp,
                 a.a_email AS actor_email,
@@ -604,7 +511,7 @@ class Indicator
             JOIN gobs.series AS s
                 ON s.id = o.fk_id_series
             JOIN gobs.actor AS a
-                ON a.id = s.fk_id_actor
+                ON a.id = o.fk_id_actor
             JOIN gobs.spatial_object AS so
                 ON so.id = o.fk_id_spatial_object,
             ind
@@ -654,10 +561,10 @@ class Indicator
         FROM obs
         ';
         // jLog::log($sql, 'error');
-        $cnx = jDb::getConnection($this->connection_profile);
+        $cnx = jDb::getConnection($this->connectionProfile);
         $resultset = $cnx->prepare($sql);
         $params = array(
-            $this->code,
+            $this->indicator_code,
             $this->allowed_polygon_wkt,
         );
         if ($requestSyncDate && $lastSyncDate) {
@@ -705,7 +612,7 @@ class Indicator
             return null;
         }
 
-        $documents = $this->raw_data->documents;
+        $documents = $this->raw_data->indicator->documents;
         foreach ($documents as $doc) {
             if ($doc->uid == $uid) {
                 return $doc;
@@ -745,8 +652,8 @@ class Indicator
                 'gobsapi~indicator:getIndicatorDocument'
             );
             $document_url = str_replace(
-                'gobsapi.php/gobsapi/indicator/getIndicatorDocument',
-                'gobsapi.php/project/'.$this->project_key.'/indicator/'.$this->code.'/document/'.$document->uid,
+                'gobsapi.php/gobsapi/series/getIndicatorDocument',
+                'gobsapi.php/project/'.$this->project_key.'/series/'.$this->id.'/indicator/'.$this->indicator_code.'/document/'.$document->uid,
                 $document_url
             );
         }
@@ -775,7 +682,7 @@ class Indicator
                 );
                 $media_url = str_replace(
                     'gobsapi.php/gobsapi/observation/getObservationMedia',
-                    'gobsapi.php/project/'.$this->project_key.'/indicator/'.$this->code.'/observation/'.$uid.'/media',
+                    'gobsapi.php/project/'.$this->project_key.'/series/'.$this->id.'/observation/'.$uid.'/media',
                     $media_url
                 );
 
@@ -813,7 +720,7 @@ class Indicator
         ';
         // jLog::log($sql, 'error');
 
-        $cnx = jDb::getConnection($this->connection_profile);
+        $cnx = jDb::getConnection($this->connectionProfile);
         $resultset = $cnx->prepare($sql);
         $params = array();
         if ($requestSyncDate && $lastSyncDate) {

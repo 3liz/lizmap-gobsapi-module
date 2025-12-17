@@ -11,29 +11,34 @@
 class User
 {
     /**
-     * @var User login
+     * @var string User login
      */
     public $login;
 
     /**
-     * @var User email
+     * @var string User email
      */
     public $email;
 
     /**
-     * @var User firstname
+     * @var string User firstname
      */
     public $firstname;
 
     /**
-     * @var User lastname
+     * @var string User lastname
      */
     public $lastname;
 
     /**
+     * @var string User connectionProfile
+     */
+    protected $connectionProfile = 'gobsapi';
+
+    /**
      * constructor.
      *
-     * @param mixed $jelix_user
+     * @param object $jelix_user
      */
     public function __construct($jelix_user)
     {
@@ -56,37 +61,50 @@ class User
         $utils = new Utils();
 
         // Get the list of projects
-        // At present, we must loop for each listed project
-        // in the ini file, which is not very optimized.
-        // We should create a new concept of "database" or "instance"
-        // which will help to know which database to connect to
-
-        // Get the ini file containing the projects connections
-        jClasses::inc('gobsapi~Utils');
-        $utils = new Utils();
-        $root_dir = $utils->getMediaRootDirectory();
-        $projects_connections_file = '/gobsapi/projects_connections.ini';
-        $projects_connections_file_path = $root_dir.$projects_connections_file;
-
-        // No file
-        if (!file_exists($projects_connections_file_path)) {
-            return array();
+        // We use the connection profile named gobsapi
+        $projectKeys = array();
+        $cnx = jDb::getConnection($this->connectionProfile);
+        $userGroups = jAcl2DbUserGroup::getGroupsIdByUser($this->login);
+        $groups = implode('@@', $userGroups);
+        $sql = "
+            SELECT DISTINCT
+                p.id, p.pt_code, p.pt_label
+            FROM gobs.project AS p
+            JOIN gobs.project_view AS v
+                ON v.fk_id_project = p.id
+            WHERE True
+            AND regexp_split_to_array(pv_groups, '[\\s,;]+')
+                && regexp_split_to_array(".$cnx->quote($groups).", '@@')
+        ";
+        $status = false;
+        try {
+            $query = $cnx->query($sql);
+            if ($query) {
+                foreach ($query->fetchAll() as $record) {
+                    $status = true;
+                    $projectKeys[] = $record->pt_code;
+                }
+            } else {
+                $errorCode = $cnx->errorCode();
+                \jLog::log('Connection to the PostgreSQL service "'.$this->connectionName.'" failed', 'error');
+                \jLog::log($errorCode, 'error');
+                $status = false;
+            }
+        } catch (Exception $e) {
+            $msg = $e->getMessage();
+            \jLog::log('Connection to the PostgreSQL service "'.$this->connectionName.'" failed', 'error');
+            \jLog::log($msg, 'error');
+            $status = false;
         }
-        $ini = parse_ini_file($projects_connections_file_path, true);
 
-        // No content
-        if (!$ini) {
-            return array();
-        }
-
+        // Get project instance
+        jClasses::inc('gobsapi~Project');
         $projects = array();
-        foreach ($ini as $project_key => $project_config) {
-            // Get project instance
-            jClasses::inc('gobsapi~Project');
+        foreach($projectKeys as $project_key) {
             $gobs_project = new Project($project_key, $this->login);
 
-            // Add it only if project has a valid connection && contains gobs indicators
-            if ($gobs_project->connectionValid && !empty($gobs_project->getIndicators())) {
+            // Add it only if project contains gobs series
+            if (!empty($gobs_project->getSeries())) {
                 $projects[] = $gobs_project->get();
             }
         }
@@ -94,8 +112,12 @@ class User
         return $projects;
     }
 
-    // Create actor and actor_category if needed
-    public function createGobsActor($connection_profile)
+    /**
+     * Create actor and actor_category if needed
+     *
+     * @return null|integer Database actor ID
+     */
+    public function createOrGetGobsActor()
     {
         // Check cache
         $cache_key = 'gobs_actor_'.$this->login;
@@ -110,7 +132,6 @@ class User
 
         // actor_category
         $category_id = $utils->getOrAddObject(
-            $connection_profile,
             'actor_category',
             // Get actor with ac_label = platform_user
             array('platform_user'),
@@ -126,7 +147,6 @@ class User
 
         // actor
         $actor_id = $utils->getOrAddObject(
-            $connection_profile,
             'actor',
             array($this->login),
             array(

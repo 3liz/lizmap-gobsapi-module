@@ -41,12 +41,12 @@ class Token
     }
 
     /**
-     * Validate a JWC token and give corresponding user name.
+     * Validate a JWC token and give the corresponding Gobs User object.
      *
      * @param string token Token passed in Authentication header
      * @param mixed $token
      *
-     * @return object User object containing login
+     * @return \User Gobs API Use object
      */
     public function getUserFromToken($token)
     {

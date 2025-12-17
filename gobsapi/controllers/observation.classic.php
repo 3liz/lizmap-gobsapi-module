@@ -5,17 +5,17 @@ include jApp::getModulePath('gobsapi').'controllers/apiController.php';
 class observationCtrl extends apiController
 {
     /**
-     * @var observation_uid: Observation uuid
+     * @var string observation_uid: Observation uuid
      */
     protected $observation_uid;
 
     /**
-     * @var observation G-Obs Representation of an observation or many observations
+     * @var \Observation G-Obs Representation of an observation or many observations
      */
     protected $observation;
 
     /**
-     * @var access Boolean saying if the user has the right to edit the observation
+     * @var boolean Boolean saying if the user has the right to edit the observation
      */
     protected $access;
 
@@ -47,8 +47,8 @@ class observationCtrl extends apiController
             );
         }
 
-        // Check indicator
-        list($code, $status, $message) = $this->checkIndicator();
+        // Check series
+        list($code, $status, $message) = $this->checkSeries();
         if ($status == 'error') {
             return array(
                 $code,
@@ -91,8 +91,7 @@ class observationCtrl extends apiController
     {
         // Parameters
         $observation_uid = $this->param('observationId');
-
-        $gobs_observation = new Observation($this->user, $this->indicator, $observation_uid, null);
+        $gobs_observation = new Observation($this->user, $this->series, $observation_uid, null);
 
         // Check uid is valid
         if (!$gobs_observation->isValidUuid($observation_uid)) {
@@ -162,7 +161,12 @@ class observationCtrl extends apiController
         }
 
         $observation_uid = null;
-        $gobs_observation = new Observation($this->user, $this->indicator, $observation_uid, $bodyString);
+        $gobs_observation = new Observation(
+            $this->user,
+            $this->series,
+            $observation_uid,
+            $bodyString
+        );
 
         // Check observation JSON
         $action = 'create';
@@ -187,20 +191,9 @@ class observationCtrl extends apiController
             );
         }
 
-        // Create a new series and related items if needed
-        // Add series of observation for the authenticated user
-        $spatial_layer_code = null;
-        if ($gobs_observation->spatial_object !== null) {
-            $spatial_layer_code = $gobs_observation->spatial_object->sl_code;
-        }
-        $series_id = $this->indicator->getOrAddGobsSeries($spatial_layer_code);
-        if (!$series_id) {
-            return array(
-                '400',
-                'error',
-                'An error occurred while creating the needed series for this indicator and this user',
-            );
-        }
+        // Create a new actor for the observation if needed
+        // No need since it is done with the method checkProject
+        $sl_actor_id = $this->gobs_actor_id;
 
         // Check capabilities
         $context = 'create';

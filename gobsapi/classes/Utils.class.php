@@ -9,6 +9,12 @@
  */
 class Utils
 {
+
+    /**
+     * @var string jDb connection profile
+     */
+    protected $connectionProfile = 'gobsapi';
+
     private $sql = array(
         'actor_category' => array(
             'get' => '
@@ -92,9 +98,9 @@ class Utils
     );
 
     // Query database and return json data
-    public function query($connection_profile, $sql, $params)
+    public function query($sql, $params)
     {
-        $cnx = jDb::getConnection($connection_profile);
+        $cnx = jDb::getConnection($this->connectionProfile);
         $cnx->beginTransaction();
 
         try {
@@ -120,20 +126,19 @@ class Utils
     /**
      * Get or add a G-Obs object.
      *
-     * @param string     $connection_profile The jDb connection profile name to connect to the database
      * @param string     $key                The object to create. It corresponds to the table name. Ex: actor_category
      * @param mixed      $get_params         Parameters needed for the get SQL
      * @param null|mixed $add_params         Parameters needed for the add SQL
      *
      * @return int Object id
      */
-    public function getOrAddObject($connection_profile, $key, $get_params, $add_params = null)
+    public function getOrAddObject($key, $get_params, $add_params = null)
     {
         $id = null;
 
         // Check if object already exists
         $sql = $this->sql[$key]['get'];
-        $data = $this->query($connection_profile, $sql, $get_params);
+        $data = $this->query($sql, $get_params);
         if (!is_array($data)) {
             return null;
         }
@@ -141,7 +146,7 @@ class Utils
         // If not, create object
         if ($add_params && count($data) == 0) {
             $sql = $this->sql[$key]['add'];
-            $data = $this->query($connection_profile, $sql, $add_params);
+            $data = $this->query($sql, $add_params);
             if (!is_array($data)) {
                 return null;
             }
@@ -162,14 +167,12 @@ class Utils
      * Get the version of G-Obs structure as written
      * in the database metadata table.
      *
-     * @param string $connection_profile Profile
-     *
      * @return string $version Version of the database structure
      */
-    public function getDatabaseStructureVersion($connection_profile)
+    public function getDatabaseStructureVersion()
     {
         $sql = 'SELECT me_version FROM gobs.metadata';
-        $data = $this->query($connection_profile, $sql, array());
+        $data = $this->query($sql, array());
         if (!is_array($data)) {
             return null;
         }

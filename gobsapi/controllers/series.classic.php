@@ -2,7 +2,7 @@
 
 include jApp::getModulePath('gobsapi').'controllers/apiController.php';
 
-class indicatorCtrl extends apiController
+class seriesCtrl extends apiController
 {
     /**
      * Check access by the user
@@ -30,8 +30,8 @@ class indicatorCtrl extends apiController
             );
         }
 
-        // Check indicator
-        list($code, $status, $message) = $this->checkIndicator();
+        // Check series
+        list($code, $status, $message) = $this->checkSeries();
         if ($status == 'error') {
             return array(
                 $code,
@@ -40,108 +40,108 @@ class indicatorCtrl extends apiController
             );
         }
 
-        return array('200', 'success', 'Indicator is a G-Obs indicator');
+        return array('200', 'success', 'Series is a G-Obs series');
     }
 
     /**
-     * Get an indicator by Code
-     * /indicator/{indicatorCode}
+     * Get a series by ID
+     * /series/{seriesId}
      * Redirect to specific function depending on http method.
      *
-     * @httpparam string Indicator Code
+     * @httpparam string Series ID
      *
-     * @return jResponseJson Indicator object or standard api response
+     * @return jResponseJson Series object or standard api response
      */
-    public function getIndicatorByCode()
+    public function getSeriesById()
     {
-        // Check indicator can be accessed and is a valid G-Obs indicator
+        // Check series can be accessed and is a valid G-Obs series
         list($code, $status, $message) = $this->check();
         if ($status == 'error') {
             return $this->apiResponse(
                 $code,
                 $status,
                 $message,
-                'getIndicatorByCode',
+                'getSeriesById',
                 null,
                 null
             );
         }
 
-        $indicator = $this->indicator->get('publication');
+        $series = $this->series->get('publication');
 
-        return $this->objectResponse($indicator, 'getIndicatorByCode', null);
+        return $this->objectResponse($series, 'getSeriesById', null);
     }
 
     /**
-     * Get observations for an indicator by indicator Code
+     * Get observations for a series by series ID
      * and Last synchronisation dates
-     * /indicator/{indicatorCode}/observations.
+     * /series/{seriesId}/observations.
      *
-     * @param string Indicator Code
-     * @param string Indicator lastSyncDate
-     * @param string Indicator requestSyncDate
+     * @param string Series ID
+     * @param string Series lastSyncDate
+     * @param string Series requestSyncDate
      *
      * @httpresponse JSON observations data
      *
      * @return jResponseJson observations data
      */
-    public function getObservationsByIndicator()
+    public function getObservationsBySeries()
     {
-        // Check indicator can be accessed and is a valid G-Obs indicator
+        // Check series can be accessed and is a valid G-Obs series
         list($code, $status, $message) = $this->check();
         if ($status == 'error') {
             return $this->apiResponse(
                 $code,
                 $status,
                 $message,
-                'getObservationsByIndicator',
+                'getObservationsBySeries',
                 null,
                 null
             );
         }
 
-        $data = $this->indicator->getObservations(
+        $data = $this->series->getObservations(
             $this->requestSyncDate,
             $this->lastSyncDate
         );
 
-        return $this->objectResponse($data, 'getObservationsByIndicator', null);
+        return $this->objectResponse($data, 'getObservationsBySeries', null);
     }
 
     /**
-     * Get deleted observations for an indicator by indicator Code
+     * Get deleted observations for a series by series ID
      * and Last synchronisation dates
-     * /indicator/{indicatorCode}/deletedObservations.
+     * /series/{seriesId}/deletedObservations.
      *
-     * @param string Indicator Code
-     * @param string Indicator lastSyncDate
-     * @param string Indicator requestSyncDate
+     * @param string Series ID
+     * @param string Series lastSyncDate
+     * @param string Series requestSyncDate
      *
-     * @httpresponse JSON observdeletedObservationsations data
+     * @httpresponse JSON deleted observations data
      *
      * @return jResponseJson deletedObservations data
      */
-    public function getDeletedObservationsByIndicator()
+    public function getDeletedObservationsBySeries()
     {
-        // Check resource can be accessed and is a valid G-Obs indicator
+        // Check resource can be accessed and is a valid G-Obs series
         list($code, $status, $message) = $this->check();
         if ($status == 'error') {
             return $this->apiResponse(
                 $code,
                 $status,
                 $message,
-                'getDeletedObservationsByIndicator',
+                'getDeletedObservationsBySeries',
                 null,
                 null
             );
         }
 
-        $data = $this->indicator->getDeletedObservations(
+        $data = $this->series->getDeletedObservations(
             $this->requestSyncDate,
             $this->lastSyncDate
         );
 
-        return $this->objectResponse($data, 'getDeletedObservationsByIndicator', null);
+        return $this->objectResponse($data, 'getDeletedObservationsBySeries', null);
     }
 
     /**
@@ -164,7 +164,7 @@ class indicatorCtrl extends apiController
 
         // Document uid
         $uid = $this->param('documentId');
-        if (!$this->indicator->isValidUuid($uid)) {
+        if (!$this->series->isValidUuid($uid)) {
             return $this->apiResponse(
                 '400',
                 'error',
@@ -175,7 +175,7 @@ class indicatorCtrl extends apiController
             );
         }
 
-        $document = $this->indicator->getDocumentByUid($uid);
+        $document = $this->series->getDocumentByUid($uid);
         if (empty($document)) {
             return $this->apiResponse(
                 '404',
@@ -187,7 +187,7 @@ class indicatorCtrl extends apiController
             );
         }
 
-        $filePath = $this->indicator->getDocumentPath($document);
+        $filePath = $this->series->getDocumentPath($document);
         if (empty($filePath)) {
             return $this->apiResponse(
                 '404',
@@ -200,7 +200,7 @@ class indicatorCtrl extends apiController
         }
         $outputFileName = $document->label;
 
-        // Return binary geopackage file
+        // Return binary file
         return $this->getMedia($filePath, $outputFileName);
     }
 }

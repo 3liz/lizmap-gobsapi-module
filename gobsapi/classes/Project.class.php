@@ -26,9 +26,9 @@ class Project
     protected $data;
 
     /**
-     * @var array Array of project indicator codes
+     * @var array Array of project series
      */
-    protected $indicators = array();
+    protected $series = array();
 
     /**
      * @var array G-Obs Project properties read from database
@@ -36,19 +36,14 @@ class Project
     protected $properties = array();
 
     /**
-     * @var string Name of the PostgreSQL connection
-     */
-    public $connectionName;
-
-    /**
      * @var bool Validity of the service connection for the connection name
      */
     public $connectionValid;
 
     /**
-     * @var string Jelix virtual jDb profile
+     * @var string jDb connection profile
      */
-    protected $connectionProfile;
+    protected $connectionProfile = 'gobsapi';
 
     /**
      * @var string Authenticated user login
@@ -74,99 +69,23 @@ class Project
         // Get the authenticated user groups
         $this->userGroups = jAcl2DbUserGroup::getGroupsIdByUser($this->login);
 
-        // Get the project connection name and profile
-        $this->setConnection();
-
         // Check connection to PostgreSQL database
         $this->connectionValid = $this->checkConnection();
 
-        // Get indicators: do it before building Gobs project
-        // to check if the project contains indicators
+        // Get series: do it before building Gobs project
+        // to check if the project contains series
         if ($this->connectionValid) {
             // Get project properties
             $this->properties = $this->getProjectPropertiesFromDatabase();
 
             // Create Gobs projet expected data
-            // only if there are some indicators
+            // only if there are some series
             if ($this->properties !== null) {
                 $this->buildGobsProject();
             }
         } else {
-            \jLog::log('Project "'.$project_key.'" connection name is not valid: "'.$this->connectionName.'"');
+            \jLog::log('The database cannot be reached with the given connection profile : "'.$this->connectionProfile.'" ');
         }
-    }
-
-    /**
-     * Set the connection name and profile.
-     *
-     * @return bool False if no connection has been found
-     */
-    private function setConnection()
-    {
-        // Get the ini file containing the projects connections
-        jClasses::inc('gobsapi~Utils');
-        $utils = new Utils();
-        $root_dir = $utils->getMediaRootDirectory();
-        $projects_connections_file = '/gobsapi/projects_connections.ini';
-        $projects_connections_file_path = $root_dir.$projects_connections_file;
-
-        // No file
-        if (!file_exists($projects_connections_file_path)) {
-            return false;
-        }
-        $ini = parse_ini_file($projects_connections_file_path, true);
-
-        // No content
-        if (!$ini) {
-            return false;
-        }
-
-        // The project key does not exists in the ini file
-        if (!array_key_exists($this->project_key, $ini) || !array_key_exists('connection_name', $ini[$this->project_key])) {
-            return false;
-        }
-
-        // The project connection is not empty
-        $connectionName = trim($ini[$this->project_key]['connection_name']);
-        if (empty($connectionName)) {
-            return false;
-        }
-
-        // Set the project connection name
-        $this->connectionName = $connectionName;
-        $this->connectionProfile = $this->getConnectionProfile();
-
-        return true;
-    }
-
-    /**
-     * Get the connection virtual profile.
-     */
-    public function getConnectionProfile()
-    {
-        if (empty($this->connectionName)) {
-            return null;
-        }
-
-        // Profile parameters
-        $jdbParams = array(
-            'driver' => 'pgsql',
-            'service' => $this->connectionName,
-        );
-        $dbProfile = 'gobs_api_profile_'.sha1(json_encode($jdbParams));
-
-        try {
-            // try to get the profile, it may be already created for an other layer
-            \jProfiles::get('jdb', $dbProfile, true);
-        } catch (Exception $e) {
-            // create the profile
-            \jProfiles::createVirtualProfile('jdb', $dbProfile, $jdbParams);
-        }
-
-        // Set the project property
-        $this->connectionProfile = $dbProfile;
-
-        return $dbProfile;
     }
 
     /**
@@ -174,9 +93,6 @@ class Project
      */
     public function checkConnection()
     {
-        if (empty($this->connectionName)) {
-            return false;
-        }
         $sql = 'SELECT 1 AS test;';
         $status = false;
 
@@ -189,21 +105,15 @@ class Project
                 }
             } else {
                 $errorCode = $cnx->errorCode();
-                \jLog::log('Connection to the PostgreSQL service "'.$this->connectionName.'" failed', 'error');
+                \jLog::log('Connection to the PostgreSQL profile "'.$this->connectionProfile.'" failed', 'error');
                 \jLog::log($errorCode, 'error');
                 $status = false;
             }
         } catch (Exception $e) {
             $msg = $e->getMessage();
-            \jLog::log('Connection to the PostgreSQL service "'.$this->connectionName.'" failed', 'error');
+            \jLog::log('Connection to the PostgreSQL profile "'.$this->connectionProfile.'" failed', 'error');
             \jLog::log($msg, 'error');
             $status = false;
-        }
-
-        // Revert the connection name and profile to null values
-        if (!$status) {
-            $this->connectionName = null;
-            $this->connectionProfile = null;
         }
 
         return $status;
@@ -250,9 +160,9 @@ class Project
                 GROUP BY fk_id_project
             )
             SELECT
-                p.id, p.pt_code, p.pt_lizmap_project_key,
+                p.id, p.pt_code,
                 p.pt_label, p.pt_description,
-                array_to_string(p.pt_indicator_codes, ',') AS pt_indicator_codes,
+                string_agg(s.id::text, ',') AS series_ids,
                 ST_AsText(mv.geom, 8) AS allowed_polygon_wkt,
                 ST_xmin(gv.geom) AS xmin,
                 ST_ymin(gv.geom) AS ymin,
@@ -263,8 +173,14 @@ class Project
                 ON gv.fk_id_project = p.id
             INNER JOIN merged_views AS mv
                 ON mv.fk_id_project = p.id
-
+            LEFT JOIN gobs.series AS s
+                ON s.fk_id_project = p.id
             WHERE p.pt_code = ".$cnx->quote($projectCode).'
+            GROUP BY
+                p.id, p.pt_code,
+                p.pt_label, p.pt_description,
+                allowed_polygon_wkt,
+                gv.geom
             LIMIT 1
         ';
 
@@ -275,8 +191,6 @@ class Project
             $resultset = $cnx->prepare($sql);
             // We do not used prepared statement anymore because this feature seems broken
             $execute = $resultset->execute();
-
-            $data = array();
             if ($resultset && $resultset->id() === false) {
                 $errorCode = $cnx->errorCode();
 
@@ -284,22 +198,25 @@ class Project
             }
 
             if ($resultset !== null) {
+                $data = array();
                 foreach ($resultset->fetchAll() as $record) {
                     $data['id'] = $record->id;
                     $data['code'] = $record->pt_code;
-                    $data['lizmap_project_key'] = $record->pt_lizmap_project_key;
                     $data['label'] = $record->pt_label;
                     $data['description'] = $record->pt_description;
-                    $data['indicator_codes'] = $record->pt_indicator_codes;
+                    $data['series_ids'] = $record->series_ids;
                     $data['allowed_polygon_wkt'] = $record->allowed_polygon_wkt;
                     $data['xmin'] = $record->xmin;
                     $data['ymin'] = $record->ymin;
                     $data['xmax'] = $record->xmax;
                     $data['ymax'] = $record->ymax;
                 }
+
+                if (count($data)) return $data;
+
+                return null;
             }
 
-            return $data;
         } catch (Exception $e) {
             $msg = $e->getMessage();
             \jLog::log('An error occurred while requesting the properties for the project "'.$this->project_key.'"', 'error');
@@ -427,25 +344,24 @@ class Project
     }
 
     /**
-     * Get Gobs project indicators.
+     * Get Gobs project series.
      *
-     * @return null|array The project indicators
+     * @return null|array The project series of observations
      */
-    public function getIndicators()
+    public function getSeries()
     {
-        $indicators = null;
-
-        if (is_array($this->properties) && array_key_exists('indicator_codes', $this->properties)
-            && !empty($this->properties['indicator_codes'])
+        $series = null;
+        if (is_array($this->properties) && array_key_exists('series_ids', $this->properties)
+            && !empty($this->properties['series_ids'])
         ) {
-            $indicators = array_map('trim', explode(',', $this->properties['indicator_codes']));
-            if (count($indicators) == 0) {
-                $indicators = null;
+            $series = array_map('trim', explode(',', $this->properties['series_ids']));
+            if (count($series) == 0) {
+                $series = null;
             }
         }
 
-        $this->indicators = $indicators;
+        $this->series = $series;
 
-        return $indicators;
+        return $series;
     }
 }

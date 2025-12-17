@@ -17,18 +17,29 @@ class apiController extends jController
         '500' => 'Internal Server Error',
     );
 
-    /** @var object */
+    /** @var \User GobsAPI user instance */
     protected $user;
 
     /** @var \Project */
     protected $gobs_project;
 
+    /** @var integer */
+    protected $gobs_actor_id;
+
     /** @var \Indicator */
     protected $indicator;
+
+    /** @var \Series */
+    protected $series;
 
     protected $requestSyncDate;
 
     protected $lastSyncDate;
+
+    /**
+     * @var jDb connection profile
+     */
+    protected $connection = 'gobsapi';
 
     /**
      * Authenticate the user via JWC token
@@ -47,12 +58,11 @@ class apiController extends jController
         }
 
         // Validate token
+        // jelix user
         $gobs_user = $token_manager->getUserFromToken($token);
         if (!$gobs_user) {
             return false;
         }
-
-        // Add user in property
         $this->user = $gobs_user;
 
         // Add requestSyncDate & lastSyncDate
@@ -106,18 +116,17 @@ class apiController extends jController
         }
 
         // Check the project can be accessed
-        if ($gobs_project->getIndicators() === null) {
+        if ($gobs_project->getSeries() === null) {
             return array(
                 '404',
                 'error',
-                'The project is not a valid G-Osb project : no indicators found, or there is no corresponding project views for the authenticated user',
+                'The project is not a valid G-Osb project : no series found, or there is no corresponding project views for the authenticated user',
             );
         }
 
         // Create the corresponding actor in G-Obs database if needed
-        $connection_profile = $gobs_project->getConnectionProfile();
-        $gobs_actor = $this->user->createGobsActor($connection_profile);
-        if (!$gobs_actor) {
+        $gobs_actor_id = $this->user->createOrGetGobsActor();
+        if (!$gobs_actor_id) {
             return array(
                 '404',
                 'error',
@@ -127,60 +136,50 @@ class apiController extends jController
 
         // Set project property
         $this->gobs_project = $gobs_project;
+        $this->gobs_actor_id = $gobs_actor_id;
 
         // Ok
         return array('200', 'success', 'Project is a valid G-Obs project');
     }
 
-    // Check if the given indicator in parameter is valid and accessible
-    protected function checkIndicator()
+    // Check if the given series in parameter is valid and accessible
+    protected function checkSeries()
     {
-        // Check indicatorKey parameter
-        $indicator_code = $this->param('indicatorCode');
-        if (!$indicator_code) {
+        // Check seriesId parameter
+        $series_id = $this->param('seriesId');
+        if (!$series_id) {
             return array(
                 '400',
                 'error',
-                'The indicatorKey parameter is mandatory',
+                'The seriesId parameter is mandatory',
             );
         }
 
-        // Get indicator
-        jClasses::inc('gobsapi~Indicator');
-        $connection_profile = $this->gobs_project->getConnectionProfile();
+        // Get series
+        jClasses::inc('gobsapi~Series');
         $project_key = $this->gobs_project->getKey();
-        $gobs_indicator = new Indicator(
+        $gobs_series = new Series(
             $this->user,
-            $indicator_code,
+            $series_id,
             $project_key,
-            $connection_profile,
             $this->gobs_project->getAllowedPolygon()
         );
 
-        // Check indicatorKey is valid
-        if (!$gobs_indicator->checkCode()) {
-            return array(
-                '400',
-                'error',
-                'The indicatorKey parameter is invalid',
-            );
-        }
-
-        // Check indicator exists
-        $indicator = $gobs_indicator->get('internal');
-        if (!$indicator) {
+        // Check series exists
+        $series = $gobs_series->get('internal');
+        if (!$series) {
             return array(
                 '404',
                 'error',
-                'The given indicator code does not refer to a known indicator',
+                'The given series id does not refer to a known series',
             );
         }
 
-        // Set indicator property
-        $this->indicator = $gobs_indicator;
+        // Set series property
+        $this->series = $gobs_series;
 
         // Ok
-        return array('200', 'success', 'Indicator is a valid G-Obs indicator');
+        return array('200', 'success', 'Series is a valid G-Obs series');
     }
 
     /**

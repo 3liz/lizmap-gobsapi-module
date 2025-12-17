@@ -65,16 +65,16 @@ class projectCtrl extends apiController
     }
 
     /**
-     * Get indicators for a project by project Key
-     * /project/{projectKey}/indicators.
+     * Get series for a project by project Key
+     * /project/{projectKey}/series.
      *
      * @param string Project Key
      *
-     * @httpresponse JSON Indicator data
+     * @httpresponse JSON Series data
      *
-     * @return jResponseJson Indicator data
+     * @return jResponseJson Series data
      */
-    public function getProjectIndicators()
+    public function getProjectSeries()
     {
         // Check resource can be accessed and is valid
         list($code, $status, $message) = $this->check();
@@ -83,33 +83,31 @@ class projectCtrl extends apiController
                 $code,
                 $status,
                 $message,
-                'getProjectIndicators',
+                'getProjectSeries',
                 null,
                 null
             );
         }
 
-        // Get indicator codes
-        $indicator_codes = $this->gobs_project->getIndicators();
+        // Get series ids
+        $series_ids = $this->gobs_project->getSeries();
 
-        // Get indicators
-        $indicators = array();
-        jClasses::inc('gobsapi~Indicator');
+        // Get series objects
+        $seriesList = array();
+        jClasses::inc('gobsapi~Series');
         $project_key = $this->gobs_project->getKey();
-        foreach ($indicator_codes as $code) {
-            $connection_profile = $this->gobs_project->getConnectionProfile();
-            $gobs_indicator = new Indicator(
+        foreach ($series_ids as $id) {
+            $gobs_series = new Series(
                 $this->user,
-                $code,
+                $id,
                 $project_key,
-                $connection_profile,
                 $this->gobs_project->getAllowedPolygon()
             );
-            $indicator = $gobs_indicator->get('publication');
-            $indicators[] = $indicator;
+            $series = $gobs_series->get('publication');
+            $seriesList[] = $series;
         }
 
-        return $this->objectResponse($indicators, 'getProjectIndicators', null);
+        return $this->objectResponse($seriesList, 'getProjectSeries', null);
     }
 
     /**
@@ -195,7 +193,7 @@ class projectCtrl extends apiController
         }
         $doDownload = true;
 
-        // Return binary geopackage file
+        // Return binary project illustration
         return $this->getMedia($filePath, $outputFileName, $mimeType, $doDownload);
     }
 }

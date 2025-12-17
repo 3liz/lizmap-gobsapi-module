@@ -105,8 +105,8 @@ class userCtrl extends apiController
         }
 
         // Validate token
-        $gobs_user = $token_manager->getUserFromToken($token);
-        if (!$gobs_user->login) {
+        $jelix_user = $token_manager->getUserFromToken($token);
+        if (!$jelix_user->login) {
             return $this->apiResponse(
                 '401',
                 'error',
@@ -118,7 +118,7 @@ class userCtrl extends apiController
         }
 
         // Log the user out. Can be useless because no session, but usefull for sending events
-        $login = $gobs_user->login;
+        $login = $jelix_user->login;
         $log_user_out = jAuth::logout($login);
 
         // Destroy token
@@ -166,4 +166,3 @@ class userCtrl extends apiController
     }
 }
 ?>
-

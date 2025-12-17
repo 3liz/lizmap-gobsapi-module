@@ -16,7 +16,7 @@ class Observation
     protected $observation_uid;
 
     /**
-     * @var user: Gobs authenticated user instance
+     * @var \User Gobs user instance
      */
     protected $user;
 
@@ -26,7 +26,12 @@ class Observation
     protected $indicator;
 
     /**
-     * @var string Allowed project polygon in WKT for the authenticated user based on the indicator project view
+     * @var \Series: G-Obs series
+     */
+    protected $series;
+
+    /**
+     * @var string Allowed project polygon in WKT for the authenticated user based on the series project view
      */
     protected $allowed_polygon_wkt;
 
@@ -60,21 +65,26 @@ class Observation
     protected $media_mimes = array('jpg', 'jpeg', 'png', 'gif');
 
     /**
+     * @var jDb connection profile
+     */
+    protected $connectionProfile = 'gobsapi';
+
+    /**
      * constructor.
      *
      * @param objet      $user            Gobs Authenticated user instance
-     * @param \Indicator $indicator       Instance of G-Obs Indicator
+     * @param \Series    $series          Instance of G-Obs series
      * @param string     $observation_uid Uid of the observation
      * @param null|mixed $body_data
      */
-    public function __construct($user, $indicator, $observation_uid = null, $body_data = null)
+    public function __construct($user, $series, $observation_uid = null, $body_data = null)
     {
         $this->observation_uid = $observation_uid;
         $this->json_data = $body_data;
         $this->raw_data = null;
         $this->user = $user;
-        $this->indicator = $indicator;
-        $this->allowed_polygon_wkt = $indicator->getAllowedPolygon();
+        $this->series = $series;
+        $this->allowed_polygon_wkt = $series->getAllowedPolygon();
 
         // Get data from database if uid is given
         if (!empty($observation_uid)) {
@@ -82,8 +92,8 @@ class Observation
                 // Get observation by id
                 $this->getObservationFromDatabase($observation_uid);
                 if ($this->observation_valid) {
-                    // Check if indicator code is correct
-                    if ($this->raw_data && $indicator->getCode() != $this->raw_data->indicator) {
+                    // Check if series code is correct
+                    if ($this->raw_data && $series->getId() != $this->raw_data->series) {
                         $this->observation_valid = false;
                     }
                 }
@@ -97,7 +107,7 @@ class Observation
         }
 
         // Set observation media directory
-        $this->observation_media_directory = $indicator->observation_media_directory;
+        $this->observation_media_directory = $series->observation_media_directory;
     }
 
     /**
@@ -184,7 +194,7 @@ class Observation
                     ELSE 'no'
                 END)::text AS test
         ";
-        $cnx = jDb::getConnection($this->indicator->getConnectionProfile());
+        $cnx = jDb::getConnection($this->connectionProfile);
         $resultset = $cnx->prepare($sql);
         $params = array($observation_wkt, $polygon_wkt);
         $resultset->execute($params);
@@ -219,14 +229,14 @@ class Observation
         // Decode body data
         $body_data = json_decode($data);
 
-        // Check indicator given in body corresponds to the observation indicator instance
-        if (!property_exists($body_data, 'indicator') || $body_data->indicator != $this->indicator->getCode()) {
+        // Check series given in body corresponds to the observation series instance
+        if (!property_exists($body_data, 'series') || $body_data->series != $this->series->getId()) {
             $this->observation_valid = false;
 
             return array(
                 'error',
                 '400',
-                'Observation JSON data must have a valid indicator',
+                'Observation JSON data must have a valid series',
             );
         }
 
@@ -329,20 +339,20 @@ class Observation
             }
             $db_obs = $this->raw_data;
 
-            // Check database observation indicator is valid
-            if ($db_obs->indicator != $this->indicator->getCode()) {
+            // Check database observation series is valid
+            if ($db_obs->series != $this->series->getId()) {
                 $this->observation_valid = false;
 
                 return array(
                     'error',
                     '400',
-                    'Observation JSON data must have a valid indicator',
+                    'Observation JSON data must have a valid series',
                 );
             }
 
             // Do not allow to modify some fields
             $keys = array(
-                'id', 'indicator', 'uuid', 'created_at', 'updated_at', 'actor_email',
+                'id', 'series', 'indicator', 'uuid', 'created_at', 'updated_at', 'actor_email',
             );
             foreach ($keys as $key) {
                 $body_data->{$key} = $db_obs->{$key};
@@ -364,7 +374,7 @@ class Observation
                 // Check it does not yet exist in the database
                 $database_uid = null;
                 $sql = 'SELECT ob_uid FROM gobs.observation WHERE ob_uid = $1';
-                $cnx = jDb::getConnection($this->indicator->getConnectionProfile());
+                $cnx = jDb::getConnection($this->connectionProfile);
                 $resultset = $cnx->prepare($sql);
                 $params = array($body_uuid);
                 $resultset->execute($params);
@@ -427,51 +437,15 @@ class Observation
         }
 
         // Edit
-        // For creation, check that the authenticated user is author
-        // of at least one series for this indicator
+        // For creation, no rule needed
+        // If the user has access to the series, it can create an observation
         if ($context == 'create') {
-            $sql = '
-                WITH
-                ind AS (
-                    SELECT
-                        id, id_code, id_date_format
-                    FROM gobs.indicator
-                    WHERE True
-                    AND id_code = $1
-                    LIMIT 1
-                ),
-                ser AS (
-                    SELECT
-                        s.id, s.fk_id_spatial_layer
-                    FROM gobs.series AS s
-                    JOIN ind AS i
-                        ON fk_id_indicator = i.id
-                    JOIN gobs.actor AS a
-                        ON s.fk_id_actor = a.id
-                    WHERE a.a_email = $2::text
-                    ORDER BY s.id DESC
-                    LIMIT 1
-                )
-                SELECT row_to_json(ser.*) AS object_json
-                FROM ser
-            ';
-            $params = array(
-                $this->indicator->getCode(),
-                $this->user->email,
-            );
-
-            try {
-                $json = $this->query($sql, $params);
-            } catch (Exception $e) {
-                $msg = $e->getMessage();
-                $json = null;
-            }
-            $capabilities['edit'] = (!empty($json));
+            $capabilities['edit'] = true;
         }
 
         // Modification
         if ($context == 'modify') {
-            // For update, we just check if the authenticated user is the author of the observation series
+            // For update, we just check if the authenticated user is the author of the observation
             // NB: the previously called method checkObservationBodyJSONFormat
             // has replaced the actor_email property by the database value
             // We can check if it corresponds to the authenticated user
@@ -487,7 +461,7 @@ class Observation
     // Query database and return json data
     private function query($sql, $params)
     {
-        $cnx = jDb::getConnection($this->indicator->getConnectionProfile());
+        $cnx = jDb::getConnection($this->connectionProfile);
         $json = null;
         $resultset = null;
         $cnx->beginTransaction();
@@ -503,7 +477,6 @@ class Observation
             $cnx->commit();
         } catch (Exception $e) {
             $cnx->rollback();
-
             throw new Exception($e->getMessage());
         }
 
@@ -587,7 +560,7 @@ class Observation
             $json = $this->query($sql, $params);
         } catch (Exception $e) {
             $msg = $e->getMessage();
-            \jLog::log($msg, 'error');
+            \jLog::log('Observation - Query error : ' .$msg, 'error');
             $json = null;
         }
 
@@ -608,16 +581,18 @@ class Observation
         // SQL clause depends on the chosen action
         if ($action == 'select') {
             // SELECT
-            $sql = "
+            $sql = '
             WITH obs AS (
                 SELECT
-                    o.id, i.id_code AS indicator, o.ob_uid AS uuid,
+                    o.id,
+                    s.id AS series,
+                    i.id_code AS indicator, o.ob_uid AS uuid,
                     a.a_email AS actor_email,
                     o.ob_start_timestamp AS start_timestamp,
                     o.ob_end_timestamp AS end_timestamp,
                     json_build_object(
-                        'x', ST_X(ST_ReducePrecision(ST_Centroid(so.geom), 0.00000001)),
-                        'y', ST_Y(ST_ReducePrecision(ST_Centroid(so.geom), 0.00000001))
+                        \'x\', ST_X(ST_ReducePrecision(ST_Centroid(so.geom), 0.00000001)),
+                        \'y\', ST_Y(ST_ReducePrecision(ST_Centroid(so.geom), 0.00000001))
                     ) AS coordinates,
                     ST_AsText(so.geom, 8) AS wkt,
                     ob_value AS values,
@@ -627,7 +602,7 @@ class Observation
                 JOIN gobs.series AS s
                     ON s.id = o.fk_id_series
                 JOIN gobs.actor AS a
-                    ON a.id = s.fk_id_actor
+                    ON a.id = o.fk_id_actor
                 JOIN gobs.indicator AS i
                     ON i.id = s.fk_id_indicator
                 JOIN gobs.spatial_object AS so
@@ -641,31 +616,31 @@ class Observation
             SELECT
                 row_to_json(obs.*) AS object_json
             FROM obs
-            ";
+            ';
         } elseif ($action == 'insert') {
             // INSERT
-            $sql = "
+            $sql = '
             WITH source AS (
                 SELECT $1::json AS o
             ),
-            ind AS (
-                SELECT
-                    id, id_code, id_date_format
-                FROM gobs.indicator
-                JOIN source
-                    ON o->>'indicator' = id_code
-                LIMIT 1
-            ),
             ser AS (
                 SELECT
-                    s.id, s.fk_id_spatial_layer
-                FROM gobs.series AS s
-                JOIN ind AS i
-                    ON fk_id_indicator = i.id
-                JOIN gobs.actor AS a
-                    ON s.fk_id_actor = a.id
-                WHERE a.a_email = $2::text
-                ORDER BY s.id DESC
+                    s.id,
+                    s.fk_id_spatial_layer,
+                    s.fk_id_indicator
+                FROM gobs.series AS s, source
+                WHERE s.id = (o->>\'series\')::integer
+                LIMIT 1
+            ),
+            ind AS (
+                SELECT
+                    i.id, id_code, id_date_format
+                FROM gobs.indicator AS i
+                JOIN source
+                    ON o->>\'indicator\' = id_code
+                JOIN ser AS s
+                    ON s.fk_id_indicator = i.id
+                WHERE s.id = (o->>\'series\')::integer
                 LIMIT 1
             ),
             so AS (
@@ -673,19 +648,21 @@ class Observation
                     so_unique_id,
                     so_unique_label,
                     geom, fk_id_spatial_layer,
-                    so_valid_from, so_valid_to
+                    so_valid_from, so_valid_to,
+                    fk_id_actor
                 )
                 SELECT
-                -- le code de l'objet spatial est défini pour être unique mais dépendant
+                -- le code de l objet spatial est défini pour être unique mais dépendant
                     md5(concat(
                         ser.id, ser.fk_id_spatial_layer, ind.id_code,
-                        o->>'wkt',
-                        date_trunc(ind.id_date_format, (o->>'start_timestamp')::timestamp),
+                        o->>\'wkt\',
+                        date_trunc(ind.id_date_format, (o->>\'start_timestamp\')::timestamp),
                         $2::text
                     )) AS so_unique_id,
-                    'api_gevent',
-                    ST_ReducePrecision(ST_GeomFromText(o->>'wkt', 4326), 0.00000001), ser.fk_id_spatial_layer,
-                    date_trunc(ind.id_date_format, (o->>'start_timestamp')::timestamp),  NULL
+                    \'api_gevent\',
+                    ST_ReducePrecision(ST_GeomFromText(o->>\'wkt\', 4326), 0.00000001), ser.fk_id_spatial_layer,
+                    date_trunc(ind.id_date_format, (o->>\'start_timestamp\')::timestamp),  NULL,
+                    $3
                 FROM source, ser, ind
                 LIMIT 1
                 ON CONFLICT DO NOTHING
@@ -696,7 +673,7 @@ class Observation
                     fk_id_series, im_status
                 )
                 SELECT
-                    ser.id, 'P'
+                    ser.id, \'P\'
                 FROM ser
                 RETURNING id
             ),
@@ -704,26 +681,28 @@ class Observation
                 INSERT INTO gobs.observation (
                     fk_id_series, fk_id_spatial_object, fk_id_import,
                     ob_value, ob_start_timestamp, ob_end_timestamp,
-                    ob_uid
+                    ob_uid,
+                    fk_id_actor
                 )
                 SELECT
                     ser.id, so.id, imp.id,
-                    (o->'values')::jsonb,
-                    (o->>'start_timestamp')::timestamp, (o->>'end_timestamp')::timestamp,
+                    (o->\'values\')::jsonb,
+                    (o->>\'start_timestamp\')::timestamp, (o->>\'end_timestamp\')::timestamp,
                     (CASE
-                        WHEN o->>'uuid' IS NULL or o->>'uuid' = '' THEN uuid_generate_v4()::text
-                        ELSE o->>'uuid'
-                    END)::uuid
+                        WHEN o->>\'uuid\' IS NULL or o->>\'uuid\' = \'\' THEN uuid_generate_v4()::text
+                        ELSE o->>\'uuid\'
+                    END)::uuid,
+                    $3
                 FROM
                     ser, so, imp, source
                 RETURNING *
             )
             SELECT row_to_json(obs.*) AS object_json
             FROM obs
-            ";
+            ';
         } elseif ($action == 'update') {
             // UPDATE
-            $sql = "
+            $sql = '
             WITH source AS (
                 SELECT $1::json AS o
             ),
@@ -734,7 +713,8 @@ class Observation
                 FROM gobs.observation a
                 JOIN gobs.spatial_object b
                     ON a.fk_id_spatial_object = b.id
-                WHERE ob_uid = $3
+                WHERE ob_uid = $4
+                AND a.fk_id_series = $5
                 LIMIT 1
             ),
             ind AS (
@@ -742,7 +722,7 @@ class Observation
                     id, id_code, id_date_format
                 FROM gobs.indicator
                 JOIN source
-                    ON o->>'indicator' = id_code
+                    ON o->>\'indicator\' = id_code
                 LIMIT 1
             ),
             so AS (
@@ -750,17 +730,19 @@ class Observation
                     so_unique_id,
                     geom,
                     so_valid_from,
-                    so_valid_to
+                    so_valid_to,
+                    fk_id_actor
                 ) = (
                     md5(concat(
                         oo.fk_id_series, oo.fk_id_spatial_layer, ind.id_code,
-                        o->>'wkt',
-                        date_trunc(ind.id_date_format, (o->>'start_timestamp')::timestamp),
+                        o->>\'wkt\',
+                        date_trunc(ind.id_date_format, (o->>\'start_timestamp\')::timestamp),
                         $2::text
                     )),
-                    ST_ReducePrecision(ST_GeomFromText(o->>'wkt', 4326), 0.00000001),
-                    date_trunc(ind.id_date_format, (o->>'start_timestamp')::timestamp),
-                    NULL
+                    ST_ReducePrecision(ST_GeomFromText(o->>\'wkt\', 4326), 0.00000001),
+                    date_trunc(ind.id_date_format, (o->>\'start_timestamp\')::timestamp),
+                    NULL,
+                    $3
                 )
                 FROM source, oldobs AS oo, ind
                 WHERE gso.id = oo.fk_id_spatial_object
@@ -768,7 +750,7 @@ class Observation
             ),
             imp AS (
                 UPDATE gobs.import AS i SET
-                    im_status = 'P'
+                    im_status = \'P\'
                 FROM oldobs AS oo
                 WHERE i.id = oo.fk_id_import
                 RETURNING i.id
@@ -776,10 +758,12 @@ class Observation
             obs AS (
                 UPDATE gobs.observation go SET (
                     ob_value,
-                    ob_start_timestamp, ob_end_timestamp
+                    ob_start_timestamp, ob_end_timestamp,
+                    fk_id_actor
                 ) = (
-                    (o->'values')::jsonb,
-                    (o->>'start_timestamp')::timestamp, (o->>'end_timestamp')::timestamp
+                    (o->\'values\')::jsonb,
+                    (o->>\'start_timestamp\')::timestamp, (o->>\'end_timestamp\')::timestamp,
+                    $3
                 )
                 FROM
                     source, oldobs AS oo
@@ -788,31 +772,31 @@ class Observation
             )
             SELECT row_to_json(obs.*) AS object_json
             FROM obs
-            ";
+            ';
         } elseif ($action == 'insert_with_spatial_object') {
             // INSERT
-            $sql = "
+            $sql = '
             WITH source AS (
                 SELECT $1::json AS o
             ),
-            ind AS (
-                SELECT
-                    id, id_code, id_date_format
-                FROM gobs.indicator
-                JOIN source
-                    ON o->>'indicator' = id_code
-                LIMIT 1
-            ),
             ser AS (
                 SELECT
-                    s.id, s.fk_id_spatial_layer
-                FROM gobs.series AS s
-                JOIN ind AS i
-                    ON fk_id_indicator = i.id
-                JOIN gobs.actor AS a
-                    ON s.fk_id_actor = a.id
-                WHERE a.a_email = $2::text
-                ORDER BY s.id DESC
+                    s.id,
+                    s.fk_id_spatial_layer,
+                    s.fk_id_indicator
+                FROM gobs.series AS s, source
+                WHERE s.id = (o->>\'series\')::integer
+                LIMIT 1
+            ),
+            ind AS (
+                SELECT
+                    i.id, id_code, id_date_format
+                FROM gobs.indicator AS i
+                JOIN source
+                    ON o->>\'indicator\' = id_code
+                JOIN ser AS s
+                    ON s.fk_id_indicator = i.id
+                WHERE s.id = (o->>\'series\')::integer
                 LIMIT 1
             ),
             imp AS (
@@ -820,7 +804,7 @@ class Observation
                     fk_id_series, im_status
                 )
                 SELECT
-                    ser.id, 'P'
+                    ser.id, \'P\'
                 FROM ser
                 RETURNING id
             ),
@@ -828,23 +812,25 @@ class Observation
                 INSERT INTO gobs.observation (
                     fk_id_series, fk_id_spatial_object, fk_id_import,
                     ob_value, ob_start_timestamp, ob_end_timestamp,
-                    ob_uid
+                    ob_uid,
+                    fk_id_actor
                 )
                 SELECT
-                    ser.id, $3, imp.id,
-                    (o->'values')::jsonb,
-                    (o->>'start_timestamp')::timestamp, (o->>'end_timestamp')::timestamp,
+                    ser.id, $4, imp.id,
+                    (o->\'values\')::jsonb,
+                    (o->>\'start_timestamp\')::timestamp, (o->>\'end_timestamp\')::timestamp,
                     (CASE
-                        WHEN o->>'uuid' IS NULL or o->>'uuid' = '' THEN uuid_generate_v4()::text
-                        ELSE o->>'uuid'
-                    END)::uuid
+                        WHEN o->>\'uuid\' IS NULL or o->>\'uuid\' = \'\' THEN uuid_generate_v4()::text
+                        ELSE o->>\'uuid\'
+                    END)::uuid,
+                    $3
                 FROM
                     ser, imp, source
                 RETURNING *
             )
             SELECT row_to_json(obs.*) AS object_json
             FROM obs
-            ";
+            ';
         } elseif ($action == 'delete') {
             // DELETE
             $sql = '
@@ -918,19 +904,26 @@ class Observation
         // Get SQL
         $sql = $this->getSql($action);
 
+        // Get authenticated user actor id
+        $gobs_actor_id = (string) $this->user->createOrGetGobsActor();
+
         // Set parameters
         $params = array();
         if ($action == 'insert') {
             $params[] = $this->json_data;
             $params[] = $this->user->email;
+            $params[] = $gobs_actor_id;
         } elseif ($action == 'insert_with_spatial_object') {
             $params[] = $this->json_data;
             $params[] = $this->user->email;
+            $params[] = $gobs_actor_id;
             $params[] = $this->spatial_object->id;
         } elseif ($action == 'update') {
             $params[] = $this->json_data;
             $params[] = $this->user->email;
+            $params[] = $gobs_actor_id;
             $params[] = $this->observation_uid;
+            $params[] = $this->series->getId();
         } elseif ($action == 'delete') {
             $params[] = $this->observation_uid;
         }
@@ -964,6 +957,7 @@ class Observation
             $json = $this->query($sql, $params);
         } catch (Exception $e) {
             $msg = $e->getMessage();
+            \jLog::log('Observation - Query error: '.$msg, 'error');
             $json = null;
 
             return array(
@@ -973,6 +967,7 @@ class Observation
             );
         }
         if (empty($json)) {
+            \jLog::log('Observation - Query result empty. There is no SQL error, but the query returns nothing !', 'error');
             return array(
                 'error',
                 $messages[$action][1],
@@ -1030,7 +1025,7 @@ class Observation
         unset($data->actor_email);
 
         // Check media exists
-        $media_url = $this->indicator->setObservationMediaUrl($data->uuid);
+        $media_url = $this->series->setObservationMediaUrl($data->uuid);
         if ($media_url) {
             $data->media_url = $media_url;
         }
