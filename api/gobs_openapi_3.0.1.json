@@ -857,7 +857,7 @@
         }
       }
     },
-    "/project/{projectKey}/series/{seriesId}/indicator/{indicator}/document/{documentUuid}": {
+    "/project/{projectKey}/series/{seriesId}/document/{documentUuid}": {
       "get": {
         "tags": [
           "series"
@@ -880,16 +880,6 @@
             "name": "seriesId",
             "in": "path",
             "description": "Code of the indicator series",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "weather_status"
-          },
-          {
-            "name": "indicator",
-            "in": "path",
-            "description": "Code of indicator to return",
             "required": true,
             "schema": {
               "type": "string"
