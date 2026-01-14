@@ -261,6 +261,7 @@ components:
         - id
         - project_key
         - layer_code
+        - protocole_code
         - indicator
       properties:
         id:
@@ -275,6 +276,10 @@ components:
           type: string
           description: Code of the spatial layer for the given spatial object unique ID
           example: "brittany-cities"
+        protocol_code:
+          type: string
+          description: Code of the protocol of the series
+          example: "g_events"
         indicator:
           $ref: '#/components/schemas/Indicator'
           

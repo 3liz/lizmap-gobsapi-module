@@ -149,12 +149,15 @@ class Series
             s.id,
             p.pt_code AS project_code,
             sl_code AS layer_code,
+            pr_code AS protocol_code,
             s.fk_id_indicator
             FROM gobs.series AS s
             INNER JOIN gobs.spatial_layer AS sl
                 ON s.fk_id_spatial_layer = sl.id
             INNER JOIN gobs.project AS p
                 ON s.fk_id_project = p.id
+            INNER JOIN gobs.protocole AS po
+                ON s.fk_id_protocol = po.id
             WHERE s.id = $1
         ),
         ind AS (
@@ -245,6 +248,7 @@ class Series
                 'id', s.id,
                 'project_key', s.project_code,
                 'layer_code', s.layer_code,
+                'protocol_code', s.protocol_code,
                 'indicator', row_to_json(i.*)
             ) AS object_json
         FROM
