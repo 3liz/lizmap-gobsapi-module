@@ -29,7 +29,7 @@ $mapping = array(
     '/project/:projectKey/series' => '/gobsapi/project/getProjectSeries',
 
     '/project/:projectKey/series/:seriesId' => '/gobsapi/series/getSeriesById',
-    '/project/:projectKey/series/:seriesId/indicator/:indicatorCode/document/:documentId' => '/gobsapi/series/getIndicatorDocument',
+    '/project/:projectKey/series/:seriesId/document/:documentId' => '/gobsapi/series/getIndicatorDocument',
     '/project/:projectKey/series/:seriesId/observations' => '/gobsapi/series/getObservationsBySeries',
     '/project/:projectKey/series/:seriesId/deletedObservations' => '/gobsapi/series/getDeletedObservationsBySeries',
 
