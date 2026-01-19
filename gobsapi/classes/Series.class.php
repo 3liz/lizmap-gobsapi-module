@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author    3liz
  * @copyright 2020 3liz
@@ -105,7 +106,7 @@ class Series
     /**
      * Get series project instance.
      *
-     * @return \Project G-Obs project instance
+     * @return Project G-Obs project instance
      */
     public function getProject()
     {

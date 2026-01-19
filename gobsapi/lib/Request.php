@@ -23,7 +23,7 @@ class Request extends \jClassicRequest
         $pathInfo = $this->urlPathInfo;
 
         foreach ($this->mapping as $path => $realPathInfo) {
-            $regexp = preg_replace('/(\\:([a-zA-Z_0-9]+))/', '(?P<${2}>[^/]+)', $path);
+            $regexp = preg_replace('/(\:([a-zA-Z_0-9]+))/', '(?P<${2}>[^/]+)', $path);
             $regexp = '!^'.$regexp.'$!';
             if (preg_match($regexp, $pathInfo, $m)) {
                 if (is_array($realPathInfo)) {

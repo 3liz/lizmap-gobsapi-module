@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author    3liz
  * @copyright 2020 3liz
@@ -108,7 +109,7 @@ class Utils
             if ($resultset && $resultset->id() === false) {
                 $cnx->rollback();
                 $errorCode = $cnx->errorCode();
-                \jLog::log($errorCode, 'error');
+                jLog::log($errorCode, 'error');
 
                 return null;
             }

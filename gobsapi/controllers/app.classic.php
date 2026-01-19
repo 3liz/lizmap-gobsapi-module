@@ -1,5 +1,7 @@
 <?php
 
+use Lizmap\Server\Server;
+
 include jApp::getModulePath('gobsapi').'controllers/apiController.php';
 
 class appCtrl extends apiController
@@ -25,11 +27,11 @@ class appCtrl extends apiController
         }
 
         // Get server metadata from LWC and QGIS Server Lizmap plugin
-        $server = new \Lizmap\Server\Server();
+        $server = new Server();
         $data = $server->getMetadata();
 
         // Only show QGIS related data for admins
-        $serverInfoAccess = (\jAcl2::check('lizmap.admin.access') || \jAcl2::check('lizmap.admin.server.information.view'));
+        $serverInfoAccess = (jAcl2::check('lizmap.admin.access') || jAcl2::check('lizmap.admin.server.information.view'));
         if (!$serverInfoAccess) {
             $data['qgis_server_info'] = array('error' => 'NO_ACCESS');
         }

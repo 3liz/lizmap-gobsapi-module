@@ -17,19 +17,19 @@ class apiController extends jController
         '500' => 'Internal Server Error',
     );
 
-    /** @var \User GobsAPI user instance */
+    /** @var User GobsAPI user instance */
     protected $user;
 
-    /** @var \Project */
+    /** @var Project */
     protected $gobs_project;
 
     /** @var int */
     protected $gobs_actor_id;
 
-    /** @var \Indicator */
+    /** @var Indicator */
     protected $indicator;
 
-    /** @var \Series */
+    /** @var Series */
     protected $series;
 
     protected $requestSyncDate;
@@ -370,12 +370,12 @@ class apiController extends jController
 
         // path. Ex: getProjectByKey
         $log = $prefix.'path: '.$path;
-        \jLog::log($log, $level);
+        jLog::log($log, $level);
 
         // connection_name. Ex: gobs_test
         if (!empty($this->gobs_project->connectionName)) {
             $log = $prefix.'connection_name: '.$this->gobs_project->connectionName;
-            \jLog::log($log, $level);
+            jLog::log($log, $level);
         }
 
         // input_data. Ex: {"projectKey":"lizmapdemo~lampadairess","module":"gobsapi","action":"project:getProjectByKey"}
@@ -384,35 +384,35 @@ class apiController extends jController
         }
         if (!empty($input_data)) {
             $log = $prefix.'input_data: '.json_encode($input_data);
-            \jLog::log($log, $level);
+            jLog::log($log, $level);
         }
 
         // http code. Ex: 404
         if (!empty($http_code)) {
             $log = $prefix.'http_code: '.$http_code;
-            \jLog::log($log, $level);
+            jLog::log($log, $level);
         }
 
         // status. Ex:  success
         if (!empty($status)) {
             $log = $prefix.'status: '.$status;
-            \jLog::log($log, $level);
+            jLog::log($log, $level);
         }
 
         // message. Ex: The given project key does not refer to a known project
         if (!empty($message)) {
             $log = $prefix.'message: '.$message;
-            \jLog::log($log, $level);
+            jLog::log($log, $level);
         }
 
         // data. Ex: {"key":"lizmapdemo~lampadaires","label":"Paris by night","description":...}
         if (!empty($data)) {
             $log = $prefix.'data: '.json_encode($data);
-            \jLog::log($log, $level);
+            jLog::log($log, $level);
         }
 
         // End of block
         $log = $prefix.'################';
-        \jLog::log($log, $level);
+        jLog::log($log, $level);
     }
 }

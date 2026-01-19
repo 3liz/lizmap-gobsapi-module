@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author    3liz
  * @copyright 2020 3liz
@@ -7,15 +8,15 @@
  *
  * @license   All rights reserved
  */
-class gobsapiListenerListener extends \jEventListener
+class gobsapiListenerListener extends jEventListener
 {
     /**
-     * @param \jEvent $event
+     * @param jEvent $event
      */
     public function onAuthLogin($event)
     {
         /** @var samlAuthDriver $driver */
-        $driver = \jAuth::getDriver();
+        $driver = jAuth::getDriver();
         if (get_class($driver) != 'samlAuthDriver') {
             return;
         }
@@ -80,19 +81,19 @@ class gobsapiListenerListener extends \jEventListener
 
         $hasChanges = false;
         foreach ($groupToRemove as $grpId) {
-            \jLog::log("onAuthLogin: Remove {$login} from {$grpId}");
-            \jAcl2DbUserGroup::removeUserFromGroup($login, $grpId);
+            jLog::log("onAuthLogin: Remove {$login} from {$grpId}");
+            jAcl2DbUserGroup::removeUserFromGroup($login, $grpId);
             $hasChanges = true;
         }
 
         foreach ($groupsOfUser as $grpId => $ok) {
-            \jLog::log("onAuthLogin: Add {$login} into {$grpId}");
-            \jAcl2DbUserGroup::addUserToGroup($login, $grpId);
+            jLog::log("onAuthLogin: Add {$login} into {$grpId}");
+            jAcl2DbUserGroup::addUserToGroup($login, $grpId);
             $hasChanges = true;
         }
 
         if ($hasChanges) {
-            \jAcl2::clearCache();
+            jAcl2::clearCache();
         }
     }
 
@@ -101,7 +102,7 @@ class gobsapiListenerListener extends \jEventListener
         $groupsOfUser = array();
         $adminGroup = array();
         if (isset(jApp::config()->gobsapi['adminSAMLGobsRoleName'])) {
-            $adminGroup = \jApp::config()->gobsapi['adminSAMLGobsRoleName'];
+            $adminGroup = jApp::config()->gobsapi['adminSAMLGobsRoleName'];
             if (!is_array($adminGroup)) {
                 $adminGroup = array($adminGroup);
             }
@@ -110,7 +111,7 @@ class gobsapiListenerListener extends \jEventListener
         foreach ($samlGroups as $roleAsJson) {
             $role = @json_decode($roleAsJson, true);
             if (!$role || !isset($role['code']) || $role['code'] == '') {
-                \jLog::log('gobs login: bad role value into '.$rolesName.', not a json or code property missing: '.$roleAsJson, 'error');
+                jLog::log('gobs login: bad role value into '.$rolesName.', not a json or code property missing: '.$roleAsJson, 'error');
 
                 continue;
             }
@@ -124,36 +125,36 @@ class gobsapiListenerListener extends \jEventListener
                 $name = $idGrp;
             }
             if (!isset($allGroups[$idGrp])) {
-                \jAcl2DbUserGroup::createGroup($name, $idGrp);
+                jAcl2DbUserGroup::createGroup($name, $idGrp);
                 if (in_array($idGrp, $adminGroup)) {
                     foreach (jAcl2DbManager::$ACL_ADMIN_RIGHTS as $role) {
-                        \jAcl2DbManager::addRight($idGrp, $role);
+                        jAcl2DbManager::addRight($idGrp, $role);
                     }
-                    \jAcl2DbManager::addRight($idGrp, 'acl.group.create');
-                    \jAcl2DbManager::addRight($idGrp, 'auth.users.list');
-                    \jAcl2DbManager::addRight($idGrp, 'auth.users.modify');
-                    \jAcl2DbManager::addRight($idGrp, 'auth.users.view');
-                    \jAcl2DbManager::addRight($idGrp, 'lizmap.admin.access');
-                    \jAcl2DbManager::addRight($idGrp, 'lizmap.admin.repositories.create');
-                    \jAcl2DbManager::addRight($idGrp, 'lizmap.admin.repositories.delete');
-                    \jAcl2DbManager::addRight($idGrp, 'lizmap.admin.repositories.update');
-                    \jAcl2DbManager::addRight($idGrp, 'lizmap.admin.repositories.view');
-                    \jAcl2DbManager::addRight($idGrp, 'lizmap.admin.services.update');
-                    \jAcl2DbManager::addRight($idGrp, 'lizmap.admin.services.view');
-                    \jAcl2DbManager::addRight($idGrp, 'lizmap.admin.project.list.view');
-                    \jAcl2DbManager::addRight($idGrp, 'lizmap.admin.home.page.update');
-                    \jAcl2DbManager::addRight($idGrp, 'lizmap.admin.theme.update');
-                    \jAcl2DbManager::addRight($idGrp, 'lizmap.admin.theme.view');
-                    \jAcl2DbManager::addRight($idGrp, 'lizmap.admin.server.information.view');
-                    \jAcl2DbManager::addRight($idGrp, 'lizmap.admin.lizmap.log.view');
-                    \jAcl2DbManager::addRight($idGrp, 'lizmap.admin.lizmap.log.delete');
+                    jAcl2DbManager::addRight($idGrp, 'acl.group.create');
+                    jAcl2DbManager::addRight($idGrp, 'auth.users.list');
+                    jAcl2DbManager::addRight($idGrp, 'auth.users.modify');
+                    jAcl2DbManager::addRight($idGrp, 'auth.users.view');
+                    jAcl2DbManager::addRight($idGrp, 'lizmap.admin.access');
+                    jAcl2DbManager::addRight($idGrp, 'lizmap.admin.repositories.create');
+                    jAcl2DbManager::addRight($idGrp, 'lizmap.admin.repositories.delete');
+                    jAcl2DbManager::addRight($idGrp, 'lizmap.admin.repositories.update');
+                    jAcl2DbManager::addRight($idGrp, 'lizmap.admin.repositories.view');
+                    jAcl2DbManager::addRight($idGrp, 'lizmap.admin.services.update');
+                    jAcl2DbManager::addRight($idGrp, 'lizmap.admin.services.view');
+                    jAcl2DbManager::addRight($idGrp, 'lizmap.admin.project.list.view');
+                    jAcl2DbManager::addRight($idGrp, 'lizmap.admin.home.page.update');
+                    jAcl2DbManager::addRight($idGrp, 'lizmap.admin.theme.update');
+                    jAcl2DbManager::addRight($idGrp, 'lizmap.admin.theme.view');
+                    jAcl2DbManager::addRight($idGrp, 'lizmap.admin.server.information.view');
+                    jAcl2DbManager::addRight($idGrp, 'lizmap.admin.lizmap.log.view');
+                    jAcl2DbManager::addRight($idGrp, 'lizmap.admin.lizmap.log.delete');
 
                 }
                 // On enlève les droits liés à la création d'utilisateur, car SAML
-                \jAcl2DbManager::removeRight($idGrp, 'auth.user.change.password', '-', true);
-                \jAcl2DbManager::removeRight($idGrp, 'auth.users.change.password', '-', true);
-                \jAcl2DbManager::addRight($idGrp, 'auth.user.view');
-                \jAcl2DbManager::addRight($idGrp, 'auth.user.modify');
+                jAcl2DbManager::removeRight($idGrp, 'auth.user.change.password', '-', true);
+                jAcl2DbManager::removeRight($idGrp, 'auth.users.change.password', '-', true);
+                jAcl2DbManager::addRight($idGrp, 'auth.user.view');
+                jAcl2DbManager::addRight($idGrp, 'auth.user.modify');
             }
 
             $groupsOfUser[$idGrp] = true;

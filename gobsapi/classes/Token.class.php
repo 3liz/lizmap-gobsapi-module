@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author    3liz
  * @copyright 2020 3liz
@@ -46,7 +47,7 @@ class Token
      * @param string token Token passed in Authentication header
      * @param mixed $token
      *
-     * @return \User Gobs API Use object
+     * @return User Gobs API Use object
      */
     public function getUserFromToken($token)
     {

@@ -87,14 +87,14 @@ class User
                 }
             } else {
                 $errorCode = $cnx->errorCode();
-                \jLog::log('Connection to the PostgreSQL service "'.$this->connectionName.'" failed', 'error');
-                \jLog::log($errorCode, 'error');
+                jLog::log('Connection to the PostgreSQL service "'.$this->connectionName.'" failed', 'error');
+                jLog::log($errorCode, 'error');
                 $status = false;
             }
         } catch (Exception $e) {
             $msg = $e->getMessage();
-            \jLog::log('Connection to the PostgreSQL service "'.$this->connectionName.'" failed', 'error');
-            \jLog::log($msg, 'error');
+            jLog::log('Connection to the PostgreSQL service "'.$this->connectionName.'" failed', 'error');
+            jLog::log($msg, 'error');
             $status = false;
         }
 

@@ -16,7 +16,7 @@ class Observation
     protected $observation_uid;
 
     /**
-     * @var \User Gobs user instance
+     * @var User Gobs user instance
      */
     protected $user;
 
@@ -73,7 +73,7 @@ class Observation
      * constructor.
      *
      * @param objet      $user            Gobs Authenticated user instance
-     * @param \Series    $series          Instance of G-Obs series
+     * @param Series     $series          Instance of G-Obs series
      * @param string     $observation_uid Uid of the observation
      * @param null|mixed $body_data
      */
@@ -560,7 +560,7 @@ class Observation
             $json = $this->query($sql, $params);
         } catch (Exception $e) {
             $msg = $e->getMessage();
-            \jLog::log('Observation - Query error : '.$msg, 'error');
+            jLog::log('Observation - Query error : '.$msg, 'error');
             $json = null;
         }
 
@@ -887,6 +887,7 @@ class Observation
         } else {
             return '';
         }
+
         // jLog::log($sql, 'error');
         return $sql;
     }
@@ -959,7 +960,7 @@ class Observation
             $json = $this->query($sql, $params);
         } catch (Exception $e) {
             $msg = $e->getMessage();
-            \jLog::log('Observation - Query error: '.$msg, 'error');
+            jLog::log('Observation - Query error: '.$msg, 'error');
             $json = null;
 
             return array(
@@ -969,7 +970,7 @@ class Observation
             );
         }
         if (empty($json)) {
-            \jLog::log('Observation - Query result empty. There is no SQL error, but the query returns nothing !', 'error');
+            jLog::log('Observation - Query result empty. There is no SQL error, but the query returns nothing !', 'error');
 
             return array(
                 'error',
@@ -1072,6 +1073,7 @@ class Observation
             // Create observation with WKT
             return $this->runDatabaseAction('insert_with_spatial_object');
         }
+
         // Create observation with Spatial object reference
         return $this->runDatabaseAction('insert');
     }

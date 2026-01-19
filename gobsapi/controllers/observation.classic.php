@@ -10,7 +10,7 @@ class observationCtrl extends apiController
     protected $observation_uid;
 
     /**
-     * @var \Observation G-Obs Representation of an observation or many observations
+     * @var Observation G-Obs Representation of an observation or many observations
      */
     protected $observation;
 

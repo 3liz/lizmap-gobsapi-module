@@ -84,7 +84,7 @@ class Project
                 $this->buildGobsProject();
             }
         } else {
-            \jLog::log('The database cannot be reached with the given connection profile : "'.$this->connectionProfile.'" ');
+            jLog::log('The database cannot be reached with the given connection profile : "'.$this->connectionProfile.'" ');
         }
     }
 
@@ -105,14 +105,14 @@ class Project
                 }
             } else {
                 $errorCode = $cnx->errorCode();
-                \jLog::log('Connection to the PostgreSQL profile "'.$this->connectionProfile.'" failed', 'error');
-                \jLog::log($errorCode, 'error');
+                jLog::log('Connection to the PostgreSQL profile "'.$this->connectionProfile.'" failed', 'error');
+                jLog::log($errorCode, 'error');
                 $status = false;
             }
         } catch (Exception $e) {
             $msg = $e->getMessage();
-            \jLog::log('Connection to the PostgreSQL profile "'.$this->connectionProfile.'" failed', 'error');
-            \jLog::log($msg, 'error');
+            jLog::log('Connection to the PostgreSQL profile "'.$this->connectionProfile.'" failed', 'error');
+            jLog::log($msg, 'error');
             $status = false;
         }
 
@@ -221,8 +221,8 @@ class Project
 
         } catch (Exception $e) {
             $msg = $e->getMessage();
-            \jLog::log('An error occurred while requesting the properties for the project "'.$this->project_key.'"', 'error');
-            \jLog::log($msg, 'error');
+            jLog::log('An error occurred while requesting the properties for the project "'.$this->project_key.'"', 'error');
+            jLog::log($msg, 'error');
 
             return null;
         }

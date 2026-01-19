@@ -16,7 +16,8 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: PHP-CS-Fixer
-      uses: docker://oskarstark/php-cs-fixer-ga
+    - name: "PHP-CS-Fixer"
+      # Version must match the one from the Makefile
+      uses: docker://ghcr.io/php-cs-fixer/php-cs-fixer:3.69-php8.1
       with:
-        args: --config=.php_cs.dist.php --diff --dry-run
+        args: check --config=.php_cs.dist.php --allow-risky=yes --diff

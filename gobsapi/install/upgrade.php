@@ -1,4 +1,7 @@
 <?php
+
+use Jelix\FileUtilities\Path;
+
 /**
  * @author    3liz
  * @copyright 2018-2020 3liz
@@ -38,7 +41,7 @@ class gobsapiModuleUpgrader extends jInstallerModule
         $entryPointFileName = basename($entryPointFile);
         $epPath = jApp::wwwPath($entryPointFileName);
         if (!file_exists($epPath)) {
-            throw new \Exception('The entrypoint '.$entryPointFile.' cannot be updated, as it doesn\'t exist');
+            throw new Exception('The entrypoint '.$entryPointFile.' cannot be updated, as it doesn\'t exist');
         }
 
         // copy the entrypoint and its configuration
@@ -48,10 +51,10 @@ class gobsapiModuleUpgrader extends jInstallerModule
         // depending on the application, the path of www/ is not always at the same place, relatively to
         // application.init.php
         $appInitFile = jApp::applicationInitFile();
-        $relativePath = \Jelix\FileUtilities\Path::shortestPath(jApp::wwwPath(), dirname($appInitFile).'/');
+        $relativePath = Path::shortestPath(jApp::wwwPath(), dirname($appInitFile).'/');
 
         $epCode = file_get_contents($epPath);
-        $epCode = preg_replace('#(require\s*\(?\s*[\'"])(.*)(application\.init\.php)([\'"])#m', '\\1'.$relativePath.'/'.basename($appInitFile).'\\4', $epCode);
+        $epCode = preg_replace('#(require\s*\(?\s*[\'"])(.*)(application\.init\.php)([\'"])#m', '\1'.$relativePath.'/'.basename($appInitFile).'\4', $epCode);
         file_put_contents($epPath, $epCode);
     }
 }

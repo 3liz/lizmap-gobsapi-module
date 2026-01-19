@@ -1,4 +1,7 @@
 <?php
+
+use Gobsapi\Request;
+
 /**
  * Entry point for G-Obs API.
  *
@@ -53,4 +56,4 @@ $mapping = array(
 jApp::loadConfig('gobsapi/config.ini.php');
 
 jApp::setCoord(new jCoordinator());
-jApp::coord()->process(new \Gobsapi\Request($mapping));
+jApp::coord()->process(new Request($mapping));
