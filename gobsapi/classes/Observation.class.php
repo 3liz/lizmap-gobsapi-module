@@ -298,7 +298,6 @@ class Observation
                 'Observation JSON data must have a valid wkt or a valid spatial object reference',
             );
         }
-
         // Check that the observation geometry is inside the project views
         // accessible to the authenticated user
         $intersectsViews = false;
@@ -665,7 +664,9 @@ class Observation
                     $3
                 FROM source, ser, ind
                 LIMIT 1
-                ON CONFLICT DO NOTHING
+                ON CONFLICT ON CONSTRAINT spatial_object_unique_key
+                DO UPDATE SET
+                    fk_id_actor = EXCLUDED.fk_id_actor
                 RETURNING id
             ),
             imp AS (
