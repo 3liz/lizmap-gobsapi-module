@@ -10,7 +10,7 @@
         <homepageURL>http://3liz.com</homepageURL>
     </info>
     <dependencies>
-        <module name="lizmap" minversion="3.6.*" maxversion="3.8.*"/>
+        <module name="lizmap" minversion="3.7.*" maxversion="3.9.*"/>
         <module name="view" />
         <!-- <module name="saml" /> -->
     </dependencies>
