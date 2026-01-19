@@ -165,4 +165,3 @@ class userCtrl extends apiController
         return $this->objectResponse($projects, 'getUserProjects', array('login' => $this->user->login));
     }
 }
-?>

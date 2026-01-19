@@ -23,7 +23,7 @@ class apiController extends jController
     /** @var \Project */
     protected $gobs_project;
 
-    /** @var integer */
+    /** @var int */
     protected $gobs_actor_id;
 
     /** @var \Indicator */

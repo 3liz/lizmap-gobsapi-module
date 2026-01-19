@@ -212,7 +212,9 @@ class Project
                     $data['ymax'] = $record->ymax;
                 }
 
-                if (count($data)) return $data;
+                if (count($data)) {
+                    return $data;
+                }
 
                 return null;
             }

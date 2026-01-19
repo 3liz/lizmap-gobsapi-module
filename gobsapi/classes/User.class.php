@@ -77,6 +77,7 @@ class User
                 && regexp_split_to_array(".$cnx->quote($groups).", '@@')
         ";
         $status = false;
+
         try {
             $query = $cnx->query($sql);
             if ($query) {
@@ -100,7 +101,7 @@ class User
         // Get project instance
         jClasses::inc('gobsapi~Project');
         $projects = array();
-        foreach($projectKeys as $project_key) {
+        foreach ($projectKeys as $project_key) {
             $gobs_project = new Project($project_key, $this->login);
 
             // Add it only if project contains gobs series
@@ -113,9 +114,9 @@ class User
     }
 
     /**
-     * Create actor and actor_category if needed
+     * Create actor and actor_category if needed.
      *
-     * @return null|integer Database actor ID
+     * @return null|int Database actor ID
      */
     public function createOrGetGobsActor()
     {

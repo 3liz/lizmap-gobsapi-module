@@ -15,7 +15,7 @@ class observationCtrl extends apiController
     protected $observation;
 
     /**
-     * @var boolean Boolean saying if the user has the right to edit the observation
+     * @var bool Boolean saying if the user has the right to edit the observation
      */
     protected $access;
 

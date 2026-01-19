@@ -476,6 +476,7 @@ class Observation
             $cnx->commit();
         } catch (Exception $e) {
             $cnx->rollback();
+
             throw new Exception($e->getMessage());
         }
 
@@ -559,7 +560,7 @@ class Observation
             $json = $this->query($sql, $params);
         } catch (Exception $e) {
             $msg = $e->getMessage();
-            \jLog::log('Observation - Query error : ' .$msg, 'error');
+            \jLog::log('Observation - Query error : '.$msg, 'error');
             $json = null;
         }
 
@@ -969,6 +970,7 @@ class Observation
         }
         if (empty($json)) {
             \jLog::log('Observation - Query result empty. There is no SQL error, but the query returns nothing !', 'error');
+
             return array(
                 'error',
                 $messages[$action][1],

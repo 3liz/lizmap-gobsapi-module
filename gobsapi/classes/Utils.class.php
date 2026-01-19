@@ -9,7 +9,6 @@
  */
 class Utils
 {
-
     /**
      * @var string jDb connection profile
      */
@@ -126,9 +125,9 @@ class Utils
     /**
      * Get or add a G-Obs object.
      *
-     * @param string     $key                The object to create. It corresponds to the table name. Ex: actor_category
-     * @param mixed      $get_params         Parameters needed for the get SQL
-     * @param null|mixed $add_params         Parameters needed for the add SQL
+     * @param string     $key        The object to create. It corresponds to the table name. Ex: actor_category
+     * @param mixed      $get_params Parameters needed for the get SQL
+     * @param null|mixed $add_params Parameters needed for the add SQL
      *
      * @return int Object id
      */
