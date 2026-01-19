@@ -1,5 +1,5 @@
 {
     "code": 0,
     "status": "error",
-    "message": "The given project key does not refer to a known project"
+    "message": "The project is not a valid G-Osb project : no series found, or there is no corresponding project views for the authenticated user"
 }

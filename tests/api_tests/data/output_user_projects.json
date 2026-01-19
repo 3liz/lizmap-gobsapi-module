@@ -1,15 +1,15 @@
 [
     {
-        "key": "test_project_a",
-        "label": "GobsAPI test project a",
-        "description": "Test project a",
-        "media_url": "http:\/\/localhost:9095\/gobsapi.php\/project\/test_project_a\/illustration",
-        "geopackage_url": "http:\/\/localhost:9095\/gobsapi.php\/project\/test_project_a\/geopackage",
+        "key": "default_project",
+        "label": "Default G-Obs project",
+        "description": "This project can be used to group series.",
+        "media_url": "http:\/\/localhost:9095\/gobsapi.php\/project\/default_project\/illustration",
+        "geopackage_url": "http:\/\/localhost:9095\/gobsapi.php\/project\/default_project\/geopackage",
         "extent": {
-            "xmin": "-3.94945321",
-            "ymin": "48.33931229",
-            "xmax": "-3.60112193",
-            "ymax": "48.57353478"
+            "xmin": "-3.95045",
+            "ymin": "48.33832",
+            "xmax": "-3.60012",
+            "ymax": "48.57453"
         }
     }
 ]

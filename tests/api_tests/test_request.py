@@ -150,8 +150,8 @@ class TestRequests(unittest.TestCase):
             raise Exception('Response is not defined')
 
         # # Log response text to ease debugging
-        # if expected_format != ExpectedType.Binary:
-        #     print(response.text)
+        if expected_format != ExpectedType.Binary:
+            print(response.text)
 
         # Status code
         self.assertEqual(response.status_code, expected_status_code)
@@ -234,38 +234,38 @@ class TestRequests(unittest.TestCase):
 
     def test_project_details(self):
         """ Get details of the gobsapi project """
-        project_key = 'test_project_a'
+        project_key = 'default_project'
         self.api_call(
             entry_point=f'/project/{project_key}',
             test_file='data/output_project_details.json',
             expected_format=ExpectedType.Dict
         )
 
-    def test_project_indicators(self):
-        """ Get the project indicators """
-        project_key = 'test_project_a'
+    def test_project_series(self):
+        """ Get the project series """
+        project_key = 'default_project'
         self.api_call(
-            entry_point=f'/project/{project_key}/indicators',
-            test_file='data/output_project_indicators.json',
+            entry_point=f'/project/{project_key}/series',
+            test_file='data/output_project_series.json',
             expected_format=ExpectedType.List
         )
 
     def test_project_geopackage(self):
         """ Get the Geopackage of a project """
-        project_key = 'test_project_a'
+        project_key = 'default_project'
         self.api_call(
             entry_point=f'/project/{project_key}/geopackage',
             test_file='data/output_project_geopackage.gpkg',
             expected_format=ExpectedType.Binary
         )
 
-    def test_indicator_details(self):
-        """ Get details of the indicator """
-        project_key = 'test_project_a'
-        indicator_key = 'hiker_position'
+    def test_series_details(self):
+        """ Get details of the series """
+        project_key = 'default_project'
+        series_id = 3
         self.api_call(
-            entry_point=f'/project/{project_key}/indicator/{indicator_key}',
-            test_file='data/output_indicator_details.json',
+            entry_point=f'/project/{project_key}/series/{series_id}',
+            test_file='data/output_series_details.json',
         )
 
     def test_observation_create_without_id_and_spatial_object(self):
@@ -274,10 +274,10 @@ class TestRequests(unittest.TestCase):
         # So that we can do it manually
         # Since the result of the call contains dynamically generated data
         # such as id, created_at, update_at, etc.
-        project_key = 'test_project_a'
-        indicator_key = 'hiker_position'
+        project_key = 'default_project'
+        series_id = 3
         response = self.api_call(
-            entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation',
+            entry_point=f'/project/{project_key}/series/{series_id}/observation',
             method=HttpMethod.Post,
             content_type='application/json',
             data_file='data/input_observation_create.json',
@@ -328,7 +328,7 @@ class TestRequests(unittest.TestCase):
 
         # Check we create the same observation -> an error must be raised
         self.api_call(
-            entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation',
+            entry_point=f'/project/{project_key}/series/{series_id}/observation',
             method=HttpMethod.Post,
             content_type='application/json',
             data_file='data/input_observation_create.json',
@@ -337,10 +337,10 @@ class TestRequests(unittest.TestCase):
         )
 
         # Delete this observation to be idempotent
-        project_key = 'test_project_a'
-        indicator_key = 'hiker_position'
+        project_key = 'default_project'
+        series_id = 3
         self.api_call(
-            entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation/{observation_uuid}',
+            entry_point=f'/project/{project_key}/series/{series_id}/observation/{observation_uuid}',
             test_file=None,
             method=HttpMethod.Delete,
             expected_format=ExpectedType.Dict
@@ -348,7 +348,7 @@ class TestRequests(unittest.TestCase):
 
         # Delete again -> should have a 404
         self.api_call(
-            entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation/{observation_uuid}',
+            entry_point=f'/project/{project_key}/series/{series_id}/observation/{observation_uuid}',
             test_file='data/output_observation_does_not_exist.json',
             expected_format=ExpectedType.Dict,
             method=HttpMethod.Delete,
@@ -361,7 +361,7 @@ class TestRequests(unittest.TestCase):
         last_sync_datetime = created_at - timedelta(seconds=delta_seconds)
         last_sync_date = last_sync_datetime.strftime("%Y-%m-%d %H:%M:%S")
         response = self.api_call(
-            entry_point=f'/project/{project_key}/indicator/{indicator_key}/deletedObservations',
+            entry_point=f'/project/{project_key}/series/{series_id}/deletedObservations',
             last_sync_date=last_sync_date,
             test_file=None,
             expected_format=ExpectedType.List
@@ -374,10 +374,10 @@ class TestRequests(unittest.TestCase):
         Create an obs without coordinates or wkt
         but with an existing spatial object and spatial layer
         """
-        project_key = 'test_project_a'
-        indicator_key = 'population'
+        project_key = 'default_project'
+        series_id = 2
         response = self.api_call(
-            entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation',
+            entry_point=f'/project/{project_key}/series/{series_id}/observation',
             method=HttpMethod.Post,
             content_type='application/json',
             data_file='data/input_observation_create_with_spatial_object.json',
@@ -401,59 +401,59 @@ class TestRequests(unittest.TestCase):
         self.assertTrue(self.is_valid_uuid(observation_uuid))
 
         # Delete this observation to be idempotent
-        project_key = 'test_project_a'
-        indicator_key = 'population'
+        project_key = 'default_project'
+        series_id = 2
         self.api_call(
-            entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation/{observation_uuid}',
+            entry_point=f'/project/{project_key}/series/{series_id}/observation/{observation_uuid}',
             test_file=None,
             method=HttpMethod.Delete,
             expected_format=ExpectedType.Dict
         )
 
-    def test_indicator_document(self):
+    def test_series_indicator_document(self):
         """ Get an indicator document by uid """
-        project_key = 'test_project_a'
-        indicator_key = 'hiker_position'
+        project_key = 'default_project'
+        series_id = 3
         document_uid = '1a7f7323-6b18-46ed-a9fe-9efbe1f006a2'
         self.api_call(
-            entry_point=f'/project/{project_key}/indicator/{indicator_key}/document/{document_uid}',
+            entry_point=f'/project/{project_key}/series/{series_id}/document/{document_uid}',
             test_file='data/output_indicator_document_text_file.txt',
             expected_format=ExpectedType.Text,
         )
 
-    def test_indicator_preview(self):
+    def test_series_indicator_preview(self):
         """ Get an indicator document by uid """
-        project_key = 'test_project_a'
-        indicator_key = 'hiker_position'
+        project_key = 'default_project'
+        series_id = 3
         document_uid = '542aa72f-d1de-4810-97bb-208f2388698b'
         self.api_call(
-            entry_point=f'/project/{project_key}/indicator/{indicator_key}/document/{document_uid}',
+            entry_point=f'/project/{project_key}/series/{series_id}/document/{document_uid}',
             test_file='data/output_indicator_document_preview.jpg',
             expected_format=ExpectedType.Binary
         )
 
-    def test_indicator_observations_all(self):
-        """ Get observations of the indicator population """
-        project_key = 'test_project_a'
-        indicator_key = 'population'
+    def test_series_observations_all(self):
+        """ Get observations of the indicator population series """
+        project_key = 'default_project'
+        series_id = 2
         response = self.api_call(
-            entry_point=f'/project/{project_key}/indicator/{indicator_key}/observations',
+            entry_point=f'/project/{project_key}/series/{series_id}/observations',
             test_file=None,
             expected_format=ExpectedType.List,
         )
         json_response = json.loads(response.text)
         self.assertEqual(len(json_response), 44)
 
-    def test_indicator_observations_filtered_by_project_view(self):
+    def test_series_observations_filtered_by_project_view(self):
 
-        """ Get observations of the indicator population """
+        """ Get observations of the indicator population series filtered by project view """
         # Log in as filtered user
         self.login('gobsapi_writer_filtered', 'md_password')
 
-        project_key = 'test_project_a'
-        indicator_key = 'population'
+        project_key = 'default_project'
+        series_id = 2
         response = self.api_call(
-            entry_point=f'/project/{project_key}/indicator/{indicator_key}/observations',
+            entry_point=f'/project/{project_key}/series/{series_id}/observations',
             test_file=None,
             expected_format=ExpectedType.List,
         )
@@ -463,13 +463,13 @@ class TestRequests(unittest.TestCase):
         # Re log as admin
         self.login('gobsapi_writer', 'al_password')
 
-    def test_indicator_observation_detail(self):
-        """ Get an observation of the indicator hiker_position """
-        project_key = 'test_project_a'
-        indicator_key = 'hiker_position'
+    def test_series_observation_detail(self):
+        """ Get an observation of the indicator hiker_position series """
+        project_key = 'default_project'
+        series_id = 3
         observation_uuid = '1adae0cf-0f3b-4af5-bf26-e72c7fde24f2'
         self.api_call(
-            entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation/{observation_uuid}',
+            entry_point=f'/project/{project_key}/series/{series_id}/observation/{observation_uuid}',
             test_file='data/output_observation_details.json',
             expected_format=ExpectedType.Dict,
         )
@@ -477,10 +477,10 @@ class TestRequests(unittest.TestCase):
     def test_observation_update(self):
         """ Create an observation & test media upload, download, deletion """
         # Create a new observation
-        project_key = 'test_project_a'
-        indicator_key = 'hiker_position'
+        project_key = 'default_project'
+        series_id = 3
         response = self.api_call(
-            entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation',
+            entry_point=f'/project/{project_key}/series/{series_id}/observation',
             method=HttpMethod.Post,
             content_type='application/json',
             data_file='data/input_observation_create.json',
@@ -510,7 +510,7 @@ class TestRequests(unittest.TestCase):
 
         # Send update requests with this new JSON file
         self.api_call(
-            entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation',
+            entry_point=f'/project/{project_key}/series/{series_id}/observation',
             method=HttpMethod.Put,
             content_type='application/json',
             data_file=dynamic_update_file_path,
@@ -519,7 +519,7 @@ class TestRequests(unittest.TestCase):
 
         # Get observation back
         response = self.api_call(
-            entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation/{observation_uuid}',
+            entry_point=f'/project/{project_key}/series/{series_id}/observation/{observation_uuid}',
             test_file=None,
             expected_format=ExpectedType.Dict,
         )
@@ -535,7 +535,7 @@ class TestRequests(unittest.TestCase):
 
         # Delete this observation to be idempotent
         self.api_call(
-            entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation/{observation_uuid}',
+            entry_point=f'/project/{project_key}/series/{series_id}/observation/{observation_uuid}',
             test_file=None,
             method=HttpMethod.Delete,
             expected_format=ExpectedType.Dict
@@ -544,10 +544,10 @@ class TestRequests(unittest.TestCase):
     def test_observation_create_with_geometry_outside_project(self):
         """ Create an observation with a geometry outside the project extent"""
         # Create a new observation
-        project_key = 'test_project_a'
-        indicator_key = 'hiker_position'
+        project_key = 'default_project'
+        series_id = 3
         self.api_call(
-            entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation',
+            entry_point=f'/project/{project_key}/series/{series_id}/observation',
             method=HttpMethod.Post,
             content_type='application/json',
             data_file='data/input_observation_create_outside_project.json',
@@ -561,10 +561,10 @@ class TestRequests(unittest.TestCase):
         self.login('gobsapi_writer_filtered', 'md_password')
 
         # Create a new observation
-        project_key = 'test_project_a'
-        indicator_key = 'hiker_position'
+        project_key = 'default_project'
+        series_id = 3
         self.api_call(
-            entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation',
+            entry_point=f'/project/{project_key}/series/{series_id}/observation',
             method=HttpMethod.Post,
             content_type='application/json',
             data_file='data/input_observation_create_outside_allowed_polygon.json',
@@ -578,15 +578,16 @@ class TestRequests(unittest.TestCase):
     def test_observation_media_actions(self):
         """ Create an observation & test media upload, download, deletion """
         # Create a new observation
-        project_key = 'test_project_a'
-        indicator_key = 'hiker_position'
+        project_key = 'default_project'
+        series_id = 3
         response = self.api_call(
-            entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation',
+            entry_point=f'/project/{project_key}/series/{series_id}/observation',
             method=HttpMethod.Post,
             content_type='application/json',
             data_file='data/input_observation_create.json',
             test_file=None,
         )
+
         # Check the data is not empty
         self.assertTrue(len(response.text))
 
@@ -597,7 +598,7 @@ class TestRequests(unittest.TestCase):
 
         # Upload a media file
         self.api_call(
-            entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation/{observation_uuid}/uploadMedia',
+            entry_point=f'/project/{project_key}/series/{series_id}/observation/{observation_uuid}/uploadMedia',
             method=HttpMethod.Post,
             content_type='multipart/form-data',
             data_file='data/input_observation_media_file.jpg',
@@ -606,19 +607,19 @@ class TestRequests(unittest.TestCase):
 
         # Get observation back with the URL
         response = self.api_call(
-            entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation/{observation_uuid}',
+            entry_point=f'/project/{project_key}/series/{series_id}/observation/{observation_uuid}',
             test_file=None,
             expected_format=ExpectedType.Dict,
         )
         observation = json.loads(response.text)
         expected_url = (
-            f'{self.base_url }project/{project_key}/indicator/{indicator_key}/observation/{observation_uuid}/media'
+            f'{self.base_url}project/{project_key}/series/{series_id}/observation/{observation_uuid}/media'
         )
         self.assertEqual(observation['media_url'], expected_url)
 
         # Delete the media
         self.api_call(
-            entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation/{observation_uuid}/deleteMedia',
+            entry_point=f'/project/{project_key}/series/{series_id}/observation/{observation_uuid}/deleteMedia',
             method=HttpMethod.Delete,
             test_file='data/output_observation_delete_media_success.json',
             expected_format=ExpectedType.Dict,
@@ -626,7 +627,7 @@ class TestRequests(unittest.TestCase):
 
         # Delete this observation to be idempotent
         self.api_call(
-            entry_point=f'/project/{project_key}/indicator/{indicator_key}/observation/{observation_uuid}',
+            entry_point=f'/project/{project_key}/series/{series_id}/observation/{observation_uuid}',
             test_file=None,
             method=HttpMethod.Delete,
             expected_format=ExpectedType.Dict

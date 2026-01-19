@@ -191,10 +191,6 @@ class observationCtrl extends apiController
             );
         }
 
-        // Create a new actor for the observation if needed
-        // No need since it is done with the method checkProject
-        $sl_actor_id = $this->gobs_actor_id;
-
         // Check capabilities
         $context = 'create';
         if ($from != 'createObservation') {

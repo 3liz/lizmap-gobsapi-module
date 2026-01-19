@@ -36,22 +36,22 @@ class Utils
                 FROM gobs.actor
                 WHERE a_login = $1::text
             ',
-            'add' => "
+            'add' => '
                 INSERT INTO gobs.actor (
                     a_login, a_label, a_description, a_email, id_category
                 )
                 VALUES (
                     $1::text,
-                    coalesce(trim(concat($2::text, ' ', $3::text)), $1::text),
+                    coalesce(trim(concat($2::text, \' \', $3::text)), $1::text),
                     concat(
                         $6::text,
-                        coalesce(trim(concat($2::text, ' ', $3::text)), $1::text)
+                        coalesce(trim(concat($2::text, \' \', $3::text)), $1::text)
                     ),
                     $4::text,
                     $5
                 )
                 RETURNING id
-            ",
+            ',
         ),
         'protocol' => array(
             'get' => '
@@ -84,13 +84,13 @@ class Utils
                 FROM gobs.series
                 WHERE TRUE
                 AND fk_id_protocol = $1
-                AND fk_id_actor = $2
+                AND fk_id_project = $2
                 AND fk_id_indicator = $3
                 AND fk_id_spatial_layer = $4
             ',
             'add' => '
                 INSERT INTO gobs.series
-                (fk_id_protocol, fk_id_actor, fk_id_indicator, fk_id_spatial_layer)
+                (fk_id_protocol, fk_id_project, fk_id_indicator, fk_id_spatial_layer)
                 VALUES ($1, $2, $3, $4)
                 RETURNING id
             ',

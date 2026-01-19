@@ -228,14 +228,14 @@ echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOK
 
 ```bash
 # getProjectByKey
-echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" $BASEURL/project/test_project_a)
+echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" $BASEURL/project/default_project)
 ```
 
 * Get the list of indicators
 
 ```bash
 # getProjectIndicators
-echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" $BASEURL/project/test_project_a/indicators)
+echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" $BASEURL/project/default_project/indicators)
 ```
 returns
 
@@ -243,7 +243,7 @@ returns
 
 ```bash
 # getProjectGeopackage
-curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" $BASEURL/project/test_project_a/geopackage --output /tmp/test.gpkg
+curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" $BASEURL/project/default_project/geopackage --output /tmp/test.gpkg
 ```
 returns the binary file and save it to `/tmp/test.gpkg`
 
@@ -253,7 +253,7 @@ returns the binary file and save it to `/tmp/test.gpkg`
 *
 ```bash
 # getIndicatorByCode
-echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" $BASEURL/project/test_project_a/indicator/hiker_position)
+echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" $BASEURL/project/default_project/series/3)
 ```
 `
 
@@ -262,7 +262,7 @@ echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOK
 ```bash
 # getObservationsByIndicator
 # between seven days ago and now
-echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "lastSyncDate: $(date '+%Y-%m-%d %H:%M:%S' -d '7 days ago')" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" $BASEURL/project/test_project_a/indicator/hiker_position/observations)
+echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "lastSyncDate: $(date '+%Y-%m-%d %H:%M:%S' -d '7 days ago')" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" $BASEURL/project/default_project/series/3/observations)
 ```
 
 returns all the matching observations.
@@ -272,10 +272,10 @@ returns all the matching observations.
 
 ```bash
 # getDeletedObservationsByIndicator
-echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "lastSyncDate: $(date '+%Y-%m-%d %H:%M:%S' -d '13 days ago')" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" $BASEURL/project/test_project_a/indicator/hiker_position/deletedObservations)
+echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "lastSyncDate: $(date '+%Y-%m-%d %H:%M:%S' -d '13 days ago')" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" $BASEURL/project/default_project/series/3/deletedObservations)
 ```
 
-returns a list of the deleted observation uids
+returns a list of the deleted observation uids, for example
 
 ```json
 ["98020996-2dec-4cbe-93d7-c2ba1b43b871","230d5b17-96b3-4bad-8c78-6379f1e9b1c6","ced021b2-6eda-4a80-8903-b013291a6b2d","2d198922-5cd0-4d0f-bc96-dfcc17c01ced","1fc001b6-c147-49ef-ae6e-66f8ea5e0b39"]
@@ -285,7 +285,7 @@ returns a list of the deleted observation uids
 
 ```bash
 # getIndicatorDocument
-curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" $BASEURL/project/test_project_a/indicator/hiker_position/document/946fee64-e86c-40fa-a55e-8d9ad3579734 --output /tmp/test.jpeg
+curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" $BASEURL/project/default_project/series/3/document/946fee64-e86c-40fa-a55e-8d9ad3579734 --output /tmp/test.jpeg
 ```
 
 ### Observation
@@ -294,7 +294,7 @@ curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "reque
 *
 ```bash
 # createObservation
-echo $(curl -X POST -H "Accept: application/json" -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" -H "Content-Type: application/json" -d "{\"id\":null,\"indicator\":\"hiker_position\",\"uuid\":null,\"start_timestamp\":\"2019-07-19 03:30:00\",\"end_timestamp\":null,\"coordinates\":{\"x\":-3.785956510771293,\"y\":48.4744332531894},\"wkt\":\"POINT(-3.78595651077129 48.4744332531894)\",\"values\":[125],\"photo\":null,\"created_at\":null,\"updated_at\":null}" "$BASEURL/project/test_project_a/indicator/hiker_position/observation")
+echo $(curl -X POST -H "Accept: application/json" -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" -H "Content-Type: application/json" -d "{\"id\":null,\"series\":3,\"indicator\":\"hiker_position\",\"uuid\":null,\"start_timestamp\":\"2019-07-19 03:30:00\",\"end_timestamp\":null,\"coordinates\":{\"x\":-3.785956510771293,\"y\":48.4744332531894},\"wkt\":\"POINT(-3.78595651077129 48.4744332531894)\",\"values\":[125],\"photo\":null,\"created_at\":null,\"updated_at\":null}" "$BASEURL/project/default_project/series/3/observation")
 ```
 
 
@@ -302,14 +302,14 @@ echo $(curl -X POST -H "Accept: application/json" -H "Authorization: Bearer ${TO
 
 ```bash
 # updateObservation
-echo $(curl -X PUT -H "Accept: application/json" -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" -H "Content-Type: application/json" -d "{\"id\":1,\"indicator\":\"hiker_position\",\"uuid\":\"e8f0a46c-1d24-456a-925a-387740ade1c6\",\"start_timestamp\":\"2019-07-16 03:35:00\",\"end_timestamp\":null,\"coordinates\":{\"x\":-3.785956510771293,\"y\":48.4744332531894},\"wkt\":\"POINT(-3.78595651077999 48.4744332531999)\",\"values\":[1.2],\"photo\":null,\"created_at\":\"2020-12-03 15:04:40\",\"updated_at\":\"2020-12-03 17:55:59\"}" "$BASEURL/project/test_project_a/indicator/hiker_position/observation")
+echo $(curl -X PUT -H "Accept: application/json" -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" -H "Content-Type: application/json" -d "{\"id\":1,\"series\":3,\"indicator\":\"hiker_position\",\"uuid\":\"e8f0a46c-1d24-456a-925a-387740ade1c6\",\"start_timestamp\":\"2019-07-16 03:35:00\",\"end_timestamp\":null,\"coordinates\":{\"x\":-3.785956510771293,\"y\":48.4744332531894},\"wkt\":\"POINT(-3.78595651077999 48.4744332531999)\",\"values\":[1.2],\"photo\":null,\"created_at\":\"2020-12-03 15:04:40\",\"updated_at\":\"2020-12-03 17:55:59\"}" "$BASEURL/project/default_project/series/3/observation")
 ```
 
 * Get an observation data
 
 ```bash
 # getObservationById
-echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" $BASEURL/project/test_project_a/indicator/hiker_position/observation/e8f0a46c-1d24-456a-925a-387740ade1c6)
+echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" $BASEURL/project/default_project/series/3/observation/e8f0a46c-1d24-456a-925a-387740ade1c6)
 ```
 
 
@@ -317,7 +317,7 @@ echo $(curl -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOK
 
 ```bash
 # deleteObservationById
-echo $(curl -X DELETE -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" $BASEURL/project/test_project_a/indicator/hiker_position/observation/e8f0a46c-1d24-456a-925a-387740ade1c6)
+echo $(curl -X DELETE -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" $BASEURL/project/default_project/series/3/observation/e8f0a46c-1d24-456a-925a-387740ade1c6)
 ```
 
 
@@ -327,7 +327,7 @@ echo $(curl -X DELETE -H 'Accept: application/json' -H "Authorization: Bearer ${
 
 ```bash
 # uploadObservationMedia
-echo $(curl -X POST -H  "Accept: application/json" -H  "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" -H  "Content-Type: multipart/form-data" -F "mediaFile=@/home/mdouchin/Documents/3liz/mdouchin_carre.jpeg;type=image/jpeg" $BASEURL/project/test_project_a/indicator/hiker_position/observation/e8f0a46c-1d24-456a-925a-387740ade1c6/uploadMedia)
+echo $(curl -X POST -H  "Accept: application/json" -H  "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" -H  "Content-Type: multipart/form-data" -F "mediaFile=@/home/mdouchin/Documents/3liz/mdouchin_carre.jpeg;type=image/jpeg" $BASEURL/project/default_project/series/3/observation/e8f0a46c-1d24-456a-925a-387740ade1c6/uploadMedia)
 ```
 
 
@@ -335,7 +335,7 @@ echo $(curl -X POST -H  "Accept: application/json" -H  "Authorization: Bearer ${
 
 ```bash
 # deleteObservationMedia
-echo $(curl -X DELETE -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" $BASEURL/project/test_project_a/indicator/hiker_position/observation/e8f0a46c-1d24-456a-925a-387740ade1c6/deleteMedia)
+echo $(curl -X DELETE -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" $BASEURL/project/default_project/series/3/observation/e8f0a46c-1d24-456a-925a-387740ade1c6/deleteMedia)
 ```
 
 
@@ -343,7 +343,7 @@ echo $(curl -X DELETE -H 'Accept: application/json' -H "Authorization: Bearer ${
 
 ```bash
 # getObservationMedia
-curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" $BASEURL/project/test_project_a/indicator/hiker_position/observation/e8f0a46c-1d24-456a-925a-387740ade1c6/media --output /tmp/test.jpeg
+curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -H "requestSyncDate: $(date '+%Y-%m-%d %H:%M:%S')" $BASEURL/project/default_project/series/3/observation/e8f0a46c-1d24-456a-925a-387740ade1c6/media --output /tmp/test.jpeg
 ```
 
 returns the media file in binary and save it to `/tmp/test.jpeg`

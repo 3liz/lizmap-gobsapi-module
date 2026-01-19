@@ -156,7 +156,7 @@ class Series
                 ON s.fk_id_spatial_layer = sl.id
             INNER JOIN gobs.project AS p
                 ON s.fk_id_project = p.id
-            INNER JOIN gobs.protocole AS po
+            INNER JOIN gobs.protocol AS po
                 ON s.fk_id_protocol = po.id
             WHERE s.id = $1
         ),
@@ -302,7 +302,7 @@ class Series
                         $media_url = $this->setDocumentUrl($document);
                         if ($media_url) {
                             $dtype = $document->type;
-                            $data->{$dtype} = $media_url;
+                            $data->indicator->{$dtype} = $media_url;
                         }
                     } elseif ($document->type == 'url') {
                         $docs[] = $document;
@@ -319,129 +319,6 @@ class Series
         }
 
         return $data;
-    }
-
-    /**
-     * Create the needed G-Obs series.
-     *
-     * If a spatial layer code is given, use this layer
-     * and do not create a new spatial layer
-     *
-     * @param null|string $spatial_layer_code the spatial layer code to use
-     *
-     * @return int $series_id the Series internal integer ID
-     */
-    public function getOrAddGobsSeries($spatial_layer_code = null)
-    {
-        // Check cache
-        $cache_key = 'gobs_series_'.$this->id.'_'.$this->user->login;
-        $series_id = jCache::get($cache_key);
-        if ($series_id) {
-            return $series_id;
-        }
-
-        // Utils
-        jClasses::inc('gobsapi~Utils');
-        $utils = new Utils();
-
-        // protocol
-        $protocol_id = $utils->getOrAddObject(
-            'protocol',
-            array('g_events'),
-            array(
-                'g_events',
-                'G-Events',
-                'Automatically created protocol for G-Events',
-            )
-        );
-        if (!$protocol_id) {
-            return null;
-        }
-
-        // actor_category for actor
-        $category_id = $utils->getOrAddObject(
-            'actor_category',
-            array('G-Events'),
-            array(
-                'G-Events',
-                'Automatically created category of actors for G-Events',
-            )
-        );
-        if (!$category_id) {
-            return null;
-        }
-
-        // actor for spatial layer
-        $sl_actor_id = $utils->getOrAddObject(
-            'actor',
-            array('g_events'),
-            array(
-                'g_events',
-                'G-Events',
-                'Application',
-                'g_events@g_events.evt',
-                $category_id,
-                'Automatically created actor for G-Events: ',
-            )
-        );
-        if (!$sl_actor_id) {
-            return null;
-        }
-
-        // spatial_layer
-        // We do not create a new spatial layer if its code has been given
-        // in the JSON body, but use the existing layer to create the needed series
-        if ($spatial_layer_code === null) {
-            $spatial_layer_code = 'g_events_'.$this->id;
-        }
-        $spatial_layer_id = $utils->getOrAddObject(
-            'spatial_layer',
-            array($spatial_layer_code),
-            array(
-                'g_events_'.$this->id,
-                'Observation layer for the series '.$this->id,
-                'Automatically created spatial layer for G-Events series '.$this->id,
-                $sl_actor_id,
-                'point',
-            )
-        );
-        if (!$spatial_layer_id) {
-            return null;
-        }
-
-        // series id
-        $series_id = $this->raw_data->id;
-
-        // authenticated actor
-        // it has already been created before hand (see User class)
-        $actor_id = $utils->getOrAddObject(
-            'actor',
-            array($this->user->login),
-            null
-        );
-        if (!$actor_id) {
-            return null;
-        }
-        // series
-        $series_properties = array(
-            $protocol_id,
-            $actor_id,
-            $indicator_id,
-            $spatial_layer_id,
-        );
-        $series_id = $utils->getOrAddObject(
-            'series',
-            $series_properties,
-            $series_properties
-        );
-        if (!$series_id) {
-            return null;
-        }
-
-        // Set cache
-        jCache::set($cache_key, $series_id, 300);
-
-        return $series_id;
     }
 
     // Set the root folder for the indicator document files
@@ -584,7 +461,6 @@ class Series
 
             // Add editable property to help clients know
             // if the observation can be modified or deleted
-            // todo: replace test with login
             $item->editable = false;
             if ($this->user->email == $item->actor_email) {
                 $item->editable = true;
@@ -653,11 +529,11 @@ class Series
 
         if ($file_path) {
             $document_url = jUrl::getFull(
-                'gobsapi~indicator:getIndicatorDocument'
+                'gobsapi~series:getIndicatorDocument'
             );
             $document_url = str_replace(
                 'gobsapi.php/gobsapi/series/getIndicatorDocument',
-                'gobsapi.php/project/'.$this->project_key.'/series/'.$this->id.'/indicator/'.$this->indicator_code.'/document/'.$document->uid,
+                'gobsapi.php/project/'.$this->project_key.'/series/'.$this->id.'/document/'.$document->uid,
                 $document_url
             );
         }

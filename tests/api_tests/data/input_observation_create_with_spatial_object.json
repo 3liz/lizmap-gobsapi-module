@@ -1,5 +1,6 @@
 {
     "id": null,
+    "series": 2,
     "indicator": "population",
     "uuid": null,
     "start_timestamp": "2011-01-01 00:00:00",

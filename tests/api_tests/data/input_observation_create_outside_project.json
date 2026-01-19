@@ -1,5 +1,6 @@
 {
     "id": null,
+    "series": 3,
     "indicator": "hiker_position",
     "uuid": null,
     "start_timestamp": "2022-07-22 03:30:00",
@@ -16,4 +17,3 @@
     "created_at": null,
     "updated_at": null
 }
-    
