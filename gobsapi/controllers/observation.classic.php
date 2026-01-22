@@ -132,6 +132,25 @@ class observationCtrl extends apiController
             );
         }
 
+        // For delete, check if observation can be deleted
+        if ($from == 'deleteObservationById' || $from == 'deleteObservationMedia' || $from == 'uploadObservationMedia') {
+            list($ok, $days_editable) = $gobs_observation->checkObservationStillEditable($observation_uid);
+            if (!$ok) {
+                $message = 'The observation can no longer be deleted (editable period is '.$days_editable.' days)';
+                if ($from == 'deleteObservationMedia') {
+                    $message = 'The observation media can no longer be deleted (editable period is '.$days_editable.' days)';
+                } elseif ($from == 'uploadObservationMedia') {
+                    $message = 'The observation media can no longer be uploaded (editable period is '.$days_editable.' days)';
+                }
+
+                return array(
+                    '403',
+                    'error',
+                    $message,
+                );
+            }
+        }
+
         // Set observation property
         $this->observation = $gobs_observation;
 

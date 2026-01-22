@@ -31,6 +31,7 @@ main:
 			install-plugins: install QGIS Server plugins
 			import-test-data: import test data inside the PostgreSQL database
 			export-test-data: export test data to tests/sql/test_data.sql
+			postgres: open a psql shell connected to the database
 
 			Note: Un fichier d'environnement pour docker compose
 			est crée à chaque invocation de 'run'.

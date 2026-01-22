@@ -207,6 +207,47 @@ class Observation
     }
 
     /**
+     * Check the observation creation timestamp is not too old
+     * compared to the protocol variable pr_days_editable.
+     *
+     * This is used to prevent modification of observations
+     * after a certain delay based on the protocol settings.
+     *
+     * @param string $observation_uid Uid of the observation
+     *
+     * @return array (bool $ok, int $days_editable)
+     */
+    public function checkObservationStillEditable($observation_uid)
+    {
+        $sql = "
+            SELECT
+                (CASE
+                    WHEN NOW() <= (o.created_at + INTERVAL '1 day' * pr.pr_days_editable) THEN 'yes'
+                    ELSE 'no'
+                END)::text AS test,
+                pr.pr_days_editable
+            FROM gobs.observation AS o
+            JOIN gobs.series AS s
+                ON s.id = o.fk_id_series
+            JOIN gobs.protocol AS pr
+                ON pr.id = s.fk_id_protocol
+            WHERE o.ob_uid = $1
+        ";
+        $cnx = jDb::getConnection($this->connectionProfile);
+        $resultset = $cnx->prepare($sql);
+        $params = array($observation_uid);
+        $resultset->execute($params);
+        $ok = false;
+        $days_editable = 0;
+        foreach ($resultset->fetchAll() as $record) {
+            $ok = ($record->test == 'yes');
+            $days_editable = (int) $record->pr_days_editable;
+        }
+
+        return array($ok, $days_editable);
+    }
+
+    /**
      * Check observation JSON data.
      *
      * @param string $action create or update
@@ -346,6 +387,18 @@ class Observation
                     'error',
                     '400',
                     'Observation JSON data must have a valid series',
+                );
+            }
+
+            // Check that the observation can still be edited
+            list($editable, $days_editable) = $this->checkObservationStillEditable($body_data->uuid);
+            if (!$editable) {
+                $this->observation_valid = false;
+
+                return array(
+                    'error',
+                    '403',
+                    'Observation can no longer be modified according to the protocol settings. It can be modified up to '.$days_editable.' days after its creation.',
                 );
             }
 
@@ -597,10 +650,16 @@ class Observation
                     ST_AsText(so.geom, 8) AS wkt,
                     ob_value AS values,
                     NULL AS media_url,
-                    o.created_at::timestamp(0), o.updated_at::timestamp(0)
+                    o.created_at::timestamp(0), o.updated_at::timestamp(0),
+                    (CASE
+                        WHEN NOW() <= (o.created_at + INTERVAL \'1 day\' * pr.pr_days_editable) THEN \'yes\'
+                        ELSE \'no\'
+                    END)::text AS pr_editable
                 FROM gobs.observation AS o
                 JOIN gobs.series AS s
                     ON s.id = o.fk_id_series
+                JOIN gobs.protocol AS pr
+                    ON pr.id = s.fk_id_protocol
                 JOIN gobs.actor AS a
                     ON a.id = o.fk_id_actor
                 JOIN gobs.indicator AS i
@@ -1021,12 +1080,13 @@ class Observation
         // Add editable property to help clients know
         // if the observation can be modified or deleted
         $data->editable = false;
-        if ($this->user->email == $data->actor_email) {
+        if ($this->user->email == $data->actor_email && $data->pr_editable == 'yes') {
             $data->editable = true;
         }
 
         // Remove login before sending back data
-        unset($data->actor_email);
+        unset($data->actor_email, $data->pr_editable);
+        // Remove pr_editable property
 
         // Check media exists
         $media_url = $this->series->setObservationMediaUrl($data->uuid);
