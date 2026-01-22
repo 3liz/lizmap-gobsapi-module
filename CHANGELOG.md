@@ -2,6 +2,38 @@
 
 ## Unreleased
 
+## 0.9.0 - 2026-01-22
+
+Configuration
+* Remove complex link between project and PostgreSQL connection.
+  The file `media/gobsapi/projects_connections.ini` is not needed anymore.
+
+API changes
+* Use `series` and not `indicators` to get the objects (observations, etc.)
+* Series
+  * Add the protocol code in the series JSON
+  * Avoid to create a series for each authenticated user. The series must be created beforehand.
+* Observation:
+  * Update/Delete/Media : Add checks about editable status based on the protocol `pr_days_editable`
+  * Fix an error if the geometry `so_unique_id` already exists
+* Spatial data - use only 8 digits for geometry precision
+
+Documentation
+* Update API doc
+  * Remove `indicator` in the URL Path (replace by `series`)
+  * Update `observation` JSON content
+  * Fix minor errors
+
+Tests
+* Upgrade test database to QGIS plugin G-Obs version 7.0.2
+
+Software compatibilities
+* Lizmap Web Client: between 3.7 and 3.9
+* PostgreSQL: test database in 17
+* QGIS 3.40
+
+
+
 ## 0.8.1 - 2025-01-10
 
 ### Changed
