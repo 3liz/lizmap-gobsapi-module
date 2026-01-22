@@ -400,6 +400,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#090-2026-01-22" class="md-nav__link">
+    0.9.0 - 2026-01-22
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#081-2025-01-10" class="md-nav__link">
     0.8.1 - 2025-01-10
   </a>
@@ -615,6 +622,30 @@
                 
                 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">#</a></h1>
 <h2 id="unreleased">Unreleased<a class="headerlink" href="#unreleased" title="Permanent link">#</a></h2>
+<h2 id="090-2026-01-22">0.9.0 - 2026-01-22<a class="headerlink" href="#090-2026-01-22" title="Permanent link">#</a></h2>
+<p>Configuration
+* Remove complex link between project and PostgreSQL connection.
+  The file <code>media/gobsapi/projects_connections.ini</code> is not needed anymore.</p>
+<p>API changes
+* Use <code>series</code> and not <code>indicators</code> to get the objects (observations, etc.)
+* Series
+  * Add the protocol code in the series JSON
+  * Avoid to create a series for each authenticated user. The series must be created beforehand.
+* Observation:
+  * Update/Delete/Media : Add checks about editable status based on the protocol <code>pr_days_editable</code>
+  * Fix an error if the geometry <code>so_unique_id</code> already exists
+* Spatial data - use only 8 digits for geometry precision</p>
+<p>Documentation
+* Update API doc
+  * Remove <code>indicator</code> in the URL Path (replace by <code>series</code>)
+  * Update <code>observation</code> JSON content
+  * Fix minor errors</p>
+<p>Tests
+* Upgrade test database to QGIS plugin G-Obs version 7.0.2</p>
+<p>Software compatibilities
+* Lizmap Web Client: between 3.7 and 3.9
+* PostgreSQL: test database in 17
+* QGIS 3.40</p>
 <h2 id="081-2025-01-10">0.8.1 - 2025-01-10<a class="headerlink" href="#081-2025-01-10" title="Permanent link">#</a></h2>
 <h3 id="changed">Changed<a class="headerlink" href="#changed" title="Permanent link">#</a></h3>
 <ul>
