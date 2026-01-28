@@ -369,6 +369,19 @@
     Project
   </a>
   
+    <nav class="md-nav" aria-label="Project">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#geopackage-file" class="md-nav__link">
+    GeoPackage file
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -479,6 +492,19 @@
     Project
   </a>
   
+    <nav class="md-nav" aria-label="Project">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#geopackage-file" class="md-nav__link">
+    GeoPackage file
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -540,39 +566,44 @@
                 
                 <h1 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">#</a></h1>
 <p>The G-Obs <strong>API module</strong> is tightly linked to the <strong>G-Obs QGIS plugin</strong>, and to the use of Lizmap Web Client as the web map publication tool.</p>
-<p>We write here some help regarding the specific configuration needed for G-Obs API. A full documentation on Lizmap Web Client is available here: <a href="https://docs.lizmap.com/">https://docs.lizmap.com/</a></p>
+<p>We write here some help regarding the specific configuration needed for G-Obs API.
+A full documentation on Lizmap Web Client is available here: <a href="https://docs.lizmap.com/">https://docs.lizmap.com/</a></p>
 <h2 id="project">Project<a class="headerlink" href="#project" title="Permanent link">#</a></h2>
-<p>A project in G-Obs corresponds to a QGIS project published to Lizmap, with some specificities:</p>
-<ul>
-<li>
-<p><strong>Indicators</strong>: In the QGIS Project properties, you need to have a <strong>project variable</strong> <code>gobs_indicators</code> containing the list of indicators that you want to publish in the project. To do so, open the project properties (CTRL+MAJ+P), go to the <code>Variables</code> tab, and add a new variable: name <code>gobs_indicators</code> and value begining <strong>exactly</strong> with the term <code>gobs_indicators:</code>, and containing the list of indicator <strong>codes</strong> separated by comma. For example: <code>gobs_indicators:pluviometry,population</code> will "publish" these two indicators (pluviometry and population) with the QGIS project.</p>
-</li>
-<li>
-<p><strong>Connection name</strong>: You must also add another QGIS <strong>project variable</strong> <code>gobs_connection_name</code> containing the name of the PostgreSQL connection name (as written in the QGIS connection configuration dialog). This connection name must be <strong>exactly the same</strong> as the name of the <strong>PostgreSQL service</strong> which is used locally (your computer) and in the <strong>GobsAPI server</strong>.</p>
-</li>
-<li>
-<p><strong>Additionnal spatial data</strong>: you can also publish a <strong>Geopackage file</strong> alongside the project, to be used by any software to display referential spatial layers on the map with the observation data. To do so, just create and save a Geopackage file containing vector layers (and raster layers if needed) named as the QGIS project. For example, if you project file is <code>my_gobs_project.qgs</code>, you must save the Geopackage file in the same folder with the name <code>my_gobs_project.qgs.gpkg</code>. You can create and populate this Geopackage with the QGIS processing tool <code>Package layers</code> accessible with the <strong>Processing / Toolbox</strong> menu.</p>
-</li>
-</ul>
+<h3 id="geopackage-file">GeoPackage file<a class="headerlink" href="#geopackage-file" title="Permanent link">#</a></h3>
+<p>You can publish a <strong>Geopackage file</strong> alongside each G-Obs project,
+to be used by any software to display <strong>referential spatial layers</strong> on the map.</p>
+<p>To do so, just create and save in the appropriate folder a <strong>Geopackage file</strong>
+containing vector layers (and raster layers if needed) named <strong>as the QGIS project</strong>.
+For example, if your G-Obs project code is <code>my_gobs_project</code>, you must
+save the Geopackage file in the Lizmap data folder <code>media/gobsapi/geopackage/my_gobs_project.gpkg</code>.</p>
+<p>You can create and populate this <strong>Geopackage</strong> with the <strong>QGIS</strong> processing tool <code>Package layers</code>
+accessible with the <strong>Processing / Toolbox</strong> menu.</p>
 <h2 id="indicators">Indicators<a class="headerlink" href="#indicators" title="Permanent link">#</a></h2>
 <h3 id="documents">Documents<a class="headerlink" href="#documents" title="Permanent link">#</a></h3>
-<p>In the G-Obs database, you can add documents to illustrate each indicator. To do so, the table <code>gobs.document</code> must be filled with appropriate data.</p>
+<p>In the G-Obs database, you can add documents to illustrate each indicator. To do so,
+the table <code>gobs.document</code> must be filled with appropriate data.</p>
 <p>An indicator can have different types of documents:</p>
 <ul>
 <li><code>document</code>: any document such as PDF, ODT, DOC, DOCX, ZIP file</li>
-<li><code>icon</code>: the icon of the indicator (a simple and small image file). Must be a jpeg, jpg, png or gif.</li>
+<li><code>icon</code>: the icon of the indicator (a simple and small image file). Must be a <code>jpeg</code>, <code>jpg</code>, <code>png</code> or <code>gif</code>.</li>
 <li><code>image</code>: an image file (photo, illustration)</li>
 <li><code>other</code>: any other unspecified type of document</li>
-<li><code>preview</code>: the image to be shown as the main illustration of the indicator. Must be a jpeg, jpg, png or gif.</li>
+<li><code>preview</code>: the image to be shown as the main illustration of the indicator. Must be a <code>jpeg</code>, <code>jpg</code>, <code>png</code> or <code>gif</code>.</li>
 <li><code>video</code>: a video file.</li>
-<li><code>url</code>: a URL pointing to an external ressource</li>
+<li><code>url</code>: a URL pointing to an external web page or document.</li>
 </ul>
-<p>All the document files must be stored in the API server. The document files must be stored inside a <code>media/gobsapi/documents/</code> folder, with the <code>media</code> folder located in Lizmap repository root folder. This <code>media</code> folder must be writable. Do it for example with</p>
+<p>All the document files must be stored in the API server. The document files must be stored
+inside a <code>media/gobsapi/documents/</code> folder,
+with the <code>media</code> folder located in Lizmap repository root folder.
+This <code>media</code> folder must be writable. Do it for example with the following command:</p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>chown<span class="w"> </span>-R<span class="w"> </span>:www-data<span class="w"> </span>/srv/data/media
 chmod<span class="w"> </span><span class="m">775</span><span class="w"> </span>-R<span class="w"> </span>/srv/data/media
 </code></pre></div></td></tr></table></div>
-<p>For example, if Lizmap Web Client repository root folder is <code>/srv/data/</code>, the root gobsapi media folder will be <code>/srv/data/media/</code> and the documents must be stored in <code>/srv/data/media/gobsapi/documents/INDICATOR_CODE/DOCUMENT_TYPE/DOCUMENT_FILE_NAME.EXT</code>, where</p>
+<p>For example, if Lizmap Web Client repository root folder is <code>/srv/data/</code>,
+the root gobsapi media folder will be <code>/srv/data/media/</code> and the documents must be stored
+in <code>/srv/data/media/gobsapi/documents/INDICATOR_CODE/DOCUMENT_TYPE/DOCUMENT_FILE_NAME.EXT</code>,
+where:</p>
 <ul>
 <li><code>INDICATOR_CODE</code> is the code of the indicator, for example <code>pluviometry</code></li>
 <li><code>DOCUMENT_TYPE</code> is the type of the document, for example <code>image</code></li>
@@ -583,15 +614,22 @@ chmod<span class="w"> </span><span class="m">775</span><span class="w"> </span>-
 <li><code>/srv/data/media/gobsapi/documents/pluviometry/image/a_picture.jpg</code></li>
 <li><code>/srv/data/media/gobsapi/documents/population/document/explaining_demography.pdf</code></li>
 </ul>
-<p>In the <strong>table</strong> <code>gobs.document</code> of the <strong>G-Obs database</strong> , the path must be stored <strong>relative to the folder</strong> <code>/srv/data/media/gobsapi/documents</code>, and must begin only with the code of the indicator. For example :</p>
+<p>In the <strong>table</strong> <code>gobs.document</code> of the <strong>G-Obs database</strong> , the path must be stored
+<strong>relative to the folder</strong> <code>/srv/data/media/gobsapi/documents</code>, and must begin
+only with the code of the indicator. For example :</p>
 <ul>
 <li><code>pluviometry/image/a_picture.jpg</code></li>
 <li><code>population/document/explaining_demography.pdf</code></li>
 </ul>
-<p>The API module will then propose a URL to access each document, returned when querying the details of an indicator.</p>
+<p>The API module will then propose a URL to access each document,
+returned when querying the details of an indicator.</p>
 <h2 id="observations">Observations<a class="headerlink" href="#observations" title="Permanent link">#</a></h2>
 <h3 id="media">Media<a class="headerlink" href="#media" title="Permanent link">#</a></h3>
-<p>Each observation can have a photo, called media. When uploading this media file with the API entry point <code>/project/PROJECT_CODE/indicator/INDICATOR_CODE/observation/OBSERVATION_UID/uploadMedia</code>, the media file will be stored in the full path <code>/srv/data/media/gobsapi/observations/OBSERVATION_UID.EXT</code> where:</p>
+<p>Each observation can have a photo, called media. When uploading this media file
+with the API entry point <code>/project/PROJECT_CODE/series/SERIES_ID/observation/OBSERVATION_UID/uploadMedia</code>,
+the media file will be stored in the full path
+<code>/srv/data/media/gobsapi/observations/OBSERVATION_UID.EXT</code>
+where:</p>
 <ul>
 <li><code>INDICATOR_CODE</code> is the code of the indicator, for example <code>pluviometry</code></li>
 <li><code>OBSERVATION_UID</code> is the UUID of the observation, for example <code>e8f0a46c-1d24-456a-925a-387740ade1c6</code></li>
