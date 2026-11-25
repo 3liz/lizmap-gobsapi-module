@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+Software compatibilities
+* Lizmap Web Client: between 3.8 and 3.10
+
+Tests
+* Upgrade the QGIS Server plugins of the test stack
+* Fix the expected coordinates of an observation, rounded to 8 digits
+
 ## 0.9.0 - 2026-01-22
 
 Configuration
