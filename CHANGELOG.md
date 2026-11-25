@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.10.0 - 2026-11-25
+
 Software compatibilities
 * Lizmap Web Client: between 3.8 and 3.10
 
