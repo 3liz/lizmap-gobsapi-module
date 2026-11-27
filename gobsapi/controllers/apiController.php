@@ -32,8 +32,10 @@ class apiController extends jController
     /** @var Series */
     protected $series;
 
+    /** @var null|string Upper bound of the synchronisation, null means the current database time */
     protected $requestSyncDate;
 
+    /** @var string Lower bound of the synchronisation */
     protected $lastSyncDate;
 
     /**
@@ -73,8 +75,10 @@ class apiController extends jController
         );
 
         // Default values
+        // Without requestSyncDate, the data is not limited in the future:
+        // a date computed by PHP could be in another time zone than the database timestamps
         $this->lastSyncDate = '1970-01-01 00:00:00';
-        $this->requestSyncDate = date('Y-m-d H:i:s');
+        $this->requestSyncDate = null;
 
         // Get lastSyncDate and requestSyncDate from headers
         foreach ($sync_dates as $key => $prop) {

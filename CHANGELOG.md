@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+Bug fixes
+* Synchronisation: without `requestSyncDate`, observations deleted or modified just before the request are not missed anymore
+
 ## 0.10.0 - 2026-11-25
 
 Software compatibilities

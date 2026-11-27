@@ -44,7 +44,16 @@ class TestRequests(unittest.TestCase):
             content_type: str = None, token: str = None, request_sync_date: str = None,
             last_sync_date: str = None
     ) -> dict:
-        """ Set request header """
+        """ Set request header
+
+        :param content_type: Accepted content type, also used as Content-Type for JSON and multipart data
+        :param token: Optional authentication token
+        :param request_sync_date: Optional request synchronisation date.
+            Without it, the API uses the database current time,
+            which avoids depending on the time zone of the computer running the tests.
+        :param last_sync_date: Optional last synchronisation date
+        :return: The request headers
+        """
         headers = {
             'Accept': content_type
         }
@@ -53,10 +62,8 @@ class TestRequests(unittest.TestCase):
         if content_type in ('application/json', 'multipart/form-data'):
             headers['Content-Type'] = content_type
 
-        # Add request sync date and optional last sync date
-        if not request_sync_date:
-            now = datetime.now()
-            request_sync_date = now.strftime("%Y-%m-%d %H:%M:%S")
+        # Add optional request sync date and last sync date
+        if request_sync_date:
             headers['requestSyncDate'] = request_sync_date
         if last_sync_date:
             headers['lastSyncDate'] = last_sync_date

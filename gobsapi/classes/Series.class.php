@@ -356,7 +356,15 @@ class Series
         }
     }
 
-    // Get indicator observations
+    /**
+     * Get the series observations, optionally modified between two synchronisation dates.
+     *
+     * @param null|string $requestSyncDate Upper bound of updated_at (included), no limit if null
+     * @param null|string $lastSyncDate    Lower bound of updated_at (excluded), no limit if null
+     * @param null|array  $uids            Optional list of observation uids to keep
+     *
+     * @return array The observations
+     */
     public function getObservations($requestSyncDate = null, $lastSyncDate = null, $uids = null)
     {
         $sql = "
@@ -407,20 +415,31 @@ class Series
             AND ( ST_Intersects(so.geom, ST_SetSRID(ST_GeomFromText($2), 4326)) )
         ';
 
+        $params = array(
+            $this->indicator_code,
+            $this->allowed_polygon_wkt,
+        );
+
         // Filter between last sync date & request sync date
-        if ($requestSyncDate && $lastSyncDate) {
-            // updated_at is always set (=created_at or last time object has been modified)
+        // updated_at is always set (=created_at or last time object has been modified)
+        // Each bound is optional: without requestSyncDate, the database current time is the limit
+        if ($lastSyncDate) {
+            $params[] = $lastSyncDate;
             $sql .= '
-            AND (
-                o.updated_at > $3 AND o.updated_at <= $4
-            )
+            AND o.updated_at > $'.count($params).'
+            ';
+        }
+        if ($requestSyncDate) {
+            $params[] = $requestSyncDate;
+            $sql .= '
+            AND o.updated_at <= $'.count($params).'
             ';
         }
 
         // Filter for given observation uids
         if (!empty($uids)) {
             $keep = array();
-            foreach ($uuids as $uuid) {
+            foreach ($uids as $uuid) {
                 if ($this->isValidUuid($uuid)) {
                     $keep[] = $uuid;
                 }
@@ -445,14 +464,6 @@ class Series
         // jLog::log($sql, 'error');
         $cnx = jDb::getConnection($this->connectionProfile);
         $resultset = $cnx->prepare($sql);
-        $params = array(
-            $this->indicator_code,
-            $this->allowed_polygon_wkt,
-        );
-        if ($requestSyncDate && $lastSyncDate) {
-            $params[] = $lastSyncDate;
-            $params[] = $requestSyncDate;
-        }
         $resultset->execute($params);
         $data = array();
 
@@ -574,7 +585,14 @@ class Series
         return $media_url;
     }
 
-    // Get indicator deleted observations
+    /**
+     * Get the uids of the observations deleted between two synchronisation dates.
+     *
+     * @param null|string $requestSyncDate Upper bound of the deletion time (included), no limit if null
+     * @param null|string $lastSyncDate    Lower bound of the deletion time (included), no limit if null
+     *
+     * @return array The deleted observation uids
+     */
     public function getDeletedObservations($requestSyncDate = null, $lastSyncDate = null)
     {
         $sql = "
@@ -586,11 +604,20 @@ class Series
             WHERE True
             AND de_table = 'observation'
         ";
-        if ($requestSyncDate && $lastSyncDate) {
+
+        // Filter between last sync date & request sync date
+        // Each bound is optional: without requestSyncDate, the database current time is the limit
+        $params = array();
+        if ($lastSyncDate) {
+            $params[] = $lastSyncDate;
             $sql .= '
-            AND (
-                de_timestamp BETWEEN $1 AND $2
-            )
+            AND de_timestamp >= $'.count($params).'
+            ';
+        }
+        if ($requestSyncDate) {
+            $params[] = $requestSyncDate;
+            $sql .= '
+            AND de_timestamp <= $'.count($params).'
             ';
         }
         $sql .= '
@@ -603,11 +630,6 @@ class Series
 
         $cnx = jDb::getConnection($this->connectionProfile);
         $resultset = $cnx->prepare($sql);
-        $params = array();
-        if ($requestSyncDate && $lastSyncDate) {
-            $params[] = $lastSyncDate;
-            $params[] = $requestSyncDate;
-        }
         $resultset->execute($params);
         $data = array();
         foreach ($resultset->fetchAll() as $record) {
